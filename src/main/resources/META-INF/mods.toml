@@ -7,9 +7,9 @@ license="All rights reserved"
 modId="insanelib"
 version="${file.jarVersion}"
 displayName="InsaneLib"
-#displayURL="https://www.curseforge.com/minecraft/mc-mods/insanelib"
+displayURL="https://www.curseforge.com/minecraft/mc-mods/insanelib"
 #logoFile="examplemod.png"
-#credits="Thanks for this example mod goes to Java"
+#credits=""
 authors="Insane96MCP"
 description='''
 A Library mod used by Insane's Mods
