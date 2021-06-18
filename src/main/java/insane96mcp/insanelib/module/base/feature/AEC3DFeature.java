@@ -42,6 +42,8 @@ public class AEC3DFeature extends Feature {
 			return;
 
 		AreaEffectCloudEntity areaEffectCloud = (AreaEffectCloudEntity) event.getEntity();
+		if (areaEffectCloud.effects.isEmpty())
+			return;
 		AreaEffectCloud3DEntity areaEffectCloud3D = new AreaEffectCloud3DEntity(areaEffectCloud);
 		areaEffectCloud.remove();
 		areaEffectCloud3D.world.addEntity(areaEffectCloud3D);
