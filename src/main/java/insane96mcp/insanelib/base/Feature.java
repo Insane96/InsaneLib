@@ -72,6 +72,13 @@ public class Feature {
             this.enabled = true;
     }
 
+    public void pushConfig(final ForgeConfigSpec.Builder builder) {
+        if (!description.equals(""))
+            builder.comment(this.getDescription()).push(this.getName());
+        else
+            builder.push(this.getName());
+    }
+
     public void registerEvents() {
         for (Method method : this.getClass().getDeclaredMethods()) {
             if (!method.isAnnotationPresent(SubscribeEvent.class))
@@ -80,5 +87,4 @@ public class Feature {
             MinecraftForge.EVENT_BUS.register(this);
         }
     }
-
 }
