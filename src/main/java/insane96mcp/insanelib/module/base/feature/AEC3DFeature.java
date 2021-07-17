@@ -7,9 +7,14 @@ import insane96mcp.insanelib.entity.AreaEffectCloud3DEntity;
 import insane96mcp.insanelib.setup.Config;
 import net.minecraft.entity.AreaEffectCloudEntity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.potion.Potions;
+import net.minecraft.util.concurrent.ThreadTaskExecutor;
+import net.minecraft.util.concurrent.TickDelayedTask;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.LogicalSide;
+import net.minecraftforge.fml.LogicalSidedProvider;
 
 @Label(name = "Area Effect Cloud 3D", description = "No more boring 3D Area of Effect Clouds")
 public class AEC3DFeature extends Feature {
@@ -42,10 +47,12 @@ public class AEC3DFeature extends Feature {
 			return;
 
 		AreaEffectCloudEntity areaEffectCloud = (AreaEffectCloudEntity) event.getEntity();
-		if (areaEffectCloud.effects.isEmpty())
+		if (areaEffectCloud.effects.isEmpty() && areaEffectCloud.potion.equals(Potions.EMPTY))
 			return;
 		AreaEffectCloud3DEntity areaEffectCloud3D = new AreaEffectCloud3DEntity(areaEffectCloud);
 		areaEffectCloud.remove();
-		areaEffectCloud3D.world.addEntity(areaEffectCloud3D);
+
+		ThreadTaskExecutor<Runnable> executor = LogicalSidedProvider.WORKQUEUE.get(event.getWorld().isRemote ? LogicalSide.CLIENT : LogicalSide.SERVER);
+		executor.enqueue(new TickDelayedTask(0, () -> areaEffectCloud3D.world.addEntity(areaEffectCloud3D)));
 	}
 }
