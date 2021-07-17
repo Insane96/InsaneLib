@@ -10,9 +10,8 @@ public class BaseModule extends Module {
 	public AEC3DFeature aec3D;
 
 	public BaseModule() {
-		super(Config.builder);
+		super(Config.builder, true, false);
 		pushConfig(Config.builder);
-		//Must be the first one to be initialized, otherwise the other modules will not get the correct difficulty settings
 		aec3D = new AEC3DFeature(this);
 		Config.builder.pop();
 	}
