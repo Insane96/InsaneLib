@@ -8,18 +8,28 @@ public class Module {
 
     private boolean enabled;
 
+    private final boolean canBeDisabled;
+
     private final String name;
     private final String description;
 
-    public Module(final ForgeConfigSpec.Builder builder, boolean enabledByDefault) {
+    public Module(final ForgeConfigSpec.Builder builder, boolean enabledByDefault, boolean canBeDisabled) {
         if (!this.getClass().isAnnotationPresent(Label.class))
             LogHelper.error(String.format("%s is missing the Label Annotation.", this.getClass().getName()));
         this.name = this.getClass().getAnnotation(Label.class).name();
         this.description = this.getClass().getAnnotation(Label.class).description();
-        if (!description.equals(""))
-            enabledConfig = builder.comment(this.description).define("Enable " + this.name + " module", enabledByDefault);
+        this.canBeDisabled = canBeDisabled;
+        if (canBeDisabled)
+            if (!description.equals(""))
+                enabledConfig = builder.comment(this.description).define("Enable " + this.name + " module", enabledByDefault);
+            else
+                enabledConfig = builder.define("Enable " + this.name, enabledByDefault);
         else
-            enabledConfig = builder.define("Enable " + this.name, enabledByDefault);
+            enabledConfig = null;
+    }
+
+    public Module(final ForgeConfigSpec.Builder builder, boolean enabledByDefault) {
+        this(builder, enabledByDefault, true);
     }
 
     public Module(final ForgeConfigSpec.Builder builder) {
@@ -39,7 +49,10 @@ public class Module {
     }
 
     public void loadConfig() {
-        this.enabled = enabledConfig.get();
+        if (canBeDisabled)
+            this.enabled = enabledConfig.get();
+        else
+            this.enabled = true;
     }
 
     public void pushConfig(final ForgeConfigSpec.Builder builder) {

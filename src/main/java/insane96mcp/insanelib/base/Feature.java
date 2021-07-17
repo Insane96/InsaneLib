@@ -13,19 +13,29 @@ public class Feature {
     private final ForgeConfigSpec.ConfigValue<Boolean> enabledConfig;
     private final Module module;
 
+    private final boolean canBeDisabled;
+
     private boolean enabled;
 
-    public Feature(final ForgeConfigSpec.Builder builder, Module module, boolean enabledByDefault) {
+    public Feature(final ForgeConfigSpec.Builder builder, Module module, boolean enabledByDefault, boolean canBeDisabled) {
         if (!this.getClass().isAnnotationPresent(Label.class))
             LogHelper.error(String.format("%s is missing the Label Annotation.", this.getClass().getName()));
         this.name = this.getClass().getAnnotation(Label.class).name();
         this.description = this.getClass().getAnnotation(Label.class).description();
         this.module = module;
-        if (!description.equals(""))
-            enabledConfig = builder.comment(getDescription()).define("Enable " + getName(), enabledByDefault);
+        this.canBeDisabled = canBeDisabled;
+        if (canBeDisabled)
+            if (!description.equals(""))
+                enabledConfig = builder.comment(getDescription()).define("Enable " + getName(), enabledByDefault);
+            else
+                enabledConfig = builder.define("Enable " + getName(), enabledByDefault);
         else
-            enabledConfig = builder.define("Enable " + getName(), enabledByDefault);
+            enabledConfig = null;
         this.registerEvents();
+    }
+
+    public Feature(final ForgeConfigSpec.Builder builder, Module module, boolean enabledByDefault) {
+        this(builder, module, enabledByDefault, true);
     }
 
     public Feature(final ForgeConfigSpec.Builder builder, Module module) {
@@ -56,7 +66,10 @@ public class Feature {
     }
 
     public void loadConfig() {
-        this.enabled = enabledConfig.get();
+        if (canBeDisabled)
+            this.enabled = enabledConfig.get();
+        else
+            this.enabled = true;
     }
 
     public void registerEvents() {
