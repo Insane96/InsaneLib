@@ -65,7 +65,7 @@ public class IdTagMatcher {
                 LogHelper.warn("%s id is not valid", line);
                 return null;
             }
-            if (ForgeRegistries.BLOCKS.containsKey(id) || ForgeRegistries.ITEMS.containsKey(id)) {
+            if (ForgeRegistries.BLOCKS.containsKey(id) || ForgeRegistries.ITEMS.containsKey(id) || ForgeRegistries.ENTITIES.containsKey(id)) {
                 return new IdTagMatcher(id, null, dimension);
             }
             else {

@@ -1,6 +1,5 @@
 package insane96mcp.insanelib.config;
 
-import insane96mcp.insanelib.setup.Config;
 import net.minecraftforge.common.ForgeConfigSpec;
 
 import java.util.List;
@@ -19,9 +18,9 @@ public class BlacklistConfig {
 	 */
 	public BlacklistConfig(ForgeConfigSpec.Builder builder, String listName, String description, List<String> defaultList, boolean isDefaultWhitelist) {
 		builder.comment(description).push(listName);
-		listConfig = Config.builder
+		listConfig = builder
 				.defineList("Blacklist", defaultList, o -> o instanceof String);
-		listAsWhitelistConfig = Config.builder
+		listAsWhitelistConfig = builder
 				.comment("If true the list will be treated as a whitelist instead of blacklist")
 				.define("List as Whitelist", isDefaultWhitelist);
 		builder.pop();
