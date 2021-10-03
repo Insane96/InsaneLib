@@ -15,6 +15,7 @@ public class InsaneLib
 {
     public static final Logger LOGGER = LogManager.getLogger();
     public static final String MOD_ID = "insanelib";
+    public static final String RESOURCE_PREFIX = MOD_ID + ":";
 
     public InsaneLib() {
         ModLoadingContext.get().registerConfig(net.minecraftforge.fml.config.ModConfig.Type.COMMON, Config.COMMON_SPEC);
