@@ -4,7 +4,7 @@ import insane96mcp.insanelib.base.Feature;
 import insane96mcp.insanelib.base.Label;
 import insane96mcp.insanelib.base.Module;
 import insane96mcp.insanelib.setup.Config;
-import insane96mcp.insanelib.utils.ILHelper;
+import insane96mcp.insanelib.utils.MCUtils;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MobEntity;
@@ -114,7 +114,7 @@ public class FixFeature extends Feature {
 		if (event.player.isSprinting())
 			baseJMF += 0.006f;
 
-		double playerSpeedRatio = ILHelper.getMovementSpeedRatio(event.player);
+		double playerSpeedRatio = MCUtils.getMovementSpeedRatio(event.player);
 
 		event.player.jumpMovementFactor = (float) (playerSpeedRatio * baseJMF);
 	}
