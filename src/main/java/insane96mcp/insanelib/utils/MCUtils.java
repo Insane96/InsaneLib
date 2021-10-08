@@ -23,6 +23,10 @@ public class MCUtils {
 
 	/**
 	 * Different version of ItemStack#addAttributeModifiers that doesn't override the item's modifiers
+	 * @param itemStack
+	 * @param attribute
+	 * @param modifier
+	 * @param modifierSlot
 	 */
 	public static void addAttributeModifierToItemStack(ItemStack itemStack, Attribute attribute, AttributeModifier modifier, EquipmentSlotType modifierSlot) {
 		if (itemStack.hasTag() && !itemStack.getTag().contains("AttributeModifiers", 9)) {

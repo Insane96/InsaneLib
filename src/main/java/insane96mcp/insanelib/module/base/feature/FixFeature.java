@@ -107,6 +107,9 @@ public class FixFeature extends Feature {
 		if (!this.isEnabled())
 			return;
 
+		if (!this.fixJumpMovementFactor)
+			return;
+
 		if (event.phase != TickEvent.Phase.START)
 			return;
 
