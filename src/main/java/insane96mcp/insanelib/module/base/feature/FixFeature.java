@@ -28,10 +28,12 @@ public class FixFeature extends Feature {
 	private final ForgeConfigSpec.ConfigValue<Boolean> fixFollowRangeConfig;
 	private final ForgeConfigSpec.ConfigValue<Boolean> removeZombiesBonusHealthConfig;
 	private final ForgeConfigSpec.ConfigValue<Boolean> fixJumpMovementFactorConfig;
+	private final ForgeConfigSpec.ConfigValue<Boolean> slowdownOnlyConfig;
 
 	public boolean fixFollowRange = true;
 	public boolean removeZombiesBonusHealth = true;
 	public boolean fixJumpMovementFactor = true;
+	public boolean slowdownOnly = true;
 
 	public FixFeature(Module module) {
 		super(Config.builder, module);
@@ -45,6 +47,9 @@ public class FixFeature extends Feature {
 		this.fixJumpMovementFactorConfig = Config.builder
 				.comment("When affected by slowness the player can still jump really far away. When true, jumps length will be calculated base off player's movement speed.")
 				.define("Fix Jump Movement Factor", this.fixJumpMovementFactor);
+		this.slowdownOnlyConfig = Config.builder
+				.comment("The fix for Jump Movement Factor is applied only when the player is slowed down.")
+				.define("Fix Jump Movement Factor Slowdown Only", this.slowdownOnly);
 		Config.builder.pop();
 	}
 
@@ -118,6 +123,9 @@ public class FixFeature extends Feature {
 			baseJMF += 0.006f;
 
 		double playerSpeedRatio = MCUtils.getMovementSpeedRatio(event.player);
+
+		if (playerSpeedRatio > 1d && this.slowdownOnly)
+			return;
 
 		event.player.jumpMovementFactor = (float) (playerSpeedRatio * baseJMF);
 	}
