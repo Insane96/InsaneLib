@@ -142,20 +142,26 @@ public class IdTagMatcher {
     }
 
     public boolean matchesEntity(Entity entity) {
-        return matchesEntity(entity, null);
+        return matchesEntity(entity.getType(), null);
+    }
+    public boolean matchesEntity(Entity entity, @Nullable ResourceLocation dimensionId) {
+        return matchesEntity(entity.getType(), dimensionId);
+    }
+    public boolean matchesEntity(EntityType<?> entityType) {
+        return matchesEntity(entityType, null);
     }
 
-    public boolean matchesEntity(Entity entity, @Nullable ResourceLocation dimensionId) {
+    public boolean matchesEntity(EntityType<?> entityType, @Nullable ResourceLocation dimensionId) {
         if (dimensionId == null)
             dimensionId = AnyRL;
-        ResourceLocation entityId = entity.getType().getRegistryName();
+        ResourceLocation entityId = entityType.getRegistryName();
         if (this.tag != null) {
             if (!EntityTypeTags.getCollection().getRegisteredTags().contains(this.tag))
                 return false;
             ITag<EntityType<?>> entityTypeTag = EntityTypeTags.getCollection().get(this.tag);
             if (entityTypeTag == null)
                 return false;
-            if (!entityTypeTag.contains(entity.getType()))
+            if (!entityTypeTag.contains(entityType))
                 return false;
             if (this.dimension.equals(AnyRL) || this.dimension.equals(dimensionId))
                 return true;

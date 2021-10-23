@@ -12,7 +12,7 @@ import net.minecraftforge.event.world.ExplosionEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
-@Label(name = "Tags", description = "Use some tags to set some mobs properties.")
+@Label(name = "Tags", description = "Set and use some tags to set some mobs properties. E.g. cause fire explosion for mobs or get if a mob has been spawned from spawner.")
 public class TagsFeature extends Feature {
 
 	public TagsFeature(Module module) {
