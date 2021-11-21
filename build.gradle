@@ -132,7 +132,7 @@ dependencies {
     // compile "some.group:artifact:version:classifier"
     // compile "some.group:artifact:version"
 
-    annotationProcessor 'org.spongepowered:mixin:0.8.4:processor'
+    annotationProcessor "org.spongepowered:mixin:${mixin_version}:processor"
 
     // implementation fg.deobf("curse.maven:when-dungeons-arise-442508:3386380")
 
