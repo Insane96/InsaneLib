@@ -4,11 +4,9 @@ package insane96mcp.insanelib.utils;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.fluid.Fluid;
 import net.minecraft.item.Item;
-import net.minecraft.tags.BlockTags;
-import net.minecraft.tags.EntityTypeTags;
-import net.minecraft.tags.ITag;
-import net.minecraft.tags.ItemTags;
+import net.minecraft.tags.*;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.ForgeRegistryEntry;
@@ -86,6 +84,33 @@ public class IdTagMatcher {
     }
 
     public static final ResourceLocation AnyRL = new ResourceLocation("any");
+
+    public boolean matchesFluid(Fluid fluid) {
+        return matchesFluid(fluid, null);
+    }
+
+    public boolean matchesFluid(Fluid fluid, @Nullable ResourceLocation dimensionId) {
+        if (dimensionId == null)
+            dimensionId = AnyRL;
+        if (this.tag != null) {
+            if (!FluidTags.getAllTags().getAvailableTags().contains(this.tag))
+                return false;
+            ITag<Fluid> fluidTag = FluidTags.getAllTags().getTag(this.tag);
+            if (fluidTag == null)
+                return false;
+            if (!fluidTag.contains(fluid))
+                return false;
+            if (this.dimension.equals(AnyRL) || this.dimension.equals(dimensionId))
+                return true;
+        }
+        else {
+            ResourceLocation fluidId = fluid.getRegistryName();
+            if (fluidId.equals(this.id))
+                if (this.dimension.equals(AnyRL) || this.dimension.equals(dimensionId))
+                    return true;
+        }
+        return false;
+    }
 
     public boolean matchesBlock(Block block) {
         return matchesBlock(block, null);
