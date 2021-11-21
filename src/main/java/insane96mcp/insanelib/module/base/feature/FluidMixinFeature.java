@@ -115,8 +115,7 @@ public class FluidMixinFeature extends Feature {
 					return null;
 				}
 			}
-			FluidMix fluidMix = new FluidMix(flowingFluid, touchingFluid, blockOutput, blockBelow);
-			return fluidMix;
+			return new FluidMix(flowingFluid, touchingFluid, blockOutput, blockBelow);
 		}
 	}
 }
