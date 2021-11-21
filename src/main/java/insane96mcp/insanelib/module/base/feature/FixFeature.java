@@ -81,10 +81,10 @@ public class FixFeature extends Feature {
 		if (zombie.getAttribute(Attributes.MAX_HEALTH) == null)
 			return;
 
-		Set<AttributeModifier> modifiers = zombie.getAttribute(Attributes.MAX_HEALTH).getModifierListCopy();
+		Set<AttributeModifier> modifiers = zombie.getAttribute(Attributes.MAX_HEALTH).getModifiers();
 		for (AttributeModifier attributeModifier : modifiers)
 			if (attributeModifier.getName().equals("Leader zombie bonus"))
-				zombie.getAttribute(Attributes.MAX_HEALTH).removeModifier(attributeModifier.getID());
+				zombie.getAttribute(Attributes.MAX_HEALTH).removeModifier(attributeModifier.getId());
 	}
 
 	private void fixFollowRange(Entity entity) {
@@ -98,10 +98,10 @@ public class FixFeature extends Feature {
 
 		ModifiableAttributeInstance followRangeAttribute = mobEntity.getAttribute(Attributes.FOLLOW_RANGE);
 		if (followRangeAttribute != null) {
-			for (PrioritizedGoal pGoal : mobEntity.targetSelector.goals) {
+			for (PrioritizedGoal pGoal : mobEntity.targetSelector.availableGoals) {
 				if (pGoal.getGoal() instanceof NearestAttackableTargetGoal) {
 					NearestAttackableTargetGoal<? extends LivingEntity> nearestAttackableTargetGoal = (NearestAttackableTargetGoal<? extends LivingEntity>) pGoal.getGoal();
-					nearestAttackableTargetGoal.targetEntitySelector.setDistance(mobEntity.getAttributeValue(Attributes.FOLLOW_RANGE));
+					nearestAttackableTargetGoal.targetConditions.range(mobEntity.getAttributeValue(Attributes.FOLLOW_RANGE));
 				}
 			}
 		}
@@ -127,6 +127,6 @@ public class FixFeature extends Feature {
 		if (playerSpeedRatio > 1d && this.slowdownOnly)
 			return;
 
-		event.player.jumpMovementFactor = (float) (playerSpeedRatio * baseJMF);
+		event.player.flyingSpeed = (float) (playerSpeedRatio * baseJMF);
 	}
 }

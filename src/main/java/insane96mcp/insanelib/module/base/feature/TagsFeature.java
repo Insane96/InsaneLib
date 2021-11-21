@@ -37,6 +37,6 @@ public class TagsFeature extends Feature {
 
 		CompoundNBT compoundNBT = creeper.getPersistentData();
 		if (compoundNBT.getBoolean(Strings.Tags.EXPLOSION_CAUSES_FIRE))
-			explosion.causesFire = true;
+			explosion.fire = true;
 	}
 }

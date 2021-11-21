@@ -45,9 +45,9 @@ public class MCUtils {
 		if (attributeInstance != null) {
 			AttributeModifier modifier = new AttributeModifier(uuid, name, amount, operation);
 			if (permanent)
-				attributeInstance.applyPersistentModifier(modifier);
+				attributeInstance.addPermanentModifier(modifier);
 			else
-				attributeInstance.applyNonPersistentModifier(modifier);
+				attributeInstance.addTransientModifier(modifier);
 
 			if (attribute == Attributes.MAX_HEALTH)
 				entity.setHealth(entity.getMaxHealth());

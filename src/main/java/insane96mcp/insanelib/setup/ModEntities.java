@@ -12,6 +12,6 @@ import net.minecraftforge.registries.ForgeRegistries;
 public class ModEntities {
 	public static final DeferredRegister<EntityType<?>> ENTITIES = DeferredRegister.create(ForgeRegistries.ENTITIES, InsaneLib.MOD_ID);
 
-	public static final RegistryObject<EntityType<AreaEffectCloud3DEntity>> AREA_EFFECT_CLOUD_3D = ENTITIES.register("area_effect_cloud_3d", () -> EntityType.Builder.<AreaEffectCloud3DEntity>create(AreaEffectCloud3DEntity::new, EntityClassification.MISC).immuneToFire().size(6.0F, 0.5F).trackingRange(10).func_233608_b_(Integer.MAX_VALUE).build("area_effect_cloud_3d"));
+	public static final RegistryObject<EntityType<AreaEffectCloud3DEntity>> AREA_EFFECT_CLOUD_3D = ENTITIES.register("area_effect_cloud_3d", () -> EntityType.Builder.<AreaEffectCloud3DEntity>of(AreaEffectCloud3DEntity::new, EntityClassification.MISC).fireImmune().sized(6.0F, 0.5F).clientTrackingRange(10).updateInterval(Integer.MAX_VALUE).build("area_effect_cloud_3d"));
 
 }

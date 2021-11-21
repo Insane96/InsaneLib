@@ -52,7 +52,7 @@ public class AEC3DFeature extends Feature {
 		AreaEffectCloud3DEntity areaEffectCloud3D = new AreaEffectCloud3DEntity(areaEffectCloud);
 		areaEffectCloud.remove();
 
-		ThreadTaskExecutor<Runnable> executor = LogicalSidedProvider.WORKQUEUE.get(event.getWorld().isRemote ? LogicalSide.CLIENT : LogicalSide.SERVER);
-		executor.enqueue(new TickDelayedTask(0, () -> areaEffectCloud3D.world.addEntity(areaEffectCloud3D)));
+		ThreadTaskExecutor<Runnable> executor = LogicalSidedProvider.WORKQUEUE.get(event.getWorld().isClientSide ? LogicalSide.CLIENT : LogicalSide.SERVER);
+		executor.tell(new TickDelayedTask(0, () -> areaEffectCloud3D.level.addFreshEntity(areaEffectCloud3D)));
 	}
 }

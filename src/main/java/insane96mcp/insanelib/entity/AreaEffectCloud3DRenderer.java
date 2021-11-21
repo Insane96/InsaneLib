@@ -11,7 +11,7 @@ public class AreaEffectCloud3DRenderer extends EntityRenderer<AreaEffectCloud3DE
 	}
 
 	@Override
-	public ResourceLocation getEntityTexture(AreaEffectCloud3DEntity entity) {
-		return AtlasTexture.LOCATION_BLOCKS_TEXTURE;
+	public ResourceLocation getTextureLocation(AreaEffectCloud3DEntity entity) {
+		return AtlasTexture.LOCATION_BLOCKS;
 	}
 }

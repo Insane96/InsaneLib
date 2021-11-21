@@ -44,7 +44,7 @@ public class IdTagMatcher {
         }
         ResourceLocation dimension = AnyRL;
         if (split.length == 2) {
-            dimension = ResourceLocation.tryCreate(split[1]);
+            dimension = ResourceLocation.tryParse(split[1]);
             if (dimension == null) {
                 LogHelper.warn(String.format("Invalid dimension \"%s\". Ignoring it", split[1]));
                 dimension = AnyRL;
@@ -52,7 +52,7 @@ public class IdTagMatcher {
         }
         if (split[0].startsWith("#")) {
             String replaced = split[0].replace("#", "");
-            ResourceLocation tag = ResourceLocation.tryCreate(replaced);
+            ResourceLocation tag = ResourceLocation.tryParse(replaced);
             if (tag == null) {
                 LogHelper.warn("%s tag is not valid", replaced);
                 return null;
@@ -60,7 +60,7 @@ public class IdTagMatcher {
             return new IdTagMatcher(null, tag, dimension);
         }
         else {
-            ResourceLocation id = ResourceLocation.tryCreate(split[0]);
+            ResourceLocation id = ResourceLocation.tryParse(split[0]);
             if (id == null) {
                 LogHelper.warn("%s id is not valid", line);
                 return null;
@@ -96,9 +96,9 @@ public class IdTagMatcher {
             dimensionId = AnyRL;
         ResourceLocation blockId = block.getRegistryName();
         if (this.tag != null) {
-            if (!BlockTags.getCollection().getRegisteredTags().contains(this.tag))
+            if (!BlockTags.getAllTags().getAvailableTags().contains(this.tag))
                 return false;
-            ITag<Block> blockTag = BlockTags.getCollection().get(this.tag);
+            ITag<Block> blockTag = BlockTags.getAllTags().getTag(this.tag);
             if (blockTag == null)
                 return false;
             if (!blockTag.contains(block))
@@ -123,9 +123,9 @@ public class IdTagMatcher {
             dimensionId = AnyRL;
         ResourceLocation itemId = item.getRegistryName();
         if (this.tag != null) {
-            if (!ItemTags.getCollection().getRegisteredTags().contains(this.tag))
+            if (!ItemTags.getAllTags().getAvailableTags().contains(this.tag))
                 return false;
-            ITag<Item> itemTag = ItemTags.getCollection().get(this.tag);
+            ITag<Item> itemTag = ItemTags.getAllTags().getTag(this.tag);
             if (itemTag == null)
                 return false;
             if (!itemTag.contains(item))
@@ -156,9 +156,9 @@ public class IdTagMatcher {
             dimensionId = AnyRL;
         ResourceLocation entityId = entityType.getRegistryName();
         if (this.tag != null) {
-            if (!EntityTypeTags.getCollection().getRegisteredTags().contains(this.tag))
+            if (!EntityTypeTags.getAllTags().getAvailableTags().contains(this.tag))
                 return false;
-            ITag<EntityType<?>> entityTypeTag = EntityTypeTags.getCollection().get(this.tag);
+            ITag<EntityType<?>> entityTypeTag = EntityTypeTags.getAllTags().getTag(this.tag);
             if (entityTypeTag == null)
                 return false;
             if (!entityTypeTag.contains(entityType))
@@ -208,9 +208,9 @@ public class IdTagMatcher {
                 blocks.add(block);
         }
         else {
-            ITag<Block> blockTag = BlockTags.getCollection().get(this.tag);
+            ITag<Block> blockTag = BlockTags.getAllTags().getTag(this.tag);
             if (blockTag != null)
-                blocks.addAll(blockTag.getAllElements());
+                blocks.addAll(blockTag.getValues());
         }
         return blocks;
     }
@@ -223,9 +223,9 @@ public class IdTagMatcher {
                 items.add(item);
         }
         else {
-            ITag<Item> itemTag = ItemTags.getCollection().get(this.tag);
+            ITag<Item> itemTag = ItemTags.getAllTags().getTag(this.tag);
             if (itemTag != null)
-                items.addAll(itemTag.getAllElements());
+                items.addAll(itemTag.getValues());
         }
         return items;
     }
