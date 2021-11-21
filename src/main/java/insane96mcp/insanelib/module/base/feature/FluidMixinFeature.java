@@ -27,7 +27,7 @@ public class FluidMixinFeature extends Feature {
 	public ArrayList<FluidMix> customFluidMixin = new ArrayList<>();
 
 	public FluidMixinFeature(Module module) {
-		super(Config.builder, module);
+		super(Config.builder, module, false);
 		this.pushConfig(Config.builder);
 		customFluidMixinConfig = Config.builder
 				.comment("A list of fluids flowing over other fluids and the block created. It's highly recommended to use tags since fluids are split between still and flowing.\n" +
@@ -49,6 +49,8 @@ public class FluidMixinFeature extends Feature {
 	}
 
 	public boolean customFluidMix(World world, BlockPos pos, BlockState state) {
+		if (!this.isEnabled())
+			return false;
 		for (FluidMixinFeature.FluidMix fluidMix : this.customFluidMixin) {
 			if (!fluidMix.flowingFluid.matchesFluid(state.getFluidState().getType()))
 				continue;
