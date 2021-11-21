@@ -6,8 +6,13 @@ import insane96mcp.insanelib.base.Module;
 import insane96mcp.insanelib.setup.Config;
 import insane96mcp.insanelib.utils.IdTagMatcher;
 import insane96mcp.insanelib.utils.LogHelper;
+import net.minecraft.block.BlockState;
+import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeConfigSpec;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -25,7 +30,7 @@ public class FluidMixinFeature extends Feature {
 		super(Config.builder, module);
 		this.pushConfig(Config.builder);
 		customFluidMixinConfig = Config.builder
-				.comment("A list of fluids flowing over other fluids and the block created.\n" +
+				.comment("A list of fluids flowing over other fluids and the block created. It's highly recommended to use tags since fluids are split between still and flowing.\n" +
 						"Format must be modid:fluid_or_tag_id,modid:fluid_or_tag_id,modid_block_output[,modid:block_below_required]\n" +
 						"block_below_required is optional.")
 				.defineList("Custom Fluid Mixin", Collections.emptyList(), o -> o instanceof String);
@@ -41,6 +46,29 @@ public class FluidMixinFeature extends Feature {
 			if (f != null)
 				customFluidMixin.add(f);
 		}
+	}
+
+	public boolean customFluidMix(World world, BlockPos pos, BlockState state) {
+		for (FluidMixinFeature.FluidMix fluidMix : this.customFluidMixin) {
+			if (!fluidMix.flowingFluid.matchesFluid(state.getFluidState().getType()))
+				continue;
+
+			BlockState stateBelow = world.getBlockState(pos.below());
+			if (fluidMix.blockBelow != null && !stateBelow.getBlock().getRegistryName().equals(fluidMix.blockBelow))
+				continue;
+
+			for(Direction direction : Direction.values()) {
+				if (direction == Direction.DOWN)
+					continue;
+
+				BlockPos blockpos = pos.relative(direction);
+				if (fluidMix.touchingFluid.matchesFluid(world.getFluidState(blockpos).getType())) {
+					world.setBlockAndUpdate(pos, net.minecraftforge.event.ForgeEventFactory.fireFluidPlaceBlockEvent(world, pos, pos, ForgeRegistries.BLOCKS.getValue(fluidMix.blockOutput).defaultBlockState()));
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 	public static class FluidMix {
