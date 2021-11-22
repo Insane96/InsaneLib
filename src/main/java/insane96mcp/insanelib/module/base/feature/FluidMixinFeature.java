@@ -52,6 +52,7 @@ public class FluidMixinFeature extends Feature {
 		if (!this.isEnabled())
 			return false;
 		for (FluidMixinFeature.FluidMix fluidMix : this.customFluidMixin) {
+			LogHelper.info("Flowing fluid: %s (tags: %s)", state.getFluidState().getType().getRegistryName(), state.getFluidState().getType().getTags());
 			if (!fluidMix.flowingFluid.matchesFluid(state.getFluidState().getType()))
 				continue;
 
@@ -64,6 +65,7 @@ public class FluidMixinFeature extends Feature {
 					continue;
 
 				BlockPos blockpos = pos.relative(direction);
+				LogHelper.info("touching fluid: %s (tags: %s)", world.getFluidState(blockpos).getType().getRegistryName(), world.getFluidState(blockpos).getType().getTags());
 				if (fluidMix.touchingFluid.matchesFluid(world.getFluidState(blockpos).getType())) {
 					world.setBlockAndUpdate(pos, net.minecraftforge.event.ForgeEventFactory.fireFluidPlaceBlockEvent(world, pos, pos, ForgeRegistries.BLOCKS.getValue(fluidMix.blockOutput).defaultBlockState()));
 					return true;

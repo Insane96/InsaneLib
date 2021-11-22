@@ -134,7 +134,8 @@ dependencies {
 
     annotationProcessor "org.spongepowered:mixin:${mixin_version}:processor"
 
-    // implementation fg.deobf("curse.maven:when-dungeons-arise-442508:3386380")
+    implementation fg.deobf("curse.maven:maven-74924:3482897")
+    implementation fg.deobf("curse.maven:tinkers-construct-74072:3526444")
 
     // Real examples
     // compile 'com.mod-buildcraft:buildcraft:6.0.8:dev'  // adds buildcraft to the dev env
