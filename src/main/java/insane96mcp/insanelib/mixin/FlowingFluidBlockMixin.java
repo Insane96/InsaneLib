@@ -18,7 +18,6 @@ public class FlowingFluidBlockMixin {
 
 	@Inject(at = @At("HEAD"), method = "shouldSpreadLiquid(Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/BlockState;)Z", cancellable = true)
 	private void reactWithNeighbors(World worldIn, BlockPos pos, BlockState state, CallbackInfoReturnable<Boolean> callback) {
-		LogHelper.info("Mixin!");
 		if (Modules.base.fluixMixin.customFluidMix(worldIn, pos, state)) {
 			this.fizz(worldIn, pos);
 			callback.setReturnValue(false);
