@@ -1,0 +1,26 @@
+package insane96mcp.insanelib.utils.scheduled;
+
+import insane96mcp.insanelib.InsaneLib;
+import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.fml.common.Mod;
+
+import java.util.ArrayList;
+import java.util.List;
+
+@Mod.EventBusSubscriber(modid = InsaneLib.MOD_ID)
+public class ScheduledTasks {
+	public static List<ScheduledTickTask> scheduledTickTasks = new ArrayList<>();
+
+	static void onServerTick(TickEvent.ServerTickEvent event) {
+		if (event.phase.equals(TickEvent.Phase.END)) {
+			for (ScheduledTickTask task : scheduledTickTasks) {
+				task.tick();
+			}
+			scheduledTickTasks.removeIf(ScheduledTickTask::hasBeenExecuted);
+		}
+	}
+
+	public static void schedule(ScheduledTickTask task) {
+		scheduledTickTasks.add(task);
+	}
+}
