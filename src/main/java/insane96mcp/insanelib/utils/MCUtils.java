@@ -25,7 +25,7 @@ public class MCUtils {
 	}
 
 	/**
-	 * Different version of ItemStack#addAttributeModifiers that doesn't override the item's modifiers
+	 * Different version of ItemStack#addAttributeModifiers that doesn't override the item's base modifiers
 	 */
 	public static void addAttributeModifierToItemStack(ItemStack itemStack, Attribute attribute, AttributeModifier modifier, EquipmentSlotType modifierSlot) {
 		if (itemStack.hasTag() && !itemStack.getTag().contains("AttributeModifiers", 9)) {
@@ -62,5 +62,22 @@ public class MCUtils {
 	 */
 	public static boolean applyModifier(LivingEntity entity, Attribute attribute, UUID uuid, String name, double amount, AttributeModifier.Operation operation) {
 		return applyModifier(entity, attribute, uuid, name, amount, operation, false);
+	}
+
+	/**
+	 * Sets the value of an attribute
+	 * @return true if the override was successful
+	 */
+	public static boolean setAttributeValue(LivingEntity entity, Attribute attribute, double value) {
+		ModifiableAttributeInstance attributeInstance = entity.getAttribute(attribute);
+		if (attributeInstance != null) {
+			attributeInstance.setBaseValue(value);
+
+			if (attribute == Attributes.MAX_HEALTH)
+				entity.setHealth(entity.getMaxHealth());
+
+			return true;
+		}
+		return false;
 	}
 }
