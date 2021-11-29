@@ -1,7 +1,6 @@
 package insane96mcp.insanelib.mixin;
 
 import insane96mcp.insanelib.module.Modules;
-import insane96mcp.insanelib.utils.LogHelper;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.FlowingFluidBlock;
 import net.minecraft.util.math.BlockPos;
@@ -14,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(FlowingFluidBlock.class)
-public class FlowingFluidBlockMixin {
+public abstract class FlowingFluidBlockMixin {
 
 	@Inject(at = @At("HEAD"), method = "shouldSpreadLiquid(Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/BlockState;)Z", cancellable = true)
 	private void reactWithNeighbors(World worldIn, BlockPos pos, BlockState state, CallbackInfoReturnable<Boolean> callback) {
@@ -24,7 +23,6 @@ public class FlowingFluidBlockMixin {
 		}
 	}
 
-	@Shadow private void fizz(IWorld worldIn, BlockPos pos) {
-		worldIn.levelEvent(1501, pos, 0);
-	}
+	@Shadow
+	protected abstract void fizz(IWorld worldIn, BlockPos pos);
 }
