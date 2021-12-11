@@ -8,6 +8,7 @@ import net.minecraft.entity.ai.attributes.ModifiableAttributeInstance;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.DamageSource;
 
 import java.util.Map;
 import java.util.UUID;
@@ -79,5 +80,13 @@ public class MCUtils {
 			return true;
 		}
 		return false;
+	}
+
+	public static boolean hurtIgnoreInvuln(LivingEntity hurtEntity, DamageSource source, float amount) {
+		int hurtResistantTime = hurtEntity.invulnerableTime;
+		hurtEntity.invulnerableTime = 0;
+		boolean attacked = hurtEntity.hurt(source, amount);
+		hurtEntity.invulnerableTime = hurtResistantTime;
+		return attacked;
 	}
 }
