@@ -5,15 +5,15 @@ import insane96mcp.insanelib.base.Label;
 import insane96mcp.insanelib.base.Module;
 import insane96mcp.insanelib.setup.Config;
 import insane96mcp.insanelib.utils.MCUtils;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.MobEntity;
-import net.minecraft.entity.ai.attributes.AttributeModifier;
-import net.minecraft.entity.ai.attributes.Attributes;
-import net.minecraft.entity.ai.attributes.ModifiableAttributeInstance;
-import net.minecraft.entity.ai.goal.NearestAttackableTargetGoal;
-import net.minecraft.entity.ai.goal.PrioritizedGoal;
-import net.minecraft.entity.monster.ZombieEntity;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.ai.goal.WrappedGoal;
+import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
+import net.minecraft.world.entity.monster.Zombie;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
@@ -59,6 +59,7 @@ public class FixFeature extends Feature {
 		this.fixFollowRange = this.fixFollowRangeConfig.get();
 		this.removeZombiesBonusHealth = this.removeZombiesBonusHealthConfig.get();
 		this.fixJumpMovementFactor = this.fixJumpMovementFactorConfig.get();
+		this.slowdownOnly = this.slowdownOnlyConfig.get();
 	}
 
 	@SubscribeEvent(priority = EventPriority.LOWEST)
@@ -74,10 +75,10 @@ public class FixFeature extends Feature {
 		if (!this.removeZombiesBonusHealth)
 			return;
 
-		if (!(entity instanceof ZombieEntity))
+		if (!(entity instanceof Zombie))
 			return;
 
-		ZombieEntity zombie = (ZombieEntity) entity;
+		Zombie zombie = (Zombie) entity;
 		if (zombie.getAttribute(Attributes.MAX_HEALTH) == null)
 			return;
 
@@ -91,14 +92,14 @@ public class FixFeature extends Feature {
 		if (!this.fixFollowRange)
 			 return;
 
-		if (!(entity instanceof MobEntity))
+		if (!(entity instanceof Mob))
 			return;
 
-		MobEntity mobEntity = (MobEntity) entity;
+		Mob mobEntity = (Mob) entity;
 
-		ModifiableAttributeInstance followRangeAttribute = mobEntity.getAttribute(Attributes.FOLLOW_RANGE);
+		AttributeInstance followRangeAttribute = mobEntity.getAttribute(Attributes.FOLLOW_RANGE);
 		if (followRangeAttribute != null) {
-			for (PrioritizedGoal pGoal : mobEntity.targetSelector.availableGoals) {
+			for (WrappedGoal pGoal : mobEntity.targetSelector.availableGoals) {
 				if (pGoal.getGoal() instanceof NearestAttackableTargetGoal) {
 					NearestAttackableTargetGoal<? extends LivingEntity> nearestAttackableTargetGoal = (NearestAttackableTargetGoal<? extends LivingEntity>) pGoal.getGoal();
 					nearestAttackableTargetGoal.targetConditions.range(mobEntity.getAttributeValue(Attributes.FOLLOW_RANGE));

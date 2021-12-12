@@ -6,11 +6,11 @@ import insane96mcp.insanelib.base.Module;
 import insane96mcp.insanelib.setup.Config;
 import insane96mcp.insanelib.utils.IdTagMatcher;
 import insane96mcp.insanelib.utils.LogHelper;
-import net.minecraft.block.BlockState;
-import net.minecraft.util.Direction;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.registries.ForgeRegistries;
 
@@ -48,11 +48,10 @@ public class FluidMixinFeature extends Feature {
 		}
 	}
 
-	public boolean customFluidMix(World world, BlockPos pos, BlockState state) {
+	public boolean customFluidMix(Level world, BlockPos pos, BlockState state) {
 		if (!this.isEnabled())
 			return false;
 		for (FluidMixinFeature.FluidMix fluidMix : this.customFluidMixin) {
-			LogHelper.info("Flowing fluid: %s (tags: %s)", state.getFluidState().getType().getRegistryName(), state.getFluidState().getType().getTags());
 			if (!fluidMix.flowingFluid.matchesFluid(state.getFluidState().getType()))
 				continue;
 
@@ -65,7 +64,6 @@ public class FluidMixinFeature extends Feature {
 					continue;
 
 				BlockPos blockpos = pos.relative(direction);
-				LogHelper.info("touching fluid: %s (tags: %s)", world.getFluidState(blockpos).getType().getRegistryName(), world.getFluidState(blockpos).getType().getTags());
 				if (fluidMix.touchingFluid.matchesFluid(world.getFluidState(blockpos).getType())) {
 					world.setBlockAndUpdate(pos, net.minecraftforge.event.ForgeEventFactory.fireFluidPlaceBlockEvent(world, pos, pos, ForgeRegistries.BLOCKS.getValue(fluidMix.blockOutput).defaultBlockState()));
 					return true;

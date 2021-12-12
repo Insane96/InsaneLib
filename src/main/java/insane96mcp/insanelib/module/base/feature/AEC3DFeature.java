@@ -5,16 +5,16 @@ import insane96mcp.insanelib.base.Label;
 import insane96mcp.insanelib.base.Module;
 import insane96mcp.insanelib.entity.AreaEffectCloud3DEntity;
 import insane96mcp.insanelib.setup.Config;
-import net.minecraft.entity.AreaEffectCloudEntity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.potion.Potions;
-import net.minecraft.util.concurrent.ThreadTaskExecutor;
-import net.minecraft.util.concurrent.TickDelayedTask;
+import net.minecraft.server.TickTask;
+import net.minecraft.util.thread.BlockableEventLoop;
+import net.minecraft.world.entity.AreaEffectCloud;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.item.alchemy.Potions;
 import net.minecraftforge.common.ForgeConfigSpec;
+import net.minecraftforge.common.util.LogicalSidedProvider;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.LogicalSide;
-import net.minecraftforge.fml.LogicalSidedProvider;
 
 @Label(name = "Area Effect Cloud 3D", description = "No more boring 3D Area of Effect Clouds")
 public class AEC3DFeature extends Feature {
@@ -46,13 +46,13 @@ public class AEC3DFeature extends Feature {
 		if (!event.getEntity().getType().equals(EntityType.AREA_EFFECT_CLOUD))
 			return;
 
-		AreaEffectCloudEntity areaEffectCloud = (AreaEffectCloudEntity) event.getEntity();
+		AreaEffectCloud areaEffectCloud = (AreaEffectCloud) event.getEntity();
 		if (areaEffectCloud.effects.isEmpty() && areaEffectCloud.potion.equals(Potions.EMPTY))
 			return;
+		event.setCanceled(true);
 		AreaEffectCloud3DEntity areaEffectCloud3D = new AreaEffectCloud3DEntity(areaEffectCloud);
-		areaEffectCloud.remove();
 
-		ThreadTaskExecutor<Runnable> executor = LogicalSidedProvider.WORKQUEUE.get(event.getWorld().isClientSide ? LogicalSide.CLIENT : LogicalSide.SERVER);
-		executor.tell(new TickDelayedTask(0, () -> areaEffectCloud3D.level.addFreshEntity(areaEffectCloud3D)));
+		BlockableEventLoop<? super TickTask> executor = LogicalSidedProvider.WORKQUEUE.get(event.getWorld().isClientSide ? LogicalSide.CLIENT : LogicalSide.SERVER);
+		executor.tell(new TickTask(0, () -> areaEffectCloud3D.level.addFreshEntity(areaEffectCloud3D)));
 	}
 }

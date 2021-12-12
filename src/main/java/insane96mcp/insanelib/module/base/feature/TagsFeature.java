@@ -5,9 +5,9 @@ import insane96mcp.insanelib.base.Label;
 import insane96mcp.insanelib.base.Module;
 import insane96mcp.insanelib.setup.Config;
 import insane96mcp.insanelib.setup.Strings;
-import net.minecraft.entity.monster.CreeperEntity;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.world.Explosion;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.entity.monster.Creeper;
+import net.minecraft.world.level.Explosion;
 import net.minecraftforge.event.world.ExplosionEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -30,12 +30,12 @@ public class TagsFeature extends Feature {
 			return;
 
 		Explosion explosion = event.getExplosion();
-		if (!(explosion.getExploder() instanceof CreeperEntity))
+		if (!(explosion.getExploder() instanceof Creeper))
 			return;
 
-		CreeperEntity creeper = (CreeperEntity) explosion.getExploder();
+		Creeper creeper = (Creeper) explosion.getExploder();
 
-		CompoundNBT compoundNBT = creeper.getPersistentData();
+		CompoundTag compoundNBT = creeper.getPersistentData();
 		if (compoundNBT.getBoolean(Strings.Tags.EXPLOSION_CAUSES_FIRE))
 			explosion.fire = true;
 	}

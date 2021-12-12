@@ -1,13 +1,13 @@
 package insane96mcp.insanelib.utils;
 
 
-import net.minecraft.block.Block;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.fluid.Fluid;
-import net.minecraft.item.Item;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.*;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.material.Fluid;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.ForgeRegistryEntry;
 
@@ -95,7 +95,7 @@ public class IdTagMatcher {
         if (this.tag != null) {
             if (!FluidTags.getAllTags().getAvailableTags().contains(this.tag))
                 return false;
-            ITag<Fluid> fluidTag = FluidTags.getAllTags().getTag(this.tag);
+            Tag<Fluid> fluidTag = FluidTags.getAllTags().getTag(this.tag);
             if (fluidTag == null)
                 return false;
             if (!fluidTag.contains(fluid))
@@ -123,7 +123,7 @@ public class IdTagMatcher {
         if (this.tag != null) {
             if (!BlockTags.getAllTags().getAvailableTags().contains(this.tag))
                 return false;
-            ITag<Block> blockTag = BlockTags.getAllTags().getTag(this.tag);
+            Tag<Block> blockTag = BlockTags.getAllTags().getTag(this.tag);
             if (blockTag == null)
                 return false;
             if (!blockTag.contains(block))
@@ -150,7 +150,7 @@ public class IdTagMatcher {
         if (this.tag != null) {
             if (!ItemTags.getAllTags().getAvailableTags().contains(this.tag))
                 return false;
-            ITag<Item> itemTag = ItemTags.getAllTags().getTag(this.tag);
+            Tag<Item> itemTag = ItemTags.getAllTags().getTag(this.tag);
             if (itemTag == null)
                 return false;
             if (!itemTag.contains(item))
@@ -183,7 +183,7 @@ public class IdTagMatcher {
         if (this.tag != null) {
             if (!EntityTypeTags.getAllTags().getAvailableTags().contains(this.tag))
                 return false;
-            ITag<EntityType<?>> entityTypeTag = EntityTypeTags.getAllTags().getTag(this.tag);
+            Tag<EntityType<?>> entityTypeTag = EntityTypeTags.getAllTags().getTag(this.tag);
             if (entityTypeTag == null)
                 return false;
             if (!entityTypeTag.contains(entityType))
@@ -233,7 +233,7 @@ public class IdTagMatcher {
                 blocks.add(block);
         }
         else {
-            ITag<Block> blockTag = BlockTags.getAllTags().getTag(this.tag);
+            Tag<Block> blockTag = BlockTags.getAllTags().getTag(this.tag);
             if (blockTag != null)
                 blocks.addAll(blockTag.getValues());
         }
@@ -248,7 +248,7 @@ public class IdTagMatcher {
                 items.add(item);
         }
         else {
-            ITag<Item> itemTag = ItemTags.getAllTags().getTag(this.tag);
+            Tag<Item> itemTag = ItemTags.getAllTags().getTag(this.tag);
             if (itemTag != null)
                 items.addAll(itemTag.getValues());
         }

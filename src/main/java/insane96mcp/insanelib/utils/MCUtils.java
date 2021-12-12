@@ -1,14 +1,14 @@
 package insane96mcp.insanelib.utils;
 
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.attributes.Attribute;
-import net.minecraft.entity.ai.attributes.AttributeModifier;
-import net.minecraft.entity.ai.attributes.Attributes;
-import net.minecraft.entity.ai.attributes.ModifiableAttributeInstance;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.EquipmentSlotType;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.DamageSource;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.Attribute;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 
 import java.util.Map;
 import java.util.UUID;
@@ -17,7 +17,7 @@ public class MCUtils {
 	/**
 	 * Returns the current speed of the player compared to his normal speed
 	 */
-	public static double getMovementSpeedRatio(PlayerEntity player) {
+	public static double getMovementSpeedRatio(Player player) {
 		double baseMS = 0.1d;
 		if (player.isSprinting())
 			baseMS += 0.03f;
@@ -28,7 +28,7 @@ public class MCUtils {
 	/**
 	 * Different version of ItemStack#addAttributeModifiers that doesn't override the item's base modifiers
 	 */
-	public static void addAttributeModifierToItemStack(ItemStack itemStack, Attribute attribute, AttributeModifier modifier, EquipmentSlotType modifierSlot) {
+	public static void addAttributeModifierToItemStack(ItemStack itemStack, Attribute attribute, AttributeModifier modifier, EquipmentSlot modifierSlot) {
 		if (itemStack.hasTag() && !itemStack.getTag().contains("AttributeModifiers", 9)) {
 			for (Map.Entry<Attribute, AttributeModifier> entry : itemStack.getAttributeModifiers(modifierSlot).entries()) {
 				itemStack.addAttributeModifier(entry.getKey(), entry.getValue(), modifierSlot);
@@ -42,7 +42,7 @@ public class MCUtils {
 	 * @return true if the modifier was applied
 	 */
 	public static boolean applyModifier(LivingEntity entity, Attribute attribute, UUID uuid, String name, double amount, AttributeModifier.Operation operation, boolean permanent) {
-		ModifiableAttributeInstance attributeInstance = entity.getAttribute(attribute);
+		AttributeInstance attributeInstance = entity.getAttribute(attribute);
 		if (attributeInstance != null) {
 			AttributeModifier modifier = new AttributeModifier(uuid, name, amount, operation);
 			if (permanent)
@@ -70,7 +70,7 @@ public class MCUtils {
 	 * @return true if the override was successful
 	 */
 	public static boolean setAttributeValue(LivingEntity entity, Attribute attribute, double value) {
-		ModifiableAttributeInstance attributeInstance = entity.getAttribute(attribute);
+		AttributeInstance attributeInstance = entity.getAttribute(attribute);
 		if (attributeInstance != null) {
 			attributeInstance.setBaseValue(value);
 
