@@ -38,7 +38,7 @@ public class MCUtils {
 	}
 
 	/**
-	 * Applies a modifiers to the Living Entity. If the attribute is max_health also sets entity's health to his max health
+	 * Applies a modifier to the Living Entity. If the attribute is max_health also sets entity's health to his max health
 	 * @return true if the modifier was applied
 	 */
 	public static boolean applyModifier(LivingEntity entity, Attribute attribute, UUID uuid, String name, double amount, AttributeModifier.Operation operation, boolean permanent) {
@@ -58,11 +58,11 @@ public class MCUtils {
 	}
 
 	/**
-	 * Applies a modifiers to the Living Entity. If the attribute is max_health also sets entity's health to his max health
+	 * Applies a permanent modifier to the Living Entity. If the attribute is max_health also sets entity's health to his max health
 	 * @return true if the modifier was applied
 	 */
 	public static boolean applyModifier(LivingEntity entity, Attribute attribute, UUID uuid, String name, double amount, AttributeModifier.Operation operation) {
-		return applyModifier(entity, attribute, uuid, name, amount, operation, false);
+		return applyModifier(entity, attribute, uuid, name, amount, operation, true);
 	}
 
 	/**
