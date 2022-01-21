@@ -73,7 +73,7 @@ public class IdTagMatcher {
         }
     }
 
-    public static ArrayList<IdTagMatcher> parseStringList(List<? extends String> list) {
+    public static ArrayList<? extends IdTagMatcher> parseStringList(List<? extends String> list) {
         ArrayList<IdTagMatcher> commonTagBlock = new ArrayList<>();
         for (String line : list) {
             IdTagMatcher idTagMatcher = IdTagMatcher.parseLine(line);
