@@ -16,7 +16,7 @@ import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.LogicalSide;
 
-@Label(name = "Area Effect Cloud 3D", description = "No more boring 3D Area of Effect Clouds")
+@Label(name = "Area Effect Cloud 3D", description = "No more boring 2D Area of Effect Clouds")
 public class AEC3DFeature extends Feature {
 
 	private final ForgeConfigSpec.ConfigValue<Boolean> replaceVanillaAECConfig;
@@ -41,6 +41,9 @@ public class AEC3DFeature extends Feature {
 	@SubscribeEvent
 	public void onSpawn(EntityJoinWorldEvent event) {
 		if (!this.isEnabled())
+			return;
+
+		if (!this.replaceVanillaAEC)
 			return;
 
 		if (!event.getEntity().getType().equals(EntityType.AREA_EFFECT_CLOUD))
