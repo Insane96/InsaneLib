@@ -10,6 +10,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.ForgeRegistryEntry;
+import net.minecraftforge.registries.IForgeRegistryEntry;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -100,14 +101,12 @@ public class IdTagMatcher {
                 return false;
             if (!fluidTag.contains(fluid))
                 return false;
-            if (this.dimension.equals(AnyRL) || this.dimension.equals(dimensionId))
-                return true;
+            return this.dimension.equals(AnyRL) || this.dimension.equals(dimensionId);
         }
         else {
             ResourceLocation fluidId = fluid.getRegistryName();
             if (fluidId.equals(this.id))
-                if (this.dimension.equals(AnyRL) || this.dimension.equals(dimensionId))
-                    return true;
+                return this.dimension.equals(AnyRL) || this.dimension.equals(dimensionId);
         }
         return false;
     }
@@ -128,13 +127,11 @@ public class IdTagMatcher {
                 return false;
             if (!blockTag.contains(block))
                 return false;
-            if (this.dimension.equals(AnyRL) || this.dimension.equals(dimensionId))
-                return true;
+            return this.dimension.equals(AnyRL) || this.dimension.equals(dimensionId);
         }
         else {
             if (blockId.equals(this.id))
-                if (this.dimension.equals(AnyRL) || this.dimension.equals(dimensionId))
-                    return true;
+                return this.dimension.equals(AnyRL) || this.dimension.equals(dimensionId);
         }
         return false;
     }
@@ -155,13 +152,12 @@ public class IdTagMatcher {
                 return false;
             if (!itemTag.contains(item))
                 return false;
-            if (this.dimension.equals(AnyRL) || this.dimension.equals(dimensionId))
-                return true;
+
+            return this.dimension.equals(AnyRL) || this.dimension.equals(dimensionId);
         }
         else {
             if (itemId.equals(this.id))
-                if (this.dimension.equals(AnyRL) || this.dimension.equals(dimensionId))
-                    return true;
+                return this.dimension.equals(AnyRL) || this.dimension.equals(dimensionId);
         }
         return false;
     }
@@ -188,13 +184,11 @@ public class IdTagMatcher {
                 return false;
             if (!entityTypeTag.contains(entityType))
                 return false;
-            if (this.dimension.equals(AnyRL) || this.dimension.equals(dimensionId))
-                return true;
+            return this.dimension.equals(AnyRL) || this.dimension.equals(dimensionId);
         }
         else {
             if (entityId.equals(this.id))
-                if (this.dimension.equals(AnyRL) || this.dimension.equals(dimensionId))
-                    return true;
+                return this.dimension.equals(AnyRL) || this.dimension.equals(dimensionId);
         }
         return false;
     }
@@ -202,21 +196,18 @@ public class IdTagMatcher {
     /**
      * Checks if the registry entry (either potion, enchantment, etc) is in the IdTagMatcher
      *
-     * @param entry
      * @return true if entry's registry name matches the tag's itemId
      */
-    public boolean matchesGeneric(ForgeRegistryEntry entry) {
+    public <T extends IForgeRegistryEntry<T>> boolean matchesGeneric(ForgeRegistryEntry<T> entry) {
         return matchesGeneric(entry, null);
     }
 
     /**
      * Checks if the registry entry (either potion, enchantment, etc) is in the IdTagMatcher
      *
-     * @param entry
-     * @param dimensionId
      * @return true if entry's registry name matches the tag's itemId and if the dimension matches
      */
-    public boolean matchesGeneric(ForgeRegistryEntry entry, @Nullable ResourceLocation dimensionId) {
+    public <T extends IForgeRegistryEntry<T>> boolean matchesGeneric(ForgeRegistryEntry<T> entry, @Nullable ResourceLocation dimensionId) {
         if (dimensionId == null)
             dimensionId = AnyRL;
         ResourceLocation itemId = entry.getRegistryName();
