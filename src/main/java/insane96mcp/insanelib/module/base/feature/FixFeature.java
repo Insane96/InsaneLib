@@ -45,10 +45,10 @@ public class FixFeature extends Feature {
 				.comment("Removes the random bonus health given to Leader Zombies. In vanilla it's useless since doesn't work. https://minecraft.fandom.com/wiki/Attribute#Vanilla_modifiers")
 				.define("Remove Zombies Bonus Health", this.removeZombiesBonusHealth);
 		this.fixJumpMovementFactorConfig = Config.builder
-				.comment("When affected by slowness the player can still jump really far away. When true, jumps length will be calculated base off player's movement speed.")
+				.comment("When affected by slowness the player can still jump really far away. When true, jumps length will be calculated based off player's movement speed.")
 				.define("Fix Jump Movement Factor", this.fixJumpMovementFactor);
 		this.slowdownOnlyConfig = Config.builder
-				.comment("The fix for Jump Movement Factor is applied only when the player is slowed down.")
+				.comment("The fix for Jump Movement Factor is applied only when the player is slowed down. If false, the player will jump really farther when going faster.")
 				.define("Fix Jump Movement Factor Slowdown Only", this.slowdownOnly);
 		Config.builder.pop();
 	}
