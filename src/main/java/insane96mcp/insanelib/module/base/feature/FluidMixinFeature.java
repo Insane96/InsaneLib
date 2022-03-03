@@ -30,9 +30,10 @@ public class FluidMixinFeature extends Feature {
 		super(Config.builder, module, false);
 		this.pushConfig(Config.builder);
 		customFluidMixinConfig = Config.builder
-				.comment("A list of fluids flowing over other fluids and the block created. It's highly recommended to use tags since fluids are split between still and flowing.\n" +
-						"Format must be modid:fluid_or_tag_id,modid:fluid_or_tag_id,modid_block_output[,modid:block_below_required]\n" +
-						"block_below_required is optional.")
+				.comment("""
+						A list of fluids flowing over other fluids and the block created. It's highly recommended to use tags since fluids are split between still and flowing.
+						Format must be modid:fluid_or_tag_id,modid:fluid_or_tag_id,modid_block_output[,modid:block_below]
+						block_below is optional.""")
 				.defineList("Custom Fluid Mixin", Collections.emptyList(), o -> o instanceof String);
 		Config.builder.pop();
 	}

@@ -75,10 +75,9 @@ public class FixFeature extends Feature {
 		if (!this.removeZombiesBonusHealth)
 			return;
 
-		if (!(entity instanceof Zombie))
+		if (!(entity instanceof Zombie zombie))
 			return;
 
-		Zombie zombie = (Zombie) entity;
 		if (zombie.getAttribute(Attributes.MAX_HEALTH) == null)
 			return;
 
@@ -92,16 +91,13 @@ public class FixFeature extends Feature {
 		if (!this.fixFollowRange)
 			 return;
 
-		if (!(entity instanceof Mob))
+		if (!(entity instanceof Mob mobEntity))
 			return;
-
-		Mob mobEntity = (Mob) entity;
 
 		AttributeInstance followRangeAttribute = mobEntity.getAttribute(Attributes.FOLLOW_RANGE);
 		if (followRangeAttribute != null) {
 			for (WrappedGoal pGoal : mobEntity.targetSelector.availableGoals) {
-				if (pGoal.getGoal() instanceof NearestAttackableTargetGoal) {
-					NearestAttackableTargetGoal<? extends LivingEntity> nearestAttackableTargetGoal = (NearestAttackableTargetGoal<? extends LivingEntity>) pGoal.getGoal();
+				if (pGoal.getGoal() instanceof NearestAttackableTargetGoal<? extends LivingEntity> nearestAttackableTargetGoal) {
 					nearestAttackableTargetGoal.targetConditions.range(mobEntity.getAttributeValue(Attributes.FOLLOW_RANGE));
 				}
 			}
