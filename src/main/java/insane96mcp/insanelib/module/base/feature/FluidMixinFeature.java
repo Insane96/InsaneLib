@@ -57,7 +57,7 @@ public class FluidMixinFeature extends Feature {
 				continue;
 
 			BlockState stateBelow = world.getBlockState(pos.below());
-			if (fluidMix.blockBelow != null && !stateBelow.getBlock().getRegistryName().equals(fluidMix.blockBelow))
+			if (fluidMix.blockBelow != null && !fluidMix.blockBelow.matchesBlock(stateBelow.getBlock()))
 				continue;
 
 			for(Direction direction : Direction.values()) {
@@ -78,9 +78,9 @@ public class FluidMixinFeature extends Feature {
 		public IdTagMatcher flowingFluid;
 		public IdTagMatcher touchingFluid;
 		public ResourceLocation blockOutput;
-		public ResourceLocation blockBelow;
+		public IdTagMatcher blockBelow;
 
-		public FluidMix(IdTagMatcher flowingFluid, IdTagMatcher touchingFluid, ResourceLocation blockOutput, @Nullable ResourceLocation blockBelow) {
+		public FluidMix(IdTagMatcher flowingFluid, IdTagMatcher touchingFluid, ResourceLocation blockOutput, @Nullable IdTagMatcher blockBelow) {
 			this.flowingFluid = flowingFluid;
 			this.touchingFluid = touchingFluid;
 			this.blockOutput = blockOutput;
@@ -108,11 +108,11 @@ public class FluidMixinFeature extends Feature {
 				LogHelper.warn("Invalid Resource Location for block output: %s", split[2]);
 				return null;
 			}
-			ResourceLocation blockBelow = null;
+			IdTagMatcher blockBelow = null;
 			if (split.length == 4) {
-				blockBelow = ResourceLocation.tryParse(split[3]);
+				blockBelow = IdTagMatcher.parseLine(split[3]);
 				if (blockBelow == null) {
-					LogHelper.warn("Invalid Resource Location for block below: %s", split[3]);
+					LogHelper.warn("Could not parse IdTagMatcher for block below: %s", split[3]);
 					return null;
 				}
 			}

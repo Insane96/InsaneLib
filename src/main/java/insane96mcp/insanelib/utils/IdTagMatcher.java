@@ -1,8 +1,9 @@
 package insane96mcp.insanelib.utils;
 
 
+import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.*;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
@@ -11,6 +12,7 @@ import net.minecraft.world.level.material.Fluid;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.ForgeRegistryEntry;
 import net.minecraftforge.registries.IForgeRegistryEntry;
+import net.minecraftforge.registries.tags.ITag;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -94,11 +96,8 @@ public class IdTagMatcher {
         if (dimensionId == null)
             dimensionId = AnyRL;
         if (this.tag != null) {
-            if (!FluidTags.getAllTags().getAvailableTags().contains(this.tag))
-                return false;
-            Tag<Fluid> fluidTag = FluidTags.getAllTags().getTag(this.tag);
-            if (fluidTag == null)
-                return false;
+            TagKey<Fluid> tagKey = TagKey.create(Registry.FLUID_REGISTRY, this.tag);
+            ITag<Fluid> fluidTag = ForgeRegistries.FLUIDS.tags().getTag(tagKey);
             if (!fluidTag.contains(fluid))
                 return false;
             return this.dimension.equals(AnyRL) || this.dimension.equals(dimensionId);
@@ -120,11 +119,8 @@ public class IdTagMatcher {
             dimensionId = AnyRL;
         ResourceLocation blockId = block.getRegistryName();
         if (this.tag != null) {
-            if (!BlockTags.getAllTags().getAvailableTags().contains(this.tag))
-                return false;
-            Tag<Block> blockTag = BlockTags.getAllTags().getTag(this.tag);
-            if (blockTag == null)
-                return false;
+            TagKey<Block> tagKey = TagKey.create(Registry.BLOCK_REGISTRY, this.tag);
+            ITag<Block> blockTag = ForgeRegistries.BLOCKS.tags().getTag(tagKey);
             if (!blockTag.contains(block))
                 return false;
             return this.dimension.equals(AnyRL) || this.dimension.equals(dimensionId);
@@ -145,11 +141,8 @@ public class IdTagMatcher {
             dimensionId = AnyRL;
         ResourceLocation itemId = item.getRegistryName();
         if (this.tag != null) {
-            if (!ItemTags.getAllTags().getAvailableTags().contains(this.tag))
-                return false;
-            Tag<Item> itemTag = ItemTags.getAllTags().getTag(this.tag);
-            if (itemTag == null)
-                return false;
+            TagKey<Item> tagKey = TagKey.create(Registry.ITEM_REGISTRY, this.tag);
+            ITag<Item> itemTag = ForgeRegistries.ITEMS.tags().getTag(tagKey);
             if (!itemTag.contains(item))
                 return false;
 
@@ -177,11 +170,8 @@ public class IdTagMatcher {
             dimensionId = AnyRL;
         ResourceLocation entityId = entityType.getRegistryName();
         if (this.tag != null) {
-            if (!EntityTypeTags.getAllTags().getAvailableTags().contains(this.tag))
-                return false;
-            Tag<EntityType<?>> entityTypeTag = EntityTypeTags.getAllTags().getTag(this.tag);
-            if (entityTypeTag == null)
-                return false;
+            TagKey<EntityType<?>> tagKey = TagKey.create(Registry.ENTITY_TYPE_REGISTRY, this.tag);
+            ITag<EntityType<?>> entityTypeTag = ForgeRegistries.ENTITIES.tags().getTag(tagKey);
             if (!entityTypeTag.contains(entityType))
                 return false;
             return this.dimension.equals(AnyRL) || this.dimension.equals(dimensionId);
@@ -224,9 +214,9 @@ public class IdTagMatcher {
                 blocks.add(block);
         }
         else {
-            Tag<Block> blockTag = BlockTags.getAllTags().getTag(this.tag);
-            if (blockTag != null)
-                blocks.addAll(blockTag.getValues());
+            TagKey<Block> tagKey = TagKey.create(Registry.BLOCK_REGISTRY, this.tag);
+            ITag<Block> blockTag = ForgeRegistries.BLOCKS.tags().getTag(tagKey);
+            blocks.addAll(blockTag.stream().toList());
         }
         return blocks;
     }
@@ -239,9 +229,9 @@ public class IdTagMatcher {
                 items.add(item);
         }
         else {
-            Tag<Item> itemTag = ItemTags.getAllTags().getTag(this.tag);
-            if (itemTag != null)
-                items.addAll(itemTag.getValues());
+            TagKey<Item> tagKey = TagKey.create(Registry.ITEM_REGISTRY, this.tag);
+            ITag<Item> itemTag = ForgeRegistries.ITEMS.tags().getTag(tagKey);
+            items.addAll(itemTag.stream().toList());
         }
         return items;
     }
