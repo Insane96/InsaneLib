@@ -5,6 +5,6 @@ import net.minecraftforge.client.event.EntityRenderersEvent;
 
 public class ClientSetup {
 	public static void init(final EntityRenderersEvent.RegisterRenderers event) {
-		event.registerEntityRenderer(ModEntities.AREA_EFFECT_CLOUD_3D.get(), AreaEffectCloud3DRenderer::new);
+		event.registerEntityRenderer(ILEntities.AREA_EFFECT_CLOUD_3D.get(), AreaEffectCloud3DRenderer::new);
 	}
 }

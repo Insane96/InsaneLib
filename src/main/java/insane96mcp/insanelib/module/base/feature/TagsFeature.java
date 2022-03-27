@@ -4,7 +4,7 @@ import insane96mcp.insanelib.base.Feature;
 import insane96mcp.insanelib.base.Label;
 import insane96mcp.insanelib.base.Module;
 import insane96mcp.insanelib.setup.Config;
-import insane96mcp.insanelib.setup.Strings;
+import insane96mcp.insanelib.setup.ILStrings;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.monster.Creeper;
@@ -37,21 +37,21 @@ public class TagsFeature extends Feature {
 			return;
 
 		CompoundTag compoundNBT = creeper.getPersistentData();
-		if (compoundNBT.getBoolean(Strings.Tags.EXPLOSION_CAUSES_FIRE))
+		if (compoundNBT.getBoolean(ILStrings.Tags.EXPLOSION_CAUSES_FIRE))
 			explosion.fire = true;
 	}
 
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public void onSpawn(LivingSpawnEvent.CheckSpawn event) {
 		if (event.getSpawnReason() == MobSpawnType.SPAWNER)
-			event.getEntityLiving().getPersistentData().putBoolean(Strings.Tags.SPAWNED_FROM_SPAWNER, true);
+			event.getEntityLiving().getPersistentData().putBoolean(ILStrings.Tags.SPAWNED_FROM_SPAWNER, true);
 		if (event.getSpawnReason() == MobSpawnType.STRUCTURE)
-			event.getEntityLiving().getPersistentData().putBoolean(Strings.Tags.SPAWNED_FROM_STRUCTURE, true);
+			event.getEntityLiving().getPersistentData().putBoolean(ILStrings.Tags.SPAWNED_FROM_STRUCTURE, true);
 	}
 
 	@SubscribeEvent
 	public void onExperienceDrop(LivingExperienceDropEvent event) {
-		if (event.getEntityLiving().getPersistentData().contains(Strings.Tags.EXPERIENCE_MULTIPLIER))
-			event.setDroppedExperience((int) (event.getDroppedExperience() * event.getEntityLiving().getPersistentData().getDouble(Strings.Tags.EXPERIENCE_MULTIPLIER)));
+		if (event.getEntityLiving().getPersistentData().contains(ILStrings.Tags.EXPERIENCE_MULTIPLIER))
+			event.setDroppedExperience((int) (event.getDroppedExperience() * event.getEntityLiving().getPersistentData().getDouble(ILStrings.Tags.EXPERIENCE_MULTIPLIER)));
 	}
 }

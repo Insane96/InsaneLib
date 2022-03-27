@@ -2,7 +2,7 @@ package insane96mcp.insanelib;
 
 import insane96mcp.insanelib.setup.ClientSetup;
 import insane96mcp.insanelib.setup.Config;
-import insane96mcp.insanelib.setup.ModEntities;
+import insane96mcp.insanelib.setup.ILEntities;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
@@ -21,6 +21,6 @@ public class InsaneLib
         ModLoadingContext.get().registerConfig(net.minecraftforge.fml.config.ModConfig.Type.COMMON, Config.COMMON_SPEC);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(ClientSetup::init);
         final IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
-        ModEntities.ENTITIES.register(modEventBus);
+        ILEntities.ENTITIES.register(modEventBus);
     }
 }

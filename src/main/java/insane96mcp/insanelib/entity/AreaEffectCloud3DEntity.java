@@ -1,7 +1,7 @@
 package insane96mcp.insanelib.entity;
 
 import com.google.common.collect.Lists;
-import insane96mcp.insanelib.setup.ModEntities;
+import insane96mcp.insanelib.setup.ILEntities;
 import insane96mcp.insanelib.utils.RandomHelper;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
@@ -22,12 +22,12 @@ public class AreaEffectCloud3DEntity extends AreaEffectCloud {
 	}
 
 	public AreaEffectCloud3DEntity(Level worldIn, double x, double y, double z) {
-		this(ModEntities.AREA_EFFECT_CLOUD_3D.get(), worldIn);
+		this(ILEntities.AREA_EFFECT_CLOUD_3D.get(), worldIn);
 		this.setPos(x, y, z);
 	}
 
 	public AreaEffectCloud3DEntity(AreaEffectCloud areaEffectCloudEntity) {
-		this(ModEntities.AREA_EFFECT_CLOUD_3D.get(), areaEffectCloudEntity.level);
+		this(ILEntities.AREA_EFFECT_CLOUD_3D.get(), areaEffectCloudEntity.level);
 		this.setPos(areaEffectCloudEntity.getX(), areaEffectCloudEntity.getY(), areaEffectCloudEntity.getZ());
 		CompoundTag nbt = new CompoundTag();
 		areaEffectCloudEntity.saveAsPassenger(nbt);
