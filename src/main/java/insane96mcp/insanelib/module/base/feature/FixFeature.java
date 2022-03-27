@@ -4,7 +4,7 @@ import insane96mcp.insanelib.base.Feature;
 import insane96mcp.insanelib.base.Label;
 import insane96mcp.insanelib.base.Module;
 import insane96mcp.insanelib.setup.Config;
-import insane96mcp.insanelib.utils.MCUtils;
+import insane96mcp.insanelib.util.MCUtils;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;

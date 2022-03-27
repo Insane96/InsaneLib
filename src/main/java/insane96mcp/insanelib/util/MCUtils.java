@@ -1,4 +1,4 @@
-package insane96mcp.insanelib.utils;
+package insane96mcp.insanelib.util;
 
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EquipmentSlot;

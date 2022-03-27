@@ -1,4 +1,4 @@
-package insane96mcp.insanelib.utils;
+package insane96mcp.insanelib.util;
 
 import insane96mcp.insanelib.InsaneLib;
 

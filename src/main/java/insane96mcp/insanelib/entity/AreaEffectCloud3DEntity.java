@@ -2,7 +2,7 @@ package insane96mcp.insanelib.entity;
 
 import com.google.common.collect.Lists;
 import insane96mcp.insanelib.setup.ILEntities;
-import insane96mcp.insanelib.utils.RandomHelper;
+import insane96mcp.insanelib.util.RandomHelper;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;

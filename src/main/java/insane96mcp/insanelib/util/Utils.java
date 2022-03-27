@@ -1,4 +1,4 @@
-package insane96mcp.insanelib.utils;
+package insane96mcp.insanelib.util;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;

@@ -1,6 +1,6 @@
 package insane96mcp.insanelib.base;
 
-import insane96mcp.insanelib.utils.LogHelper;
+import insane96mcp.insanelib.util.LogHelper;
 import net.minecraftforge.common.ForgeConfigSpec;
 
 public class Module {

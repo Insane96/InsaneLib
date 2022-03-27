@@ -1,4 +1,4 @@
-package insane96mcp.insanelib.utils.scheduled;
+package insane96mcp.insanelib.util.scheduled;
 
 import insane96mcp.insanelib.InsaneLib;
 import net.minecraftforge.event.TickEvent;
