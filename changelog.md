@@ -2,6 +2,7 @@ InsaneLib's Changelog
 
 ## Upcoming
 * Removed Custom Fluid Mixin. Made a proper mod for it (using data packs yaay)
+* Moved tons of classes from MPR to here
 
 ## 1.4.5
 * Update to 1.18.2
