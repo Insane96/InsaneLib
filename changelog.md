@@ -1,5 +1,8 @@
 InsaneLib's Changelog
 
+## Upcoming
+* Removed Custom Fluid Mixin. Made a proper mod for it (using data packs yaay)
+
 ## 1.4.5
 * Update to 1.18.2
 * Fixed block_below in fluid mix not working with tags

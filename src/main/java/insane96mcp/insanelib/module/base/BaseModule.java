@@ -4,7 +4,6 @@ import insane96mcp.insanelib.base.Label;
 import insane96mcp.insanelib.base.Module;
 import insane96mcp.insanelib.module.base.feature.AEC3DFeature;
 import insane96mcp.insanelib.module.base.feature.FixFeature;
-import insane96mcp.insanelib.module.base.feature.FluidMixinFeature;
 import insane96mcp.insanelib.module.base.feature.TagsFeature;
 import insane96mcp.insanelib.setup.Config;
 
@@ -13,7 +12,6 @@ public class BaseModule extends Module {
 	public AEC3DFeature aec3D;
 	public FixFeature fix;
 	public TagsFeature tags;
-	public FluidMixinFeature fluixMixin;
 
 	public BaseModule() {
 		super(Config.builder, true, false);
@@ -21,7 +19,6 @@ public class BaseModule extends Module {
 		aec3D = new AEC3DFeature(this);
 		fix = new FixFeature(this);
 		tags = new TagsFeature(this);
-		fluixMixin = new FluidMixinFeature(this);
 		Config.builder.pop();
 	}
 
@@ -31,6 +28,5 @@ public class BaseModule extends Module {
 		aec3D.loadConfig();
 		fix.loadConfig();
 		tags.loadConfig();
-		fluixMixin.loadConfig();
 	}
 }

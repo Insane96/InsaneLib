@@ -4,7 +4,6 @@
 	"compatibilityLevel": "JAVA_8",
 	"refmap": "insanelib.refmap.json",
 	"mixins": [
-		"FlowingFluidBlockMixin"
 	],
 	"minVersion": "0.8"
 }
