@@ -1,5 +1,8 @@
 InsaneLib's Changelog
 
+## 1.4.7
+* Possibly Fixed a crash related to Scheduled Tick (used by Enhanced AI)
+
 ## 1.4.6
 * Removed Custom Fluid Mixin. Made a proper mod for it (using data packs yaay)
 * Moved tons of classes from MPR to here
