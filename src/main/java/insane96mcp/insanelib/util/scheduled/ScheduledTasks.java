@@ -15,7 +15,8 @@ public class ScheduledTasks {
 	@SubscribeEvent
 	static void onServerTick(TickEvent.ServerTickEvent event) {
 		if (event.phase.equals(TickEvent.Phase.END)) {
-			for (ScheduledTickTask task : scheduledTickTasks) {
+			List<ScheduledTickTask> listCopy = new ArrayList<>(scheduledTickTasks);
+			for (ScheduledTickTask task : listCopy) {
 				task.tick();
 			}
 			scheduledTickTasks.removeIf(ScheduledTickTask::hasBeenExecuted);
