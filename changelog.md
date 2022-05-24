@@ -1,5 +1,8 @@
 InsaneLib's Changelog
 
+## 1.4.8
+* Fixed a possible crash when applying attribute modifiers
+
 ## 1.4.7
 * Possibly Fixed a crash related to Scheduled Tick (used by Enhanced AI)
 

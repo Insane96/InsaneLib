@@ -48,6 +48,8 @@ public class MCUtils {
 	public static boolean applyModifier(LivingEntity entity, Attribute attribute, UUID uuid, String name, double amount, AttributeModifier.Operation operation, boolean permanent) {
 		AttributeInstance attributeInstance = entity.getAttribute(attribute);
 		if (attributeInstance != null) {
+			if (attributeInstance.getModifier(uuid) != null)
+				return false;
 			AttributeModifier modifier = new AttributeModifier(uuid, name, amount, operation);
 			if (permanent)
 				attributeInstance.addPermanentModifier(modifier);
