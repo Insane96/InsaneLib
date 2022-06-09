@@ -1,10 +1,6 @@
 package insane96mcp.insanelib.config;
 
 import insane96mcp.insanelib.util.IdTagMatcher;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.material.Fluid;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.registries.ForgeRegistryEntry;
 import net.minecraftforge.registries.IForgeRegistryEntry;
@@ -22,86 +18,6 @@ public class Blacklist {
 	public Blacklist(ArrayList<IdTagMatcher> blacklist, boolean blacklistAsWhitelist) {
 		this.blacklist = blacklist;
 		this.blacklistAsWhitelist = blacklistAsWhitelist;
-	}
-
-	/**
-	 * Returns true if the entity is in the blacklist or, if the list is a whitelist, is not in the whitelist
-	 */
-	public boolean isEntityListed(Entity entity) {
-		//Check for black/whitelist
-		boolean isInWhitelist = false;
-		boolean isInBlacklist = false;
-		for (IdTagMatcher blacklistEntry : this.blacklist) {
-			if (blacklistEntry.matchesEntity(entity)) {
-				if (!this.blacklistAsWhitelist)
-					isInBlacklist = true;
-				else
-					isInWhitelist = true;
-				break;
-			}
-		}
-
-		return isInBlacklist || (!isInWhitelist && this.blacklistAsWhitelist);
-	}
-
-	/**
-	 * Returns true if the block is in the blacklist or, if the list is a whitelist, is not in the whitelist
-	 */
-	public boolean isBlockListed(Block block) {
-		//Check for black/whitelist
-		boolean isInWhitelist = false;
-		boolean isInBlacklist = false;
-		for (IdTagMatcher blacklistEntry : this.blacklist) {
-			if (blacklistEntry.matchesBlock(block)) {
-				if (!this.blacklistAsWhitelist)
-					isInBlacklist = true;
-				else
-					isInWhitelist = true;
-				break;
-			}
-		}
-
-		return isInBlacklist || (!isInWhitelist && this.blacklistAsWhitelist);
-	}
-
-	/**
-	 * Returns true if the item is in the blacklist or, if the list is a whitelist, is not in the whitelist
-	 */
-	public boolean isItemListed(Item item) {
-		//Check for black/whitelist
-		boolean isInWhitelist = false;
-		boolean isInBlacklist = false;
-		for (IdTagMatcher blacklistEntry : this.blacklist) {
-			if (blacklistEntry.matchesItem(item)) {
-				if (!this.blacklistAsWhitelist)
-					isInBlacklist = true;
-				else
-					isInWhitelist = true;
-				break;
-			}
-		}
-
-		return isInBlacklist || (!isInWhitelist && this.blacklistAsWhitelist);
-	}
-
-	/**
-	 * Returns true if the fluid is in the blacklist or, if the list is a whitelist, is not in the whitelist
-	 */
-	public boolean isItemListed(Fluid fluid) {
-		//Check for black/whitelist
-		boolean isInWhitelist = false;
-		boolean isInBlacklist = false;
-		for (IdTagMatcher blacklistEntry : this.blacklist) {
-			if (blacklistEntry.matchesFluid(fluid)) {
-				if (!this.blacklistAsWhitelist)
-					isInBlacklist = true;
-				else
-					isInWhitelist = true;
-				break;
-			}
-		}
-
-		return isInBlacklist || (!isInWhitelist && this.blacklistAsWhitelist);
 	}
 
 	/**

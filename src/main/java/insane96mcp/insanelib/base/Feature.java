@@ -1,11 +1,9 @@
 package insane96mcp.insanelib.base;
 
 import insane96mcp.insanelib.util.LogHelper;
-import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.loading.FMLEnvironment;
 
 import java.lang.reflect.Method;
 
@@ -84,8 +82,6 @@ public class Feature {
     public void registerEvents() {
         for (Method method : this.getClass().getDeclaredMethods()) {
             if (!method.isAnnotationPresent(SubscribeEvent.class))
-                continue;
-            if (method.isAnnotationPresent(ClientEvent.class) && FMLEnvironment.dist != Dist.CLIENT)
                 continue;
 
             MinecraftForge.EVENT_BUS.register(this);
