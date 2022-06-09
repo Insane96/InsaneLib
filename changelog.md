@@ -1,6 +1,6 @@
 InsaneLib's Changelog
 
-## Upcoming
+## 1.5.0
 * Added Blacklist Config and MinMax Config
 * ILNearestAttackableTargetGoal
 * Added many Utils
