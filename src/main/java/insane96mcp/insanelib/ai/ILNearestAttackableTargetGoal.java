@@ -22,16 +22,16 @@ public class ILNearestAttackableTargetGoal<T extends LivingEntity> extends Targe
 
 	public TargetingConditions targetEntitySelector;
 
-	public ILNearestAttackableTargetGoal(Mob goalOwnerIn, Class<T> targetClassIn, boolean checkSight) {
-		this(goalOwnerIn, targetClassIn, checkSight, false);
+	public ILNearestAttackableTargetGoal(Mob goalOwnerIn, Class<T> targetClassIn, boolean mustSee) {
+		this(goalOwnerIn, targetClassIn, mustSee, false);
 	}
 
-	public ILNearestAttackableTargetGoal(Mob goalOwnerIn, Class<T> targetClassIn, boolean checkSight, boolean nearbyOnlyIn) {
-		this(goalOwnerIn, targetClassIn, checkSight, nearbyOnlyIn, null);
+	public ILNearestAttackableTargetGoal(Mob goalOwnerIn, Class<T> targetClassIn, boolean mustSee, boolean mustReach) {
+		this(goalOwnerIn, targetClassIn, mustSee, mustReach, null);
 	}
 
-	public ILNearestAttackableTargetGoal(Mob goalOwnerIn, Class<T> targetClassIn, boolean checkSight, boolean nearbyOnlyIn, @Nullable Predicate<LivingEntity> targetPredicate) {
-		super(goalOwnerIn, checkSight, nearbyOnlyIn);
+	public ILNearestAttackableTargetGoal(Mob goalOwnerIn, Class<T> targetClassIn, boolean mustSee, boolean mustReach, @Nullable Predicate<LivingEntity> targetPredicate) {
+		super(goalOwnerIn, mustSee, mustReach);
 		this.targetClass = targetClassIn;
 		this.targetChance = 10;
 		this.setFlags(EnumSet.of(Flag.TARGET));
@@ -75,16 +75,22 @@ public class ILNearestAttackableTargetGoal<T extends LivingEntity> extends Targe
 	}
 
 	/**
-	 * If true, entities will no longer have 1 in 10 chance to target an entity.
+	 * Entities will no longer have 1 in 10 chance to target an entity. Same as calling setTargetChance(0)
 	 */
-	public void setInstaTarget(boolean instaTarget) {
-		this.targetChance = instaTarget ? 0 : reducedTickDelay(10);
+	public ILNearestAttackableTargetGoal<T> setInstaTarget() {
+		return this.setTargetChance(0);
+	}
+
+	public ILNearestAttackableTargetGoal<T> setTargetChance(int targetChance) {
+		this.targetChance = reducedTickDelay(targetChance);
+		return this;
 	}
 
 	/**
 	 * Let the entity see through walls (X-Ray)
 	 */
-	public void setIgnoreLineOfSight() {
+	public ILNearestAttackableTargetGoal<T> setIgnoreLineOfSight() {
 		this.targetEntitySelector.ignoreLineOfSight();
+		return this;
 	}
 }

@@ -23,7 +23,7 @@ archivesBaseName = 'InsaneLib'
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
 minecraft {
-    mappings channel: 'official', version: '1.18.2'
+    mappings channel: 'official', version: "${mc_version}"
     
     accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
 
@@ -79,7 +79,7 @@ minecraft {
 sourceSets.main.resources { srcDir 'src/generated/resources' }
 
 dependencies {
-    minecraft 'net.minecraftforge:forge:1.18.2-40.1.20'
+    minecraft "net.minecraftforge:forge:${mc_version}-${forge_version}"
 
     annotationProcessor "org.spongepowered:mixin:${mixin_version}:processor"
 
@@ -97,7 +97,6 @@ mixin {
     add sourceSets.main, 'insanelib.refmap.json'
 }
 
-// Example for how to get properties into the manifest for reading by the runtime..
 jar {
     manifest {
         attributes([
