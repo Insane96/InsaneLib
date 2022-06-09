@@ -1,5 +1,9 @@
 InsaneLib's Changelog
 
+## Upcoming
+* Added Blacklist Config and MinMax Config
+* ILNearestAttackableTargetGoal
+
 ## 1.4.8
 * Fixed a possible crash when applying attribute modifiers
 
