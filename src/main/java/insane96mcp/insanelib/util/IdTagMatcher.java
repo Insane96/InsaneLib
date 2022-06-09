@@ -200,8 +200,8 @@ public class IdTagMatcher {
     public <T extends IForgeRegistryEntry<T>> boolean matchesGeneric(ForgeRegistryEntry<T> entry, @Nullable ResourceLocation dimensionId) {
         if (dimensionId == null)
             dimensionId = AnyRL;
-        ResourceLocation itemId = entry.getRegistryName();
-        if (itemId.equals(this.id))
+        ResourceLocation entryId = entry.getRegistryName();
+        if (entryId.equals(this.id))
             return this.dimension.equals(AnyRL) || this.dimension.equals(dimensionId);
         return false;
     }
