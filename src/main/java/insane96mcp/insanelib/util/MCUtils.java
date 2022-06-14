@@ -4,7 +4,7 @@ import net.minecraft.advancements.Advancement;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
@@ -12,7 +12,6 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
@@ -21,11 +20,9 @@ import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.alchemy.PotionUtils;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.commons.lang3.math.NumberUtils;
 
@@ -155,7 +152,7 @@ public class MCUtils {
 
 			compoundtag.put("CustomPotionEffects", listtag);
 
-			itemStack.setHoverName(new TranslatableComponent("unknown_potion"));
+			itemStack.setHoverName(Component.translatable("unknown_potion"));
 		}
 		return itemStack;
 	}
@@ -205,27 +202,6 @@ public class MCUtils {
 			return y;
 		}
 		return fittingYPos;
-	}
-
-	public static boolean isDamageSourceBlocked(DamageSource damageSource, LivingEntity livingEntity) {
-		Entity entity = damageSource.getDirectEntity();
-		boolean flag = false;
-		if (entity instanceof AbstractArrow abstractArrow) {
-			if (abstractArrow.getPierceLevel() > 0) {
-				flag = true;
-			}
-		}
-
-		if (!damageSource.isBypassArmor() && livingEntity.isBlocking() && !flag) {
-			Vec3 sourcePosition = damageSource.getSourcePosition();
-			if (sourcePosition != null) {
-				Vec3 livingEntityViewVector = livingEntity.getViewVector(1.0F);
-				Vec3 vec3 = sourcePosition.vectorTo(livingEntity.position()).normalize();
-				vec3 = new Vec3(vec3.x, 0.0D, vec3.z);
-				return vec3.dot(livingEntityViewVector) < 0.0D;
-			}
-		}
-		return false;
 	}
 
 	public static int getEnchantmentLevel(ResourceLocation enchantmentId, ItemStack stack) {

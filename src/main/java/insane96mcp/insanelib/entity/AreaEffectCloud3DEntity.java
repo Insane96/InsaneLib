@@ -2,7 +2,6 @@ package insane96mcp.insanelib.entity;
 
 import com.google.common.collect.Lists;
 import insane96mcp.insanelib.setup.ILEntities;
-import insane96mcp.insanelib.util.RandomHelper;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
@@ -73,9 +72,9 @@ public class AreaEffectCloud3DEntity extends AreaEffectCloud {
 				for (int k1 = 0; k1 < particleAmount; ++k1) {
 					float f6 = this.random.nextFloat() * ((float)Math.PI * 2F);
 					float f7 = Mth.sqrt(this.random.nextFloat()) * radius;
-					float x = RandomHelper.getFloat(this.random, -radius, radius);
-					float y = RandomHelper.getFloat(this.random, -radius, radius);
-					float z = RandomHelper.getFloat(this.random, -radius, radius);
+					float x = Mth.nextFloat(this.random, -radius, radius);
+					float y = Mth.nextFloat(this.random, -radius, radius);
+					float z = Mth.nextFloat(this.random, -radius, radius);
 					if ((x*x) + (y*y) + (z*z) > (radius*radius))
 						continue;
 
