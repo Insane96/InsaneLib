@@ -4,7 +4,6 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 
 public class Utils {
-
 	public static <T extends Enum<?>> T searchEnum(Class<T> enumeration, String search) {
 		for (T each : enumeration.getEnumConstants()) {
 			if (each.name().compareToIgnoreCase(search) == 0) {

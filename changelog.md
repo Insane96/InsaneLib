@@ -1,6 +1,6 @@
 InsaneLib's Changelog
 
-## Upcoming
+## 1.5.1
 * Refactored IdTagMatcher. No more matchesGeneric. Affects Blacklist too. Added more getAll methods.
 * Removed MCUtils.isBlockingWithShield as it's now public in LivingEntity
 * Removed RandomHelper, there's Mth
