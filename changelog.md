@@ -1,5 +1,10 @@
 InsaneLib's Changelog
 
+## Upcoming
+* Refactored IdTagMatcher. No more matchesGeneric.
+* Removed MCUtils.isBlockingWithShield as it's now public in LivingEntity
+* Removed RandomHelper, there's Mth
+
 ## 1.5.0
 * Added Blacklist Config and MinMax Config
 * ILNearestAttackableTargetGoal

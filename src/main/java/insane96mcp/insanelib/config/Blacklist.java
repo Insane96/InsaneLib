@@ -1,9 +1,12 @@
 package insane96mcp.insanelib.config;
 
 import insane96mcp.insanelib.util.IdTagMatcher;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.material.Fluid;
 import net.minecraftforge.common.ForgeConfigSpec;
-import net.minecraftforge.registries.ForgeRegistryEntry;
-import net.minecraftforge.registries.IForgeRegistryEntry;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,15 +23,80 @@ public class Blacklist {
 		this.blacklistAsWhitelist = blacklistAsWhitelist;
 	}
 
-	/**
-	 * Returns true if the ForgeRegistryEntry (item, block, etc) is in the blacklist or, if the list is a whitelist, is not in the whitelist
-	 */
-	public <T extends IForgeRegistryEntry<T>> boolean isBlackWhiteListed(ForgeRegistryEntry<T> entry) {
+	public boolean isBlockBlackOrNotWhiteListed(Block entry) {
 		//Check for black/whitelist
 		boolean isInWhitelist = false;
 		boolean isInBlacklist = false;
 		for (IdTagMatcher blacklistEntry : this.blacklist) {
-			if (blacklistEntry.matchesGeneric(entry)) {
+			if (blacklistEntry.matchesBlock(entry)) {
+				if (!this.blacklistAsWhitelist)
+					isInBlacklist = true;
+				else
+					isInWhitelist = true;
+				break;
+			}
+		}
+
+		return isInBlacklist || (!isInWhitelist && this.blacklistAsWhitelist);
+	}
+
+	public boolean isItemBlackOrNotWhiteListed(Item entry) {
+		//Check for black/whitelist
+		boolean isInWhitelist = false;
+		boolean isInBlacklist = false;
+		for (IdTagMatcher blacklistEntry : this.blacklist) {
+			if (blacklistEntry.matchesItem(entry)) {
+				if (!this.blacklistAsWhitelist)
+					isInBlacklist = true;
+				else
+					isInWhitelist = true;
+				break;
+			}
+		}
+
+		return isInBlacklist || (!isInWhitelist && this.blacklistAsWhitelist);
+	}
+
+	public boolean isFluidBlackOrNotWhiteListed(Fluid entry) {
+		//Check for black/whitelist
+		boolean isInWhitelist = false;
+		boolean isInBlacklist = false;
+		for (IdTagMatcher blacklistEntry : this.blacklist) {
+			if (blacklistEntry.matchesFluid(entry)) {
+				if (!this.blacklistAsWhitelist)
+					isInBlacklist = true;
+				else
+					isInWhitelist = true;
+				break;
+			}
+		}
+
+		return isInBlacklist || (!isInWhitelist && this.blacklistAsWhitelist);
+	}
+
+	public boolean isEntityBlackOrNotWhitelist(Entity entry) {
+		//Check for black/whitelist
+		boolean isInWhitelist = false;
+		boolean isInBlacklist = false;
+		for (IdTagMatcher blacklistEntry : this.blacklist) {
+			if (blacklistEntry.matchesEntity(entry)) {
+				if (!this.blacklistAsWhitelist)
+					isInBlacklist = true;
+				else
+					isInWhitelist = true;
+				break;
+			}
+		}
+
+		return isInBlacklist || (!isInWhitelist && this.blacklistAsWhitelist);
+	}
+
+	public boolean isEntityBlackOrNotWhitelist(EntityType<?> entry) {
+		//Check for black/whitelist
+		boolean isInWhitelist = false;
+		boolean isInBlacklist = false;
+		for (IdTagMatcher blacklistEntry : this.blacklist) {
+			if (blacklistEntry.matchesEntity(entry)) {
 				if (!this.blacklistAsWhitelist)
 					isInBlacklist = true;
 				else
