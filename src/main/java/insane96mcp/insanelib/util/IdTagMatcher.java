@@ -7,8 +7,10 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.material.Fluid;
+import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.tags.ITag;
 
@@ -195,6 +197,48 @@ public class IdTagMatcher {
             items.addAll(itemTag.stream().toList());
         }
         return items;
+    }
+
+    public List<ItemStack> getAllItemStacks() {
+        List<ItemStack> itemStacks = new ArrayList<>();
+        this.getAllItems().forEach(item -> itemStacks.add(new ItemStack(item)));
+        return itemStacks;
+    }
+
+    public List<Fluid> getAllFluids() {
+        List<Fluid> fluids = new ArrayList<>();
+        if (this.type == Type.ID) {
+            Fluid fluid = ForgeRegistries.FLUIDS.getValue(this.location);
+            if (fluid != null)
+                fluids.add(fluid);
+        }
+        else {
+            TagKey<Fluid> tagKey = TagKey.create(Registry.FLUID_REGISTRY, this.location);
+            ITag<Fluid> fluidTag = ForgeRegistries.FLUIDS.tags().getTag(tagKey);
+            fluids.addAll(fluidTag.stream().toList());
+        }
+        return fluids;
+    }
+
+    public List<FluidStack> getAllFluidStacks() {
+        List<FluidStack> fluidStacks = new ArrayList<>();
+        this.getAllFluids().forEach(item -> fluidStacks.add(new FluidStack(item, 1000)));
+        return fluidStacks;
+    }
+
+    public List<EntityType<?>> getAllEntityTypes() {
+        List<EntityType<?>> entityTypes = new ArrayList<>();
+        if (this.type == Type.ID) {
+            EntityType<?> entityType = ForgeRegistries.ENTITIES.getValue(this.location);
+            if (entityType != null)
+                entityTypes.add(entityType);
+        }
+        else {
+            TagKey<EntityType<?>> tagKey = TagKey.create(Registry.ENTITY_TYPE_REGISTRY, this.location);
+            ITag<EntityType<?>> entityTag = ForgeRegistries.ENTITIES.tags().getTag(tagKey);
+            entityTypes.addAll(entityTag.stream().toList());
+        }
+        return entityTypes;
     }
 
     public enum Type {
