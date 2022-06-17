@@ -93,12 +93,12 @@ public class IdTagMatcher {
             ITag<Block> tag = ForgeRegistries.BLOCKS.tags().getTag(tagKey);
             if (!tag.contains(block))
                 return false;
-            return dimensionId == null || dimensionId.equals(this.dimension);
+            return this.dimension == null || this.dimension.equals(dimensionId);
         }
         else {
             ResourceLocation id = ForgeRegistries.BLOCKS.getKey(block);
             if (id != null && id.equals(this.location))
-                return dimensionId == null || dimensionId.equals(this.dimension);
+                return this.dimension == null || this.dimension.equals(dimensionId);
         }
         return false;
     }
@@ -113,12 +113,12 @@ public class IdTagMatcher {
             ITag<Item> tag = ForgeRegistries.ITEMS.tags().getTag(tagKey);
             if (!tag.contains(item))
                 return false;
-            return dimensionId == null || dimensionId.equals(this.dimension);
+            return this.dimension == null || this.dimension.equals(dimensionId);
         }
         else {
             ResourceLocation id = ForgeRegistries.ITEMS.getKey(item);
             if (id != null && id.equals(this.location))
-                return dimensionId == null || dimensionId.equals(this.dimension);
+                return this.dimension == null || this.dimension.equals(dimensionId);
         }
         return false;
     }
@@ -133,12 +133,12 @@ public class IdTagMatcher {
             ITag<Fluid> fluidTag = ForgeRegistries.FLUIDS.tags().getTag(tagKey);
             if (!fluidTag.contains(fluid))
                 return false;
-            return dimensionId == null || dimensionId.equals(this.dimension);
+            return this.dimension == null || this.dimension.equals(dimensionId);
         }
         else {
             ResourceLocation id = ForgeRegistries.FLUIDS.getKey(fluid);
             if (id != null && id.equals(this.location))
-                return dimensionId == null || dimensionId.equals(this.dimension);
+                return this.dimension == null || this.dimension.equals(dimensionId);
         }
         return false;
     }
@@ -159,12 +159,12 @@ public class IdTagMatcher {
             ITag<EntityType<?>> tag = ForgeRegistries.ENTITIES.tags().getTag(tagKey);
             if (!tag.contains(entityType))
                 return false;
-            return dimensionId == null || dimensionId.equals(this.dimension);
+            return this.dimension == null || this.dimension.equals(dimensionId);
         }
         else {
             ResourceLocation id = ForgeRegistries.ENTITIES.getKey(entityType);
             if (id != null && id.equals(this.location))
-                return dimensionId == null || dimensionId.equals(this.dimension);
+                return this.dimension == null || this.dimension.equals(dimensionId);
         }
         return false;
     }
