@@ -38,10 +38,6 @@ public class ILNearestAttackableTargetGoal<T extends LivingEntity> extends Targe
 		this.targetEntitySelector = TargetingConditions.forCombat().range(this.getFollowDistance()).selector(targetPredicate);
 	}
 
-	/**
-	 * Returns whether execution should begin. You can also read and cache any state necessary for execution in this
-	 * method as well.
-	 */
 	public boolean canUse() {
 		if (this.targetChance > 0 && this.mob.getRandom().nextInt(this.targetChance) != 0) {
 			return false;
@@ -66,17 +62,11 @@ public class ILNearestAttackableTargetGoal<T extends LivingEntity> extends Targe
 
 	}
 
-	/**
-	 * Execute a one shot task or start executing a continuous task
-	 */
 	public void start() {
 		this.mob.setTarget(this.nearestTarget);
 		super.start();
 	}
 
-	/**
-	 * Entities will no longer have 1 in 10 chance to target an entity. Same as calling setTargetChance(0)
-	 */
 	public ILNearestAttackableTargetGoal<T> setInstaTarget() {
 		return this.setTargetChance(0);
 	}
@@ -86,9 +76,6 @@ public class ILNearestAttackableTargetGoal<T extends LivingEntity> extends Targe
 		return this;
 	}
 
-	/**
-	 * Let the entity see through walls (X-Ray)
-	 */
 	public ILNearestAttackableTargetGoal<T> setIgnoreLineOfSight() {
 		this.targetEntitySelector.ignoreLineOfSight();
 		return this;

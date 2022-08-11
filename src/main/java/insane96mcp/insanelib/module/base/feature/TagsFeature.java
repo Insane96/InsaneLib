@@ -11,7 +11,7 @@ import net.minecraft.world.entity.monster.Creeper;
 import net.minecraft.world.level.Explosion;
 import net.minecraftforge.event.entity.living.LivingExperienceDropEvent;
 import net.minecraftforge.event.entity.living.LivingSpawnEvent;
-import net.minecraftforge.event.world.ExplosionEvent;
+import net.minecraftforge.event.level.ExplosionEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
@@ -44,14 +44,14 @@ public class TagsFeature extends Feature {
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public void onSpawn(LivingSpawnEvent.CheckSpawn event) {
 		if (event.getSpawnReason() == MobSpawnType.SPAWNER)
-			event.getEntityLiving().getPersistentData().putBoolean(ILStrings.Tags.SPAWNED_FROM_SPAWNER, true);
+			event.getEntity().getPersistentData().putBoolean(ILStrings.Tags.SPAWNED_FROM_SPAWNER, true);
 		if (event.getSpawnReason() == MobSpawnType.STRUCTURE)
-			event.getEntityLiving().getPersistentData().putBoolean(ILStrings.Tags.SPAWNED_FROM_STRUCTURE, true);
+			event.getEntity().getPersistentData().putBoolean(ILStrings.Tags.SPAWNED_FROM_STRUCTURE, true);
 	}
 
 	@SubscribeEvent
 	public void onExperienceDrop(LivingExperienceDropEvent event) {
-		if (event.getEntityLiving().getPersistentData().contains(ILStrings.Tags.EXPERIENCE_MULTIPLIER))
-			event.setDroppedExperience((int) (event.getDroppedExperience() * event.getEntityLiving().getPersistentData().getDouble(ILStrings.Tags.EXPERIENCE_MULTIPLIER)));
+		if (event.getEntity().getPersistentData().contains(ILStrings.Tags.EXPERIENCE_MULTIPLIER))
+			event.setDroppedExperience((int) (event.getDroppedExperience() * event.getEntity().getPersistentData().getDouble(ILStrings.Tags.EXPERIENCE_MULTIPLIER)));
 	}
 }

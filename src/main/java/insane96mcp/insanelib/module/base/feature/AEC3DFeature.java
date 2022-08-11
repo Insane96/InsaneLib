@@ -12,7 +12,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.alchemy.Potions;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.util.LogicalSidedProvider;
-import net.minecraftforge.event.entity.EntityJoinWorldEvent;
+import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.LogicalSide;
 
@@ -39,7 +39,7 @@ public class AEC3DFeature extends Feature {
 	}
 
 	@SubscribeEvent
-	public void onSpawn(EntityJoinWorldEvent event) {
+	public void onSpawn(EntityJoinLevelEvent event) {
 		if (!this.isEnabled())
 			return;
 
@@ -55,7 +55,7 @@ public class AEC3DFeature extends Feature {
 		event.setCanceled(true);
 		AreaEffectCloud3DEntity areaEffectCloud3D = new AreaEffectCloud3DEntity(areaEffectCloud);
 
-		BlockableEventLoop<? super TickTask> executor = LogicalSidedProvider.WORKQUEUE.get(event.getWorld().isClientSide ? LogicalSide.CLIENT : LogicalSide.SERVER);
+		BlockableEventLoop<? super TickTask> executor = LogicalSidedProvider.WORKQUEUE.get(event.getLevel().isClientSide ? LogicalSide.CLIENT : LogicalSide.SERVER);
 		executor.tell(new TickTask(0, () -> areaEffectCloud3D.level.addFreshEntity(areaEffectCloud3D)));
 	}
 }

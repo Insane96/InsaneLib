@@ -16,7 +16,7 @@ import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.monster.Zombie;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.event.entity.EntityJoinWorldEvent;
+import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
@@ -63,7 +63,7 @@ public class FixFeature extends Feature {
 	}
 
 	@SubscribeEvent(priority = EventPriority.LOWEST)
-	public void onSpawn(EntityJoinWorldEvent event) {
+	public void onSpawn(EntityJoinLevelEvent event) {
 		if (!this.isEnabled())
 			return;
 

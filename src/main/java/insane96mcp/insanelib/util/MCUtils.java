@@ -4,7 +4,6 @@ import net.minecraft.advancements.Advancement;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
@@ -152,7 +151,7 @@ public class MCUtils {
 
 			compoundtag.put("CustomPotionEffects", listtag);
 
-			itemStack.setHoverName(new TranslatableComponent("unknown_potion"));
+			//itemStack.setHoverName(new TranslatableComponent("unknown_potion"));
 		}
 		return itemStack;
 	}

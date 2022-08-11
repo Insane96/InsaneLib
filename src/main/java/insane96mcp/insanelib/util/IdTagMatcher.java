@@ -156,13 +156,13 @@ public class IdTagMatcher {
     public boolean matchesEntity(EntityType<?> entityType, @Nullable ResourceLocation dimensionId) {
         if (this.type == Type.TAG) {
             TagKey<EntityType<?>> tagKey = TagKey.create(Registry.ENTITY_TYPE_REGISTRY, this.location);
-            ITag<EntityType<?>> tag = ForgeRegistries.ENTITIES.tags().getTag(tagKey);
+            ITag<EntityType<?>> tag = ForgeRegistries.ENTITY_TYPES.tags().getTag(tagKey);
             if (!tag.contains(entityType))
                 return false;
             return this.dimension == null || this.dimension.equals(dimensionId);
         }
         else {
-            ResourceLocation id = ForgeRegistries.ENTITIES.getKey(entityType);
+            ResourceLocation id = ForgeRegistries.ENTITY_TYPES.getKey(entityType);
             if (id != null && id.equals(this.location))
                 return this.dimension == null || this.dimension.equals(dimensionId);
         }
@@ -229,13 +229,13 @@ public class IdTagMatcher {
     public List<EntityType<?>> getAllEntityTypes() {
         List<EntityType<?>> entityTypes = new ArrayList<>();
         if (this.type == Type.ID) {
-            EntityType<?> entityType = ForgeRegistries.ENTITIES.getValue(this.location);
+            EntityType<?> entityType = ForgeRegistries.ENTITY_TYPES.getValue(this.location);
             if (entityType != null)
                 entityTypes.add(entityType);
         }
         else {
             TagKey<EntityType<?>> tagKey = TagKey.create(Registry.ENTITY_TYPE_REGISTRY, this.location);
-            ITag<EntityType<?>> entityTag = ForgeRegistries.ENTITIES.tags().getTag(tagKey);
+            ITag<EntityType<?>> entityTag = ForgeRegistries.ENTITY_TYPES.tags().getTag(tagKey);
             entityTypes.addAll(entityTag.stream().toList());
         }
         return entityTypes;

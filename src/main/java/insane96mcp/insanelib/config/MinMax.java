@@ -1,9 +1,8 @@
 package insane96mcp.insanelib.config;
 
 import net.minecraft.util.Mth;
+import net.minecraft.util.RandomSource;
 import net.minecraftforge.common.ForgeConfigSpec;
-
-import java.util.Random;
 
 public class MinMax {
     public double min, max;
@@ -21,14 +20,14 @@ public class MinMax {
     /**
      * Returns a random number between min (included) and max (excluded)
      */
-    public double getRandBetween(Random random) {
+    public double getRandBetween(RandomSource random) {
         return Mth.nextDouble(random, this.min, this.max - 1);
     }
 
     /**
      * Returns an integer random number between min (included) and max (excluded)
      */
-    public int getIntRandBetween(Random random) {
+    public int getIntRandBetween(RandomSource random) {
         return Mth.nextInt(random, (int) this.min, (int) this.max - 1);
     }
 
