@@ -172,6 +172,8 @@ public class IdTagMatcher {
     public List<Block> getAllBlocks() {
         List<Block> blocks = new ArrayList<>();
         if (this.type == Type.ID) {
+            if (!ForgeRegistries.BLOCKS.containsKey(this.location))
+                return blocks;
             Block block = ForgeRegistries.BLOCKS.getValue(this.location);
             if (block != null)
                 blocks.add(block);
@@ -187,6 +189,8 @@ public class IdTagMatcher {
     public List<Item> getAllItems() {
         List<Item> items = new ArrayList<>();
         if (this.type == Type.ID) {
+            if (!ForgeRegistries.ITEMS.containsKey(this.location))
+                return items;
             Item item = ForgeRegistries.ITEMS.getValue(this.location);
             if (item != null)
                 items.add(item);
@@ -208,6 +212,8 @@ public class IdTagMatcher {
     public List<Fluid> getAllFluids() {
         List<Fluid> fluids = new ArrayList<>();
         if (this.type == Type.ID) {
+            if (!ForgeRegistries.FLUIDS.containsKey(this.location))
+                return fluids;
             Fluid fluid = ForgeRegistries.FLUIDS.getValue(this.location);
             if (fluid != null)
                 fluids.add(fluid);
@@ -229,6 +235,8 @@ public class IdTagMatcher {
     public List<EntityType<?>> getAllEntityTypes() {
         List<EntityType<?>> entityTypes = new ArrayList<>();
         if (this.type == Type.ID) {
+            if (!ForgeRegistries.ENTITY_TYPES.containsKey(this.location))
+                return entityTypes;
             EntityType<?> entityType = ForgeRegistries.ENTITY_TYPES.getValue(this.location);
             if (entityType != null)
                 entityTypes.add(entityType);
