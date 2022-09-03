@@ -273,6 +273,7 @@ public class MCUtils {
 		}
 		int amplifier = Integer.parseInt(split[2]);
 
+		//noinspection ConstantConditions
 		return new MobEffectInstance(effect, duration, amplifier);
 	}
 }
