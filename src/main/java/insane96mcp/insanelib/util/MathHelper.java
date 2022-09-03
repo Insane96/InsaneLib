@@ -1,5 +1,7 @@
 package insane96mcp.insanelib.util;
 
+import net.minecraft.util.RandomSource;
+
 import java.util.Random;
 
 public class MathHelper {
@@ -17,7 +19,7 @@ public class MathHelper {
 	 * Given a value, will return the integer part plus a chance given by the decimal part to have a +1 on the return value
 	 * Example 1.2 would have 20% chance to return 2 and 80% chance to return 1
 	 */
-	public static int getAmountWithDecimalChance(Random rand, float f) {
+	public static int getAmountWithDecimalChance(RandomSource rand, float f) {
 		return getAmountWithDecimalChance(rand, (double) f);
 	}
 
@@ -25,7 +27,7 @@ public class MathHelper {
 	 * Given a value, will return the integer part plus a chance given by the decimal part to have a +1 on the return value
 	 * Example 1.2 would have 20% chance to return 2 and 80% chance to return 1
 	 */
-	public static int getAmountWithDecimalChance(Random rand, double f) {
+	public static int getAmountWithDecimalChance(RandomSource rand, double f) {
 		double mod = f - (int)f;
 		if (mod == 0f)
 			return (int) f;

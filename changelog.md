@@ -1,5 +1,8 @@
 InsaneLib's Changelog
 
+## Upcoming
+* Fixed `MathHelper.getAmountWithDecimalChance` not using RandomSource
+
 ## 1.6.1
 * Fixed getAllItems/Blocks/Entities/Fluids returning air when the entry was not in the registry
 
