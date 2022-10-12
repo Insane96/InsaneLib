@@ -3,7 +3,8 @@ package insane96mcp.insanelib.module.base.feature;
 import insane96mcp.insanelib.base.Feature;
 import insane96mcp.insanelib.base.Label;
 import insane96mcp.insanelib.base.Module;
-import insane96mcp.insanelib.setup.Config;
+import insane96mcp.insanelib.base.config.ConfigBool;
+import insane96mcp.insanelib.base.config.ConfigOption;
 import insane96mcp.insanelib.util.MCUtils;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -14,7 +15,6 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.WrappedGoal;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.monster.Zombie;
-import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
@@ -25,41 +25,30 @@ import java.util.Set;
 @Label(name = "Fixes", description = "A few fixes")
 public class FixFeature extends Feature {
 
-	private final ForgeConfigSpec.ConfigValue<Boolean> fixFollowRangeConfig;
-	private final ForgeConfigSpec.ConfigValue<Boolean> removeZombiesBonusHealthConfig;
-	private final ForgeConfigSpec.ConfigValue<Boolean> fixJumpMovementFactorConfig;
-	private final ForgeConfigSpec.ConfigValue<Boolean> slowdownOnlyConfig;
-
-	public boolean fixFollowRange = true;
-	public boolean removeZombiesBonusHealth = true;
-	public boolean fixJumpMovementFactor = true;
-	public boolean slowdownOnly = true;
+	@ConfigOption
+	@Label(name = "Fix Follow Range", description = "If true, mobs will have their follow range fixed. https://bugs.mojang.com/browse/MC-145656")
+	@ConfigBool(defaultValue = true)
+	public boolean fixFollowRange;
+	@ConfigOption
+	@Label(name = "Remove Zombies Bonus Health", description = "Removes the random bonus health given to Leader Zombies. In vanilla it's useless since doesn't work. https://minecraft.fandom.com/wiki/Attribute#Vanilla_modifiers")
+	@ConfigBool(defaultValue = true)
+	public boolean removeZombiesBonusHealth;
+	@ConfigOption
+	@Label(name = "Fix Flying Speed", description = "When affected by slowness the player can still jump really far away. When true, jumps length will be calculated based off player's movement speed.")
+	@ConfigBool(defaultValue = true)
+	public boolean fixFlyingSpeed;
+	@ConfigOption
+	@Label(name = "Fix Jump Movement Factor Slowdown Only", description = "The fix for Jump Movement Factor is applied only when the player is slowed down. If false, the player will jump really farther when going faster.")
+	@ConfigBool(defaultValue = true)
+	public boolean slowdownOnly;
 
 	public FixFeature(Module module) {
-		super(Config.builder, module);
-		Config.builder.comment(this.getDescription()).push(this.getName());
-		this.fixFollowRangeConfig = Config.builder
-				.comment("If true, mobs will have their follow range fixed. https://bugs.mojang.com/browse/MC-145656")
-				.define("Fix Follow Range", this.fixFollowRange);
-		this.removeZombiesBonusHealthConfig = Config.builder
-				.comment("Removes the random bonus health given to Leader Zombies. In vanilla it's useless since doesn't work. https://minecraft.fandom.com/wiki/Attribute#Vanilla_modifiers")
-				.define("Remove Zombies Bonus Health", this.removeZombiesBonusHealth);
-		this.fixJumpMovementFactorConfig = Config.builder
-				.comment("When affected by slowness the player can still jump really far away. When true, jumps length will be calculated based off player's movement speed.")
-				.define("Fix Jump Movement Factor", this.fixJumpMovementFactor);
-		this.slowdownOnlyConfig = Config.builder
-				.comment("The fix for Jump Movement Factor is applied only when the player is slowed down. If false, the player will jump really farther when going faster.")
-				.define("Fix Jump Movement Factor Slowdown Only", this.slowdownOnly);
-		Config.builder.pop();
+		super(module);
 	}
 
 	@Override
 	public void loadConfig() {
 		super.loadConfig();
-		this.fixFollowRange = this.fixFollowRangeConfig.get();
-		this.removeZombiesBonusHealth = this.removeZombiesBonusHealthConfig.get();
-		this.fixJumpMovementFactor = this.fixJumpMovementFactorConfig.get();
-		this.slowdownOnly = this.slowdownOnlyConfig.get();
 	}
 
 	@SubscribeEvent(priority = EventPriority.LOWEST)
@@ -72,13 +61,9 @@ public class FixFeature extends Feature {
 	}
 
 	private void removeZombiesBonusHealth(Entity entity) {
-		if (!this.removeZombiesBonusHealth)
-			return;
-
-		if (!(entity instanceof Zombie zombie))
-			return;
-
-		if (zombie.getAttribute(Attributes.MAX_HEALTH) == null)
+		if (!this.removeZombiesBonusHealth
+				|| !(entity instanceof Zombie zombie)
+				|| zombie.getAttribute(Attributes.MAX_HEALTH) == null)
 			return;
 
 		Set<AttributeModifier> modifiers = zombie.getAttribute(Attributes.MAX_HEALTH).getModifiers();
@@ -88,11 +73,9 @@ public class FixFeature extends Feature {
 	}
 
 	private void fixFollowRange(Entity entity) {
-		if (!this.fixFollowRange)
+		if (!this.fixFollowRange
+				|| !(entity instanceof Mob mobEntity))
 			 return;
-
-		if (!(entity instanceof Mob mobEntity))
-			return;
 
 		AttributeInstance followRangeAttribute = mobEntity.getAttribute(Attributes.FOLLOW_RANGE);
 		if (followRangeAttribute != null) {
@@ -106,24 +89,20 @@ public class FixFeature extends Feature {
 
 	@SubscribeEvent(priority = EventPriority.LOWEST)
 	public void onUpdate(TickEvent.PlayerTickEvent event) {
-		if (!this.isEnabled())
+		if (!this.isEnabled()
+				|| !this.fixFlyingSpeed
+				|| event.phase != TickEvent.Phase.START)
 			return;
 
-		if (!this.fixJumpMovementFactor)
-			return;
-
-		if (event.phase != TickEvent.Phase.START)
-			return;
-
-		float baseJMF = 0.02f;
+		float baseFlyingSpeed = 0.02f;
 		if (event.player.isSprinting())
-			baseJMF += 0.006f;
+			baseFlyingSpeed += 0.006f;
 
 		double playerSpeedRatio = MCUtils.getMovementSpeedRatio(event.player);
 
 		if (playerSpeedRatio > 1d && this.slowdownOnly)
 			return;
 
-		event.player.flyingSpeed = (float) (playerSpeedRatio * baseJMF);
+		event.player.flyingSpeed = (float) (playerSpeedRatio * baseFlyingSpeed);
 	}
 }

@@ -3,14 +3,14 @@ package insane96mcp.insanelib.module.base.feature;
 import insane96mcp.insanelib.base.Feature;
 import insane96mcp.insanelib.base.Label;
 import insane96mcp.insanelib.base.Module;
+import insane96mcp.insanelib.base.config.ConfigBool;
+import insane96mcp.insanelib.base.config.ConfigOption;
 import insane96mcp.insanelib.entity.AreaEffectCloud3DEntity;
-import insane96mcp.insanelib.setup.Config;
 import net.minecraft.server.TickTask;
 import net.minecraft.util.thread.BlockableEventLoop;
 import net.minecraft.world.entity.AreaEffectCloud;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.alchemy.Potions;
-import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.util.LogicalSidedProvider;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -18,35 +18,25 @@ import net.minecraftforge.fml.LogicalSide;
 
 @Label(name = "Area Effect Cloud 3D", description = "No more boring 2D Area of Effect Clouds")
 public class AEC3DFeature extends Feature {
-
-	private final ForgeConfigSpec.ConfigValue<Boolean> replaceVanillaAECConfig;
-
-	public boolean replaceVanillaAEC = true;
+	@ConfigOption
+	@Label(name = "Replace Vanilla Area of Effect Clouds", description = "If true, vanilla Area of Effect Clouds will be replaced with 3D versions of them")
+	@ConfigBool(defaultValue = true)
+	public boolean replaceVanillaAEC;
 
 	public AEC3DFeature(Module module) {
 		super(module);
-		this.pushConfig();
-		replaceVanillaAECConfig = Config.builder
-				.comment("If true, vanilla Area of Effect Clouds will be replaced with 3D versions of them")
-				.define("Replace Vanilla Area of Effect Clouds", replaceVanillaAEC);
-		this.popConfig();
 	}
 
 	@Override
 	public void loadConfig() {
 		super.loadConfig();
-		this.replaceVanillaAEC = this.replaceVanillaAECConfig.get();
 	}
 
 	@SubscribeEvent
 	public void onSpawn(EntityJoinLevelEvent event) {
-		if (!this.isEnabled())
-			return;
-
-		if (!this.replaceVanillaAEC)
-			return;
-
-		if (!event.getEntity().getType().equals(EntityType.AREA_EFFECT_CLOUD))
+		if (!this.isEnabled()
+				|| !this.replaceVanillaAEC
+				|| !event.getEntity().getType().equals(EntityType.AREA_EFFECT_CLOUD))
 			return;
 
 		AreaEffectCloud areaEffectCloud = (AreaEffectCloud) event.getEntity();
