@@ -20,8 +20,8 @@ import net.minecraftforge.fml.LogicalSide;
 public class AEC3DFeature extends Feature {
 	@ConfigOption
 	@Label(name = "Replace Vanilla Area of Effect Clouds", description = "If true, vanilla Area of Effect Clouds will be replaced with 3D versions of them")
-	@ConfigBool(defaultValue = true)
-	public boolean replaceVanillaAEC;
+	@ConfigBool
+	public static boolean replaceVanillaAEC = true;
 
 	public AEC3DFeature(Module module) {
 		super(module);

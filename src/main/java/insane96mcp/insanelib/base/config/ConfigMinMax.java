@@ -8,7 +8,9 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
 // Requires @Label and @ConfigOption to work
-public @interface ConfigInt {
-    int min() default Integer.MIN_VALUE;
-    int max() default Integer.MAX_VALUE;
+public @interface ConfigMinMax {
+    double defaultMinValue();
+    double defaultMaxValue();
+    double min();
+    double max();
 }

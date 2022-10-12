@@ -9,5 +9,5 @@ import java.lang.annotation.Target;
 @Target(ElementType.FIELD)
 // Requires @Label and @ConfigOption to work
 public @interface ConfigBool {
-    boolean defaultValue();
+
 }

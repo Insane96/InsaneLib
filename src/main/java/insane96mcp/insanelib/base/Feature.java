@@ -72,50 +72,68 @@ public class Feature {
         return description;
     }
 
+    public ForgeConfigSpec.Builder getBuilder() {
+        return this.module.builder;
+    }
 
     HashMap<Field, ForgeConfigSpec.ConfigValue<?>> configOptions = new HashMap<>();
 
     private void loadConfigOptions() {
         this.pushConfig();
-        for (Field field : this.getClass().getDeclaredFields())
-        {
-            if (!field.isAnnotationPresent(ConfigOption.class))
-                continue;
+        try {
+            for (Field field : this.getClass().getDeclaredFields())
+            {
+                if (!field.isAnnotationPresent(ConfigOption.class))
+                    continue;
 
-            if (!field.isAnnotationPresent(Label.class)) {
-                LogHelper.error("%s config option is missing the Label Annotation.".formatted(field.getName()));
-            }
+                if (!field.isAnnotationPresent(Label.class)) {
+                    LogHelper.error("%s config option is missing the Label Annotation.".formatted(field.getName()));
+                    continue;
+                }
 
-            String name = field.getAnnotation(Label.class).name();
-            String description = field.getAnnotation(Label.class).description();
-            if (field.isAnnotationPresent(ConfigDouble.class))
-            {
-                double defaultValue = field.getAnnotation(ConfigDouble.class).defaultValue();
-                double min = field.getAnnotation(ConfigDouble.class).min();
-                double max = field.getAnnotation(ConfigDouble.class).max();
-                if (!description.equals("")) {
-                    ForgeConfigSpec.DoubleValue doubleValue = this.module.builder.comment(description).defineInRange(name, defaultValue, min, max);
-                    this.configOptions.put(field, doubleValue);
+                String name = field.getAnnotation(Label.class).name();
+                String description = field.getAnnotation(Label.class).description();
+                if (field.isAnnotationPresent(ConfigDouble.class))
+                {
+                    double defaultValue = (double) field.get(null);
+                    double min = field.getAnnotation(ConfigDouble.class).min();
+                    double max = field.getAnnotation(ConfigDouble.class).max();
+                    if (!description.equals("")) {
+                        ForgeConfigSpec.DoubleValue doubleValue = this.module.builder.comment(description).defineInRange(name, defaultValue, min, max);
+                        this.configOptions.put(field, doubleValue);
+                    }
                 }
-            }
-            else if (field.isAnnotationPresent(ConfigInt.class))
-            {
-                int defaultValue = field.getAnnotation(ConfigInt.class).defaultValue();
-                int min = field.getAnnotation(ConfigInt.class).min();
-                int max = field.getAnnotation(ConfigInt.class).max();
-                if (!description.equals("")) {
-                    ForgeConfigSpec.IntValue intValue = this.module.builder.comment(description).defineInRange(name, defaultValue, min, max);
-                    this.configOptions.put(field, intValue);
+                else if (field.isAnnotationPresent(ConfigInt.class))
+                {
+                    int defaultValue = (int) field.get(null);
+                    int min = field.getAnnotation(ConfigInt.class).min();
+                    int max = field.getAnnotation(ConfigInt.class).max();
+                    if (!description.equals("")) {
+                        ForgeConfigSpec.IntValue intValue = this.module.builder.comment(description).defineInRange(name, defaultValue, min, max);
+                        this.configOptions.put(field, intValue);
+                    }
                 }
-            }
-            else if (field.isAnnotationPresent(ConfigBool.class))
+                else if (field.isAnnotationPresent(ConfigBool.class))
+                {
+                    boolean defaultValue = (boolean) field.get(null);
+                    if (!description.equals("")) {
+                        ForgeConfigSpec.BooleanValue booleanValue = this.module.builder.comment(description).define(name, defaultValue);
+                        this.configOptions.put(field, booleanValue);
+                    }
+                }
+            /*else if (field.isAnnotationPresent(ConfigMinMax.class))
             {
-                boolean defaultValue = field.getAnnotation(ConfigBool.class).defaultValue();
+                double min = field.getAnnotation(ConfigMinMax.class).defaultMinValue();
+                double max = field.getAnnotation(ConfigMinMax.class).defaultMaxValue();
                 if (!description.equals("")) {
                     ForgeConfigSpec.BooleanValue booleanValue = this.module.builder.comment(description).define(name, defaultValue);
                     this.configOptions.put(field, booleanValue);
                 }
+            }*/
             }
+        }
+        catch (IllegalAccessException e) {
+            throw new RuntimeException("Failed to load Feature " + this.name, e);
         }
         this.popConfig();
     }
@@ -130,8 +148,9 @@ public class Feature {
         try {
             for(Field field : this.getClass().getDeclaredFields())
             {
-                if (!field.isAnnotationPresent(ConfigOption.class))
+                if (!field.isAnnotationPresent(ConfigOption.class)) {
                     continue;
+                }
 
                 curField = String.join(".", this.configOptions.get(field).getPath());
                 field.set(this, this.configOptions.get(field).get());

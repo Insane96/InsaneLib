@@ -9,7 +9,6 @@ import java.lang.annotation.Target;
 @Target(ElementType.FIELD)
 // Requires @Label and @ConfigOption to work
 public @interface ConfigDouble {
-    double defaultValue() default 0d;
     double min() default Double.MIN_VALUE;
     double max() default Double.MAX_VALUE;
 }
