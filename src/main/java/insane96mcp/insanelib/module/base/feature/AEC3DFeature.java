@@ -24,12 +24,12 @@ public class AEC3DFeature extends Feature {
 	public boolean replaceVanillaAEC = true;
 
 	public AEC3DFeature(Module module) {
-		super(Config.builder, module);
-		Config.builder.comment(this.getDescription()).push(this.getName());
+		super(module);
+		this.pushConfig();
 		replaceVanillaAECConfig = Config.builder
 				.comment("If true, vanilla Area of Effect Clouds will be replaced with 3D versions of them")
 				.define("Replace Vanilla Area of Effect Clouds", replaceVanillaAEC);
-		Config.builder.pop();
+		this.popConfig();
 	}
 
 	@Override

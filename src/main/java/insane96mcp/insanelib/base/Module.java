@@ -66,4 +66,8 @@ public class Module {
             this.builder.comment(this.getDescription()).push(this.getName());
         }
     }
+
+    protected void popConfig() {
+        this.builder.pop();
+    }
 }

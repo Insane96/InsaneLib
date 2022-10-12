@@ -5,7 +5,9 @@ import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.HashMap;
 
 public class Feature {
     private final String name;
@@ -32,6 +34,49 @@ public class Feature {
         else
             enabledConfig = null;
         this.registerEvents();
+        this.loadConfigOptions();
+    }
+
+    HashMap<String, ForgeConfigSpec.ConfigValue<?>> configOptions = new HashMap<>();
+
+    private void loadConfigOptions() {
+        for(Field field : this.getClass().getDeclaredFields())
+        {
+            if (!field.isAnnotationPresent(Label.class))
+                continue;
+
+            String name = field.getAnnotation(Label.class).name();
+            String description = field.getAnnotation(Label.class).description();
+            if (field.isAnnotationPresent(ConfigDouble.class))
+            {
+                double defaultValue = field.getAnnotation(ConfigDouble.class).defaultValue();
+                double min = field.getAnnotation(ConfigDouble.class).min();
+                double max = field.getAnnotation(ConfigDouble.class).max();
+                if (!description.equals("")) {
+                    ForgeConfigSpec.DoubleValue doubleValue = this.module.builder.comment(description).defineInRange(name, defaultValue, min, max);
+                    this.configOptions.put(name, doubleValue);
+                }
+            }
+            else if (field.isAnnotationPresent(ConfigInt.class))
+            {
+                int defaultValue = field.getAnnotation(ConfigInt.class).defaultValue();
+                int min = field.getAnnotation(ConfigInt.class).min();
+                int max = field.getAnnotation(ConfigInt.class).max();
+                if (!description.equals("")) {
+                    ForgeConfigSpec.IntValue intValue = this.module.builder.comment(description).defineInRange(name, defaultValue, min, max);
+                    this.configOptions.put(name, intValue);
+                }
+            }
+            else if (field.isAnnotationPresent(ConfigBool.class))
+            {
+                boolean defaultValue = field.getAnnotation(ConfigBool.class).defaultValue();
+                if (!description.equals("")) {
+                    ForgeConfigSpec.BooleanValue booleanValue = this.module.builder.comment(description).define(name, defaultValue);
+                    this.configOptions.put(name, booleanValue);
+                    //TODO Get the value in loadConfig and put it in the field. The hashmap must be changed to a Field, ConfigValue
+                }
+            }
+        }
     }
 
     public Feature(Module module, boolean enabledByDefault) {
@@ -72,11 +117,11 @@ public class Feature {
             this.enabled = true;
     }
 
-    public void pushConfig(final ForgeConfigSpec.Builder builder) {
+    public void pushConfig() {
         if (!description.equals(""))
-            builder.comment(this.getDescription()).push(this.getName());
+            this.module.builder.comment(this.getDescription()).push(this.getName());
         else
-            builder.push(this.getName());
+            this.module.builder.push(this.getName());
     }
 
     public void registerEvents() {
@@ -88,35 +133,7 @@ public class Feature {
         }
     }
 
-    public void push(String name) {
-        this.module.builder.push(name);
-    }
-
-    public void pop() {
+    protected void popConfig() {
         this.module.builder.pop();
-    }
-
-    public void pop(int count) {
-        this.module.builder.pop(count);
-    }
-
-    public ForgeConfigSpec.BooleanValue defineBool(String name, String comment, boolean defaultValue) {
-        return this.module.builder.comment(comment).define(name, defaultValue);
-    }
-
-    public ForgeConfigSpec.DoubleValue defineDouble(String name, String comment, double defaultValue) {
-        return this.defineDouble(name, comment, defaultValue, Double.MIN_VALUE, Double.MAX_VALUE);
-    }
-
-    public ForgeConfigSpec.DoubleValue defineDouble(String name, String comment, double defaultValue, double min, double max) {
-        return this.module.builder.comment(comment).defineInRange(name, defaultValue, min, max);
-    }
-
-    public ForgeConfigSpec.IntValue defineInt(String name, String comment, int defaultValue) {
-        return this.defineInt(name, comment, defaultValue, Integer.MIN_VALUE, Integer.MAX_VALUE);
-    }
-
-    public ForgeConfigSpec.IntValue defineInt(String name, String comment, int defaultValue, int min, int max) {
-        return this.module.builder.comment(comment).defineInRange(name, defaultValue, min, max);
     }
 }

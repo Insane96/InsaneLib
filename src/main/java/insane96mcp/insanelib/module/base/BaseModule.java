@@ -15,11 +15,11 @@ public class BaseModule extends Module {
 
 	public BaseModule() {
 		super(Config.builder, true, false);
-		pushConfig(Config.builder);
+		this.pushConfig();
 		aec3D = new AEC3DFeature(this);
 		fix = new FixFeature(this);
 		tags = new TagsFeature(this);
-		Config.builder.pop();
+		this.popConfig();
 	}
 
 	@Override

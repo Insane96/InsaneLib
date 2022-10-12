@@ -7,7 +7,7 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-public @interface ConfigOption {
-    public String name();
-    public String description() default "";
+// Requires @Label to work
+public @interface ConfigBool {
+    boolean defaultValue();
 }
