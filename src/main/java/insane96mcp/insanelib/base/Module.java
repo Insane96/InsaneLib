@@ -6,6 +6,8 @@ import net.minecraftforge.common.ForgeConfigSpec;
 public class Module {
     private final ForgeConfigSpec.ConfigValue<Boolean> enabledConfig;
 
+    protected final ForgeConfigSpec.Builder builder;
+
     private boolean enabled;
 
     private final boolean canBeDisabled;
@@ -14,16 +16,17 @@ public class Module {
     private final String description;
 
     public Module(final ForgeConfigSpec.Builder builder, boolean enabledByDefault, boolean canBeDisabled) {
+        this.builder = builder;
         if (!this.getClass().isAnnotationPresent(Label.class))
-            LogHelper.error(String.format("%s is missing the Label Annotation.", this.getClass().getName()));
+            LogHelper.error("%s is missing the Label Annotation.".formatted(this.getClass().getName()));
         this.name = this.getClass().getAnnotation(Label.class).name();
         this.description = this.getClass().getAnnotation(Label.class).description();
         this.canBeDisabled = canBeDisabled;
         if (canBeDisabled)
             if (!description.equals(""))
-                enabledConfig = builder.comment(this.description).define("Enable " + this.name + " module", enabledByDefault);
+                enabledConfig = this.builder.comment(this.description).define("Enable " + this.name + " module", enabledByDefault);
             else
-                enabledConfig = builder.define("Enable " + this.name, enabledByDefault);
+                enabledConfig = this.builder.define("Enable " + this.name, enabledByDefault);
         else
             enabledConfig = null;
     }
@@ -55,10 +58,12 @@ public class Module {
             this.enabled = true;
     }
 
-    public void pushConfig(final ForgeConfigSpec.Builder builder) {
-        if (!description.equals(""))
-            builder.comment(this.getDescription()).push(this.getName());
-        else
-            builder.push(this.getName());
+    public void pushConfig() {
+        if (description.equals("")) {
+            this.builder.push(this.getName());
+        }
+        else {
+            this.builder.comment(this.getDescription()).push(this.getName());
+        }
     }
 }

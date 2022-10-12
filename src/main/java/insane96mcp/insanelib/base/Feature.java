@@ -17,29 +17,29 @@ public class Feature {
 
     private boolean enabled;
 
-    public Feature(final ForgeConfigSpec.Builder builder, Module module, boolean enabledByDefault, boolean canBeDisabled) {
+    public Feature(Module module, boolean enabledByDefault, boolean canBeDisabled) {
         if (!this.getClass().isAnnotationPresent(Label.class))
-            LogHelper.error(String.format("%s is missing the Label Annotation.", this.getClass().getName()));
+            LogHelper.error("%s is missing the Label Annotation.".formatted(this.getClass().getName()));
         this.name = this.getClass().getAnnotation(Label.class).name();
         this.description = this.getClass().getAnnotation(Label.class).description();
         this.module = module;
         this.canBeDisabled = canBeDisabled;
         if (canBeDisabled)
             if (!description.equals(""))
-                enabledConfig = builder.comment(getDescription()).define("Enable " + getName(), enabledByDefault);
+                enabledConfig = this.module.builder.comment(getDescription()).define("Enable " + getName(), enabledByDefault);
             else
-                enabledConfig = builder.define("Enable " + getName(), enabledByDefault);
+                enabledConfig = this.module.builder.define("Enable " + getName(), enabledByDefault);
         else
             enabledConfig = null;
         this.registerEvents();
     }
 
-    public Feature(final ForgeConfigSpec.Builder builder, Module module, boolean enabledByDefault) {
-        this(builder, module, enabledByDefault, true);
+    public Feature(Module module, boolean enabledByDefault) {
+        this(module, enabledByDefault, true);
     }
 
-    public Feature(final ForgeConfigSpec.Builder builder, Module module) {
-        this(builder, module, true);
+    public Feature(Module module) {
+        this(module, true);
     }
 
     /**
@@ -86,5 +86,37 @@ public class Feature {
 
             MinecraftForge.EVENT_BUS.register(this);
         }
+    }
+
+    public void push(String name) {
+        this.module.builder.push(name);
+    }
+
+    public void pop() {
+        this.module.builder.pop();
+    }
+
+    public void pop(int count) {
+        this.module.builder.pop(count);
+    }
+
+    public ForgeConfigSpec.BooleanValue defineBool(String name, String comment, boolean defaultValue) {
+        return this.module.builder.comment(comment).define(name, defaultValue);
+    }
+
+    public ForgeConfigSpec.DoubleValue defineDouble(String name, String comment, double defaultValue) {
+        return this.defineDouble(name, comment, defaultValue, Double.MIN_VALUE, Double.MAX_VALUE);
+    }
+
+    public ForgeConfigSpec.DoubleValue defineDouble(String name, String comment, double defaultValue, double min, double max) {
+        return this.module.builder.comment(comment).defineInRange(name, defaultValue, min, max);
+    }
+
+    public ForgeConfigSpec.IntValue defineInt(String name, String comment, int defaultValue) {
+        return this.defineInt(name, comment, defaultValue, Integer.MIN_VALUE, Integer.MAX_VALUE);
+    }
+
+    public ForgeConfigSpec.IntValue defineInt(String name, String comment, int defaultValue, int min, int max) {
+        return this.module.builder.comment(comment).defineInRange(name, defaultValue, min, max);
     }
 }
