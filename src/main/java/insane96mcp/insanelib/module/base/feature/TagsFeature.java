@@ -3,11 +3,10 @@ package insane96mcp.insanelib.module.base.feature;
 import insane96mcp.insanelib.base.Feature;
 import insane96mcp.insanelib.base.Label;
 import insane96mcp.insanelib.base.Module;
-import insane96mcp.insanelib.setup.Config;
 import insane96mcp.insanelib.setup.ILStrings;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MobSpawnType;
-import net.minecraft.world.entity.monster.Creeper;
 import net.minecraft.world.level.Explosion;
 import net.minecraftforge.event.entity.living.LivingExperienceDropEvent;
 import net.minecraftforge.event.entity.living.LivingSpawnEvent;
@@ -19,7 +18,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 public class TagsFeature extends Feature {
 
 	public TagsFeature(Module module) {
-		super(Config.builder, module, true, false);
+		super(module, true, false);
 	}
 
 	@Override
@@ -33,10 +32,10 @@ public class TagsFeature extends Feature {
 			return;
 
 		Explosion explosion = event.getExplosion();
-		if (!(explosion.getExploder() instanceof Creeper creeper))
+		if (!(explosion.getExploder() instanceof LivingEntity entity))
 			return;
 
-		CompoundTag compoundNBT = creeper.getPersistentData();
+		CompoundTag compoundNBT = entity.getPersistentData();
 		if (compoundNBT.getBoolean(ILStrings.Tags.EXPLOSION_CAUSES_FIRE))
 			explosion.fire = true;
 	}
