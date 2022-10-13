@@ -12,7 +12,7 @@ public abstract class ConfigOption<T> {
     public ConfigOption(ForgeConfigSpec.Builder builder, String name, String description) {
         this.builder = builder;
         this.name = name;
-        if (!description.equals("")) {
+        if (!"".equals(description)) {
             builder.comment(description);
         }
     }
@@ -22,6 +22,24 @@ public abstract class ConfigOption<T> {
     @Override
     public String toString() {
         return "ConfigOpt{name='%s'}".formatted(name);
+    }
+
+    public static class GenericOption extends ConfigOption<Object> {
+
+        public final ForgeConfigSpec.ConfigValue<?> valueConfig;
+
+        public GenericOption(ForgeConfigSpec.Builder builder, String name, String description, Object defaultValue, boolean isEnum) {
+            super(builder, name, description);
+            if (isEnum)
+                valueConfig = builder.defineEnum(name, defaultValue);
+            else
+                valueConfig = builder.define(name, defaultValue);
+        }
+
+        @Override
+        public Object get() {
+            return this.valueConfig.get();
+        }
     }
 
     public static class DoubleOption extends ConfigOption<java.lang.Double> {
@@ -90,20 +108,6 @@ public abstract class ConfigOption<T> {
         }
 
         public List<? extends String> get() {
-            return valueConfig.get();
-        }
-    }
-
-    public static class EnumOption extends ConfigOption<Enum<?>> {
-
-        public final ForgeConfigSpec.EnumValue<?> valueConfig;
-
-        public EnumOption(ForgeConfigSpec.Builder builder, String name, String description, Enum<?> defaultValue) {
-            super(builder, name, description);
-            valueConfig = builder.defineEnum(this.name, defaultValue);
-        }
-
-        public Enum<?> get() {
             return valueConfig.get();
         }
     }

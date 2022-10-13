@@ -128,17 +128,16 @@ public class Feature {
                     ConfigOption.StringListOption listOption = new ConfigOption.StringListOption(this.getBuilder(), name, description, defaultValue);
                     this.configOptions.put(field, listOption);
                 }
-                else if (field.getType().isEnum())
-                {
-                    Enum defaultValue = (Enum) field.get(null);
-                    ConfigOption.EnumOption enumOption = new ConfigOption.EnumOption(this.getBuilder(), name, description, defaultValue);
-                    this.configOptions.put(field, enumOption);
-                }
                 else if (field.getType().isAssignableFrom(MinMax.class))
                 {
                     MinMax defaultValue = (MinMax) field.get(null);
                     MinMax.Config minMaxConfig = new MinMax.Config(this.getBuilder(), name, description, defaultValue, min, max);
                     this.configOptions.put(field, minMaxConfig);
+                }
+                else {
+                    Object defaultValue = field.get(null);
+                    ConfigOption.GenericOption genericOption = new ConfigOption.GenericOption(this.getBuilder(), name, description, defaultValue);
+                    this.configOptions.put(field, genericOption);
                 }
             }
         }

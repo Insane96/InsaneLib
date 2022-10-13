@@ -4,7 +4,6 @@ import insane96mcp.insanelib.base.Feature;
 import insane96mcp.insanelib.base.Label;
 import insane96mcp.insanelib.base.Module;
 import insane96mcp.insanelib.base.config.Config;
-import insane96mcp.insanelib.config.MinMax;
 import insane96mcp.insanelib.entity.AreaEffectCloud3DEntity;
 import net.minecraft.server.TickTask;
 import net.minecraft.util.thread.BlockableEventLoop;
@@ -23,9 +22,9 @@ public class AEC3DFeature extends Feature {
 	@Label(name = "Replace Vanilla Area of Effect Clouds", description = "If true, vanilla Area of Effect Clouds will be replaced with 3D versions of them")
 	public static Boolean replaceVanillaAEC = true;
 
-	@Config(min = 1, max = 10)
-	@Label(name = "Test Min Max", description = "Min max testtesttesttesttesttesttesttesttest")
-	public static MinMax testMinMax = new MinMax(4, 6);
+	@Config
+	@Label(name = "Test Enum", description = "Enum testtesttesttesttesttest")
+	public static TestEnum testEnum = TestEnum.TWO;
 
 	public AEC3DFeature(Module module) {
 		super(module);
@@ -51,5 +50,11 @@ public class AEC3DFeature extends Feature {
 
 		BlockableEventLoop<? super TickTask> executor = LogicalSidedProvider.WORKQUEUE.get(event.getLevel().isClientSide ? LogicalSide.CLIENT : LogicalSide.SERVER);
 		executor.tell(new TickTask(0, () -> areaEffectCloud3D.level.addFreshEntity(areaEffectCloud3D)));
+	}
+
+	public enum TestEnum {
+		ONE,
+		TWO,
+		THREE
 	}
 }
