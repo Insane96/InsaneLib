@@ -27,16 +27,16 @@ public class FixFeature extends Feature {
 
 	@Config
 	@Label(name = "Fix Follow Range", description = "If true, mobs will have their follow range fixed. https://bugs.mojang.com/browse/MC-145656")
-	public static boolean fixFollowRange = true;
+	public static Boolean fixFollowRange = true;
 	@Config
 	@Label(name = "Remove Zombies Bonus Health", description = "Removes the random bonus health given to Leader Zombies. In vanilla it's useless since doesn't work. https://minecraft.fandom.com/wiki/Attribute#Vanilla_modifiers")
-	public static boolean removeZombiesBonusHealth = true;
+	public static Boolean removeZombiesBonusHealth = true;
 	@Config
 	@Label(name = "Fix Flying Speed", description = "When affected by slowness the player can still jump really far away. When true, jumps length will be calculated based off player's movement speed.")
-	public static boolean fixFlyingSpeed = true;
+	public static Boolean fixFlyingSpeed = true;
 	@Config
 	@Label(name = "Fix Jump Movement Factor Slowdown Only", description = "The fix for Jump Movement Factor is applied only when the player is slowed down. If false, the player will jump really farther when going faster.")
-	public static boolean slowdownOnly = true;
+	public static Boolean slowdownOnly = true;
 
 	public FixFeature(Module module) {
 		super(module);

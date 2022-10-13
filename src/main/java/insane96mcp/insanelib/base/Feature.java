@@ -99,28 +99,40 @@ public class Feature {
                 if (field.getType().isAssignableFrom(Double.class))
                 {
                     double defaultValue = (double) field.get(null);
-                    ConfigOption.Double doubleValue = new ConfigOption.Double(this.getBuilder(), name, description, defaultValue, min, max);
-                    this.configOptions.put(field, doubleValue);
+                    ConfigOption.DoubleOption doubleOption = new ConfigOption.DoubleOption(this.getBuilder(), name, description, defaultValue, min, max);
+                    this.configOptions.put(field, doubleOption);
                 }
                 else if (field.getType().isAssignableFrom(Integer.class))
                 {
                     int defaultValue = (int) field.get(null);
                     if (min == Double.MIN_VALUE) min = Integer.MIN_VALUE;
                     if (max == Double.MAX_VALUE) min = Integer.MAX_VALUE;
-                    ConfigOption.Int intValue = new ConfigOption.Int(this.getBuilder(), name, description, defaultValue, (int) min, (int) max);
-                    this.configOptions.put(field, intValue);
+                    ConfigOption.IntOption intOption = new ConfigOption.IntOption(this.getBuilder(), name, description, defaultValue, (int) min, (int) max);
+                    this.configOptions.put(field, intOption);
                 }
                 else if (field.getType().isAssignableFrom(Boolean.class))
                 {
                     boolean defaultValue = (boolean) field.get(null);
-                    ConfigOption.Bool booleanValue = new ConfigOption.Bool(this.getBuilder(), name, description, defaultValue);
-                    this.configOptions.put(field, booleanValue);
+                    ConfigOption.BoolOption boolOption = new ConfigOption.BoolOption(this.getBuilder(), name, description, defaultValue);
+                    this.configOptions.put(field, boolOption);
+                }
+                else if (field.getType().isAssignableFrom(String.class))
+                {
+                    String defaultValue = (String) field.get(null);
+                    ConfigOption.StringOption stringOption = new ConfigOption.StringOption(this.getBuilder(), name, description, defaultValue);
+                    this.configOptions.put(field, stringOption);
                 }
                 else if (field.getType().isAssignableFrom(List.class))
                 {
                     List<String> defaultValue = (List<String>) field.get(null);
-                    ConfigOption.StringList listValue = new ConfigOption.StringList(this.getBuilder(), name, description, defaultValue);
-                    this.configOptions.put(field, listValue);
+                    ConfigOption.StringListOption listOption = new ConfigOption.StringListOption(this.getBuilder(), name, description, defaultValue);
+                    this.configOptions.put(field, listOption);
+                }
+                else if (field.getType().isEnum())
+                {
+                    Enum defaultValue = (Enum) field.get(null);
+                    ConfigOption.EnumOption enumOption = new ConfigOption.EnumOption(this.getBuilder(), name, description, defaultValue);
+                    this.configOptions.put(field, enumOption);
                 }
                 else if (field.getType().isAssignableFrom(MinMax.class))
                 {
@@ -142,6 +154,12 @@ public class Feature {
         else
             this.enabled = true;
 
+        readConfigOptions();
+    }
+
+    private void readConfigOptions() {
+        if (this.configOptions.size() == 0)
+            return;
         String curField = "";
         try {
             for(Field field : this.getClass().getDeclaredFields())
@@ -155,7 +173,7 @@ public class Feature {
             }
         }
         catch (Exception e) {
-            LogHelper.error("Failed to set config option for %s", curField);
+            throw new RuntimeException("Failed to set config option for %s".formatted(curField), e);
         }
     }
 

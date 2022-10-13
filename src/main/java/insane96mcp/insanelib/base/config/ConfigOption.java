@@ -24,11 +24,11 @@ public abstract class ConfigOption<T> {
         return "ConfigOpt{name='%s'}".formatted(name);
     }
 
-    public static class Double extends ConfigOption<java.lang.Double> {
+    public static class DoubleOption extends ConfigOption<java.lang.Double> {
 
         public final ForgeConfigSpec.DoubleValue valueConfig;
 
-        public Double(ForgeConfigSpec.Builder builder, String name, String description, double defaultValue, double min, double max) {
+        public DoubleOption(ForgeConfigSpec.Builder builder, String name, String description, double defaultValue, double min, double max) {
             super(builder, name, description);
             valueConfig = builder.defineInRange(name, defaultValue, min, max);
         }
@@ -38,11 +38,11 @@ public abstract class ConfigOption<T> {
         }
     }
 
-    public static class Int extends ConfigOption<Integer> {
+    public static class IntOption extends ConfigOption<Integer> {
 
         public final ForgeConfigSpec.IntValue valueConfig;
 
-        public Int(ForgeConfigSpec.Builder builder, String name, String description, int defaultValue, int min, int max) {
+        public IntOption(ForgeConfigSpec.Builder builder, String name, String description, int defaultValue, int min, int max) {
             super(builder, name, description);
             valueConfig = builder.defineInRange(name, defaultValue, min, max);
         }
@@ -52,11 +52,11 @@ public abstract class ConfigOption<T> {
         }
     }
 
-    public static class Bool extends ConfigOption<Boolean> {
+    public static class BoolOption extends ConfigOption<Boolean> {
 
         public final ForgeConfigSpec.BooleanValue valueConfig;
 
-        public Bool(ForgeConfigSpec.Builder builder, String name, String description, boolean defaultValue) {
+        public BoolOption(ForgeConfigSpec.Builder builder, String name, String description, boolean defaultValue) {
             super(builder, name, description);
             valueConfig = builder.define(name, defaultValue);
         }
@@ -66,16 +66,44 @@ public abstract class ConfigOption<T> {
         }
     }
 
-    public static class StringList extends ConfigOption<List<? extends String>> {
+    public static class StringOption extends ConfigOption<String> {
+
+        public final ForgeConfigSpec.ConfigValue<String> valueConfig;
+
+        public StringOption(ForgeConfigSpec.Builder builder, String name, String description, String defaultValue) {
+            super(builder, name, description);
+            valueConfig = builder.define(this.name, defaultValue);
+        }
+
+        public String get() {
+            return valueConfig.get();
+        }
+    }
+
+    public static class StringListOption extends ConfigOption<List<? extends String>> {
 
         public final ForgeConfigSpec.ConfigValue<List<? extends String>> valueConfig;
 
-        public StringList(ForgeConfigSpec.Builder builder, String name, String description, List<String> defaultValue) {
+        public StringListOption(ForgeConfigSpec.Builder builder, String name, String description, List<String> defaultValue) {
             super(builder, name, description);
             valueConfig = builder.defineList(this.name, defaultValue, o -> o instanceof String);
         }
 
         public List<? extends String> get() {
+            return valueConfig.get();
+        }
+    }
+
+    public static class EnumOption extends ConfigOption<Enum<?>> {
+
+        public final ForgeConfigSpec.EnumValue<?> valueConfig;
+
+        public EnumOption(ForgeConfigSpec.Builder builder, String name, String description, Enum<?> defaultValue) {
+            super(builder, name, description);
+            valueConfig = builder.defineEnum(this.name, defaultValue);
+        }
+
+        public Enum<?> get() {
             return valueConfig.get();
         }
     }
