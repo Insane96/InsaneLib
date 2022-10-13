@@ -35,7 +35,7 @@ public class AEC3DFeature extends Feature {
 	@SubscribeEvent
 	public void onSpawn(EntityJoinLevelEvent event) {
 		if (!this.isEnabled()
-				|| !this.replaceVanillaAEC
+				|| !replaceVanillaAEC
 				|| !event.getEntity().getType().equals(EntityType.AREA_EFFECT_CLOUD))
 			return;
 

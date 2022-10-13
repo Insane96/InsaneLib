@@ -20,6 +20,7 @@ import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
+import java.util.Objects;
 import java.util.Set;
 
 @Label(name = "Fixes", description = "A few fixes")
@@ -61,7 +62,7 @@ public class FixFeature extends Feature {
 	}
 
 	private void removeZombiesBonusHealth(Entity entity) {
-		if (!this.removeZombiesBonusHealth
+		if (!removeZombiesBonusHealth
 				|| !(entity instanceof Zombie zombie)
 				|| zombie.getAttribute(Attributes.MAX_HEALTH) == null)
 			return;
@@ -69,11 +70,11 @@ public class FixFeature extends Feature {
 		Set<AttributeModifier> modifiers = zombie.getAttribute(Attributes.MAX_HEALTH).getModifiers();
 		for (AttributeModifier attributeModifier : modifiers)
 			if (attributeModifier.getName().equals("Leader zombie bonus"))
-				zombie.getAttribute(Attributes.MAX_HEALTH).removeModifier(attributeModifier.getId());
+				Objects.requireNonNull(zombie.getAttribute(Attributes.MAX_HEALTH)).removeModifier(attributeModifier.getId());
 	}
 
 	private void fixFollowRange(Entity entity) {
-		if (!this.fixFollowRange
+		if (!fixFollowRange
 				|| !(entity instanceof Mob mobEntity))
 			 return;
 
@@ -90,7 +91,7 @@ public class FixFeature extends Feature {
 	@SubscribeEvent(priority = EventPriority.LOWEST)
 	public void onUpdate(TickEvent.PlayerTickEvent event) {
 		if (!this.isEnabled()
-				|| !this.fixFlyingSpeed
+				|| !fixFlyingSpeed
 				|| event.phase != TickEvent.Phase.START)
 			return;
 
