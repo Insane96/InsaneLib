@@ -1,5 +1,6 @@
 package insane96mcp.insanelib.config;
 
+import insane96mcp.insanelib.base.config.ConfigOpt;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraftforge.common.ForgeConfigSpec;
@@ -31,38 +32,20 @@ public class MinMax {
         return Mth.nextInt(random, (int) this.min, (int) this.max - 1);
     }
 
-    public static class Config {
-        private final ForgeConfigSpec.Builder builder;
+    public static class Config extends ConfigOpt<MinMax> {
 
-        private ForgeConfigSpec.ConfigValue<Double> minConfig;
-        private ForgeConfigSpec.ConfigValue<Double> maxConfig;
+        private ForgeConfigSpec.DoubleValue minConfig;
+        private ForgeConfigSpec.DoubleValue maxConfig;
 
-        public Config(ForgeConfigSpec.Builder builder, String optionName, String description) {
-            this.builder = builder;
-            builder.comment(description).push(optionName);
-        }
-
-        public Config setMin(double rangeMin, double rangeMax, double defaultValue) {
-            minConfig = builder.defineInRange("Minimum", defaultValue, rangeMin, rangeMax);
-            return this;
-        }
-
-        public Config setMax(double rangeMin, double rangeMax, double defaultValue) {
-            maxConfig = builder.defineInRange("Maximum", defaultValue, rangeMin, rangeMax);
-            return this;
-        }
-
-        public Config setMinMax(double rangeMin, double rangeMax, MinMax defaultValue) {
+        public Config(ForgeConfigSpec.Builder builder, String name, String description, MinMax defaultValue, double rangeMin, double rangeMax) {
+            super(builder, name, description);
+            builder.push(name);
             minConfig = builder.defineInRange("Minimum", defaultValue.min, rangeMin, rangeMax);
             maxConfig = builder.defineInRange("Maximum", defaultValue.max, rangeMin, rangeMax);
-            return this;
-        }
-
-        public Config build() {
             builder.pop();
-            return this;
         }
 
+        @Override
         public MinMax get() {
             return new MinMax(minConfig.get(), maxConfig.get());
         }

@@ -1,9 +1,7 @@
 package insane96mcp.insanelib.base;
 
-import insane96mcp.insanelib.base.config.ConfigBool;
-import insane96mcp.insanelib.base.config.ConfigDouble;
-import insane96mcp.insanelib.base.config.ConfigInt;
-import insane96mcp.insanelib.base.config.ConfigOption;
+import insane96mcp.insanelib.base.config.*;
+import insane96mcp.insanelib.config.MinMax;
 import insane96mcp.insanelib.util.LogHelper;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.MinecraftForge;
@@ -12,6 +10,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.HashMap;
+import java.util.List;
 
 public class Feature {
     private final String name;
@@ -76,7 +75,7 @@ public class Feature {
         return this.module.builder;
     }
 
-    HashMap<Field, ForgeConfigSpec.ConfigValue<?>> configOptions = new HashMap<>();
+    HashMap<Field, ConfigOpt<?>> configOptions = new HashMap<>();
 
     private void loadConfigOptions() {
         this.pushConfig();
@@ -98,42 +97,50 @@ public class Feature {
                     double defaultValue = (double) field.get(null);
                     double min = field.getAnnotation(ConfigDouble.class).min();
                     double max = field.getAnnotation(ConfigDouble.class).max();
-                    if (!description.equals("")) {
-                        ForgeConfigSpec.DoubleValue doubleValue = this.module.builder.comment(description).defineInRange(name, defaultValue, min, max);
-                        this.configOptions.put(field, doubleValue);
-                    }
+                    ConfigOpt.Double doubleValue = new ConfigOpt.Double(this.getBuilder(), name, description, defaultValue, min, max);
+                    this.configOptions.put(field, doubleValue);
                 }
                 else if (field.isAnnotationPresent(ConfigInt.class))
                 {
                     int defaultValue = (int) field.get(null);
                     int min = field.getAnnotation(ConfigInt.class).min();
                     int max = field.getAnnotation(ConfigInt.class).max();
-                    if (!description.equals("")) {
-                        ForgeConfigSpec.IntValue intValue = this.module.builder.comment(description).defineInRange(name, defaultValue, min, max);
-                        this.configOptions.put(field, intValue);
-                    }
+                    ConfigOpt.Int intValue = new ConfigOpt.Int(this.getBuilder(), name, description, defaultValue, min, max);
+                    this.configOptions.put(field, intValue);
                 }
                 else if (field.isAnnotationPresent(ConfigBool.class))
                 {
                     boolean defaultValue = (boolean) field.get(null);
+                    ConfigOpt.Bool booleanValue = new ConfigOpt.Bool(this.getBuilder(), name, description, defaultValue);
+                    this.configOptions.put(field, booleanValue);
+                }
+                else if (field.isAnnotationPresent(ConfigList.class))
+                {
+                    List<String> defaultValue = (List<String>) field.get(null);
+                    ConfigOpt.StringList listValue = new ConfigOpt.StringList(this.getBuilder(), name, description, defaultValue);
+                    this.configOptions.put(field, listValue);
+                }
+                else if (field.isAnnotationPresent(ConfigMinMax.class))
+                {
+                    MinMax defaultValue = (MinMax) field.get(null);
+                    double min = field.getAnnotation(ConfigMinMax.class).min();
+                    double max = field.getAnnotation(ConfigMinMax.class).max();
+                    MinMax.Config minMaxConfig = new MinMax.Config(this.getBuilder(), name, description, defaultValue, min, max);
+                    this.configOptions.put(field, minMaxConfig);
+                }
+                /*else if (field.isAnnotationPresent(ConfigMinMax.class))
+                {
+                    double min = field.getAnnotation(ConfigMinMax.class).defaultMinValue();
+                    double max = field.getAnnotation(ConfigMinMax.class).defaultMaxValue();
                     if (!description.equals("")) {
                         ForgeConfigSpec.BooleanValue booleanValue = this.module.builder.comment(description).define(name, defaultValue);
                         this.configOptions.put(field, booleanValue);
                     }
-                }
-            /*else if (field.isAnnotationPresent(ConfigMinMax.class))
-            {
-                double min = field.getAnnotation(ConfigMinMax.class).defaultMinValue();
-                double max = field.getAnnotation(ConfigMinMax.class).defaultMaxValue();
-                if (!description.equals("")) {
-                    ForgeConfigSpec.BooleanValue booleanValue = this.module.builder.comment(description).define(name, defaultValue);
-                    this.configOptions.put(field, booleanValue);
-                }
-            }*/
+                }*/
             }
         }
-        catch (IllegalAccessException e) {
-            throw new RuntimeException("Failed to load Feature " + this.name, e);
+        catch (Exception e) {
+            throw new RuntimeException("Failed to load Feature '%s'".formatted(this.name), e);
         }
         this.popConfig();
     }
@@ -152,11 +159,11 @@ public class Feature {
                     continue;
                 }
 
-                curField = String.join(".", this.configOptions.get(field).getPath());
+                curField = this.configOptions.get(field).toString();
                 field.set(this, this.configOptions.get(field).get());
             }
         }
-        catch (IllegalAccessException e) {
+        catch (Exception e) {
             LogHelper.error("Failed to set config option for %s", curField);
         }
     }
