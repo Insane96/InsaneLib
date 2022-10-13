@@ -1,6 +1,6 @@
 package insane96mcp.insanelib.config;
 
-import insane96mcp.insanelib.base.config.ConfigOpt;
+import insane96mcp.insanelib.base.config.ConfigOption;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraftforge.common.ForgeConfigSpec;
@@ -32,7 +32,7 @@ public class MinMax {
         return Mth.nextInt(random, (int) this.min, (int) this.max - 1);
     }
 
-    public static class Config extends ConfigOpt<MinMax> {
+    public static class Config extends ConfigOption<MinMax> {
 
         private final ForgeConfigSpec.DoubleValue minConfig;
         private final ForgeConfigSpec.DoubleValue maxConfig;

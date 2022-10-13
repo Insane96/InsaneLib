@@ -1,6 +1,6 @@
 package insane96mcp.insanelib.base;
 
-import insane96mcp.insanelib.base.config.ConfigOpt;
+import insane96mcp.insanelib.base.config.Config;
 import insane96mcp.insanelib.base.config.ConfigOption;
 import insane96mcp.insanelib.config.MinMax;
 import insane96mcp.insanelib.util.LogHelper;
@@ -76,14 +76,14 @@ public class Feature {
         return this.module.builder;
     }
 
-    HashMap<Field, ConfigOpt<?>> configOptions = new HashMap<>();
+    HashMap<Field, ConfigOption<?>> configOptions = new HashMap<>();
 
     private void loadConfigOptions() {
         this.pushConfig();
         try {
             for (Field field : this.getClass().getDeclaredFields())
             {
-                if (!field.isAnnotationPresent(ConfigOption.class))
+                if (!field.isAnnotationPresent(Config.class))
                     continue;
 
                 if (!field.isAnnotationPresent(Label.class)) {
@@ -93,13 +93,13 @@ public class Feature {
 
                 String name = field.getAnnotation(Label.class).name();
                 String description = field.getAnnotation(Label.class).description();
-                double min = field.getAnnotation(ConfigOption.class).min();
-                double max = field.getAnnotation(ConfigOption.class).max();
+                double min = field.getAnnotation(Config.class).min();
+                double max = field.getAnnotation(Config.class).max();
 
                 if (field.getType().isAssignableFrom(Double.class))
                 {
                     double defaultValue = (double) field.get(null);
-                    ConfigOpt.Double doubleValue = new ConfigOpt.Double(this.getBuilder(), name, description, defaultValue, min, max);
+                    ConfigOption.Double doubleValue = new ConfigOption.Double(this.getBuilder(), name, description, defaultValue, min, max);
                     this.configOptions.put(field, doubleValue);
                 }
                 else if (field.getType().isAssignableFrom(Integer.class))
@@ -107,19 +107,19 @@ public class Feature {
                     int defaultValue = (int) field.get(null);
                     if (min == Double.MIN_VALUE) min = Integer.MIN_VALUE;
                     if (max == Double.MAX_VALUE) min = Integer.MAX_VALUE;
-                    ConfigOpt.Int intValue = new ConfigOpt.Int(this.getBuilder(), name, description, defaultValue, (int) min, (int) max);
+                    ConfigOption.Int intValue = new ConfigOption.Int(this.getBuilder(), name, description, defaultValue, (int) min, (int) max);
                     this.configOptions.put(field, intValue);
                 }
                 else if (field.getType().isAssignableFrom(Boolean.class))
                 {
                     boolean defaultValue = (boolean) field.get(null);
-                    ConfigOpt.Bool booleanValue = new ConfigOpt.Bool(this.getBuilder(), name, description, defaultValue);
+                    ConfigOption.Bool booleanValue = new ConfigOption.Bool(this.getBuilder(), name, description, defaultValue);
                     this.configOptions.put(field, booleanValue);
                 }
                 else if (field.getType().isAssignableFrom(List.class))
                 {
                     List<String> defaultValue = (List<String>) field.get(null);
-                    ConfigOpt.StringList listValue = new ConfigOpt.StringList(this.getBuilder(), name, description, defaultValue);
+                    ConfigOption.StringList listValue = new ConfigOption.StringList(this.getBuilder(), name, description, defaultValue);
                     this.configOptions.put(field, listValue);
                 }
                 else if (field.getType().isAssignableFrom(MinMax.class))
@@ -146,7 +146,7 @@ public class Feature {
         try {
             for(Field field : this.getClass().getDeclaredFields())
             {
-                if (!field.isAnnotationPresent(ConfigOption.class)) {
+                if (!field.isAnnotationPresent(Config.class)) {
                     continue;
                 }
 

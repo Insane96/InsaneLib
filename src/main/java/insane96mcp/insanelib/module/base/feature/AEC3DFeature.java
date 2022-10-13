@@ -3,7 +3,7 @@ package insane96mcp.insanelib.module.base.feature;
 import insane96mcp.insanelib.base.Feature;
 import insane96mcp.insanelib.base.Label;
 import insane96mcp.insanelib.base.Module;
-import insane96mcp.insanelib.base.config.ConfigOption;
+import insane96mcp.insanelib.base.config.Config;
 import insane96mcp.insanelib.config.MinMax;
 import insane96mcp.insanelib.entity.AreaEffectCloud3DEntity;
 import net.minecraft.server.TickTask;
@@ -19,11 +19,11 @@ import net.minecraftforge.fml.LogicalSide;
 @Label(name = "Area Effect Cloud 3D", description = "No more boring 2D Area of Effect Clouds")
 public class AEC3DFeature extends Feature {
 
-	@ConfigOption
+	@Config
 	@Label(name = "Replace Vanilla Area of Effect Clouds", description = "If true, vanilla Area of Effect Clouds will be replaced with 3D versions of them")
 	public static Boolean replaceVanillaAEC = true;
 
-	@ConfigOption(min = 1, max = 10)
+	@Config(min = 1, max = 10)
 	@Label(name = "Test Min Max", description = "Min max testtesttesttesttesttesttesttesttest")
 	public static MinMax testMinMax = new MinMax(4, 6);
 
