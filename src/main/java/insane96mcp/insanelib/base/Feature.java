@@ -1,6 +1,7 @@
 package insane96mcp.insanelib.base;
 
-import insane96mcp.insanelib.base.config.*;
+import insane96mcp.insanelib.base.config.ConfigOpt;
+import insane96mcp.insanelib.base.config.ConfigOption;
 import insane96mcp.insanelib.config.MinMax;
 import insane96mcp.insanelib.util.LogHelper;
 import net.minecraftforge.common.ForgeConfigSpec;
@@ -92,51 +93,41 @@ public class Feature {
 
                 String name = field.getAnnotation(Label.class).name();
                 String description = field.getAnnotation(Label.class).description();
-                if (field.isAnnotationPresent(ConfigDouble.class))
+                double min = field.getAnnotation(ConfigOption.class).min();
+                double max = field.getAnnotation(ConfigOption.class).max();
+
+                if (field.getType().isAssignableFrom(Double.class))
                 {
                     double defaultValue = (double) field.get(null);
-                    double min = field.getAnnotation(ConfigDouble.class).min();
-                    double max = field.getAnnotation(ConfigDouble.class).max();
                     ConfigOpt.Double doubleValue = new ConfigOpt.Double(this.getBuilder(), name, description, defaultValue, min, max);
                     this.configOptions.put(field, doubleValue);
                 }
-                else if (field.isAnnotationPresent(ConfigInt.class))
+                else if (field.getType().isAssignableFrom(Integer.class))
                 {
                     int defaultValue = (int) field.get(null);
-                    int min = field.getAnnotation(ConfigInt.class).min();
-                    int max = field.getAnnotation(ConfigInt.class).max();
-                    ConfigOpt.Int intValue = new ConfigOpt.Int(this.getBuilder(), name, description, defaultValue, min, max);
+                    if (min == Double.MIN_VALUE) min = Integer.MIN_VALUE;
+                    if (max == Double.MAX_VALUE) min = Integer.MAX_VALUE;
+                    ConfigOpt.Int intValue = new ConfigOpt.Int(this.getBuilder(), name, description, defaultValue, (int) min, (int) max);
                     this.configOptions.put(field, intValue);
                 }
-                else if (field.isAnnotationPresent(ConfigBool.class))
+                else if (field.getType().isAssignableFrom(Boolean.class))
                 {
                     boolean defaultValue = (boolean) field.get(null);
                     ConfigOpt.Bool booleanValue = new ConfigOpt.Bool(this.getBuilder(), name, description, defaultValue);
                     this.configOptions.put(field, booleanValue);
                 }
-                else if (field.isAnnotationPresent(ConfigList.class))
+                else if (field.getType().isAssignableFrom(List.class))
                 {
                     List<String> defaultValue = (List<String>) field.get(null);
                     ConfigOpt.StringList listValue = new ConfigOpt.StringList(this.getBuilder(), name, description, defaultValue);
                     this.configOptions.put(field, listValue);
                 }
-                else if (field.isAnnotationPresent(ConfigMinMax.class))
+                else if (field.getType().isAssignableFrom(MinMax.class))
                 {
                     MinMax defaultValue = (MinMax) field.get(null);
-                    double min = field.getAnnotation(ConfigMinMax.class).min();
-                    double max = field.getAnnotation(ConfigMinMax.class).max();
                     MinMax.Config minMaxConfig = new MinMax.Config(this.getBuilder(), name, description, defaultValue, min, max);
                     this.configOptions.put(field, minMaxConfig);
                 }
-                /*else if (field.isAnnotationPresent(ConfigMinMax.class))
-                {
-                    double min = field.getAnnotation(ConfigMinMax.class).defaultMinValue();
-                    double max = field.getAnnotation(ConfigMinMax.class).defaultMaxValue();
-                    if (!description.equals("")) {
-                        ForgeConfigSpec.BooleanValue booleanValue = this.module.builder.comment(description).define(name, defaultValue);
-                        this.configOptions.put(field, booleanValue);
-                    }
-                }*/
             }
         }
         catch (Exception e) {

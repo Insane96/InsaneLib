@@ -6,15 +6,14 @@ import java.util.List;
 
 public abstract class ConfigOpt<T> {
 
-    String name, description;
+    String name;
     ForgeConfigSpec.Builder builder;
 
     public ConfigOpt(ForgeConfigSpec.Builder builder, String name, String description) {
         this.builder = builder;
         this.name = name;
-        this.description = description;
-        if (!this.description.equals("")) {
-            builder.comment(this.description);
+        if (!description.equals("")) {
+            builder.comment(description);
         }
     }
 
@@ -22,15 +21,12 @@ public abstract class ConfigOpt<T> {
 
     @Override
     public String toString() {
-        return "ConfigOpt{" +
-                "name='" + name + '\'' +
-                ", description='" + description + '\'' +
-                '}';
+        return "ConfigOpt{name='%s'}".formatted(name);
     }
 
     public static class Double extends ConfigOpt<java.lang.Double> {
 
-        public ForgeConfigSpec.DoubleValue valueConfig;
+        public final ForgeConfigSpec.DoubleValue valueConfig;
 
         public Double(ForgeConfigSpec.Builder builder, String name, String description, double defaultValue, double min, double max) {
             super(builder, name, description);
@@ -44,7 +40,7 @@ public abstract class ConfigOpt<T> {
 
     public static class Int extends ConfigOpt<Integer> {
 
-        public ForgeConfigSpec.IntValue valueConfig;
+        public final ForgeConfigSpec.IntValue valueConfig;
 
         public Int(ForgeConfigSpec.Builder builder, String name, String description, int defaultValue, int min, int max) {
             super(builder, name, description);
@@ -58,7 +54,7 @@ public abstract class ConfigOpt<T> {
 
     public static class Bool extends ConfigOpt<Boolean> {
 
-        public ForgeConfigSpec.BooleanValue valueConfig;
+        public final ForgeConfigSpec.BooleanValue valueConfig;
 
         public Bool(ForgeConfigSpec.Builder builder, String name, String description, boolean defaultValue) {
             super(builder, name, description);
@@ -72,7 +68,7 @@ public abstract class ConfigOpt<T> {
 
     public static class StringList extends ConfigOpt<List<? extends String>> {
 
-        public ForgeConfigSpec.ConfigValue<List<? extends String>> valueConfig;
+        public final ForgeConfigSpec.ConfigValue<List<? extends String>> valueConfig;
 
         public StringList(ForgeConfigSpec.Builder builder, String name, String description, List<String> defaultValue) {
             super(builder, name, description);

@@ -3,7 +3,6 @@ package insane96mcp.insanelib.module.base.feature;
 import insane96mcp.insanelib.base.Feature;
 import insane96mcp.insanelib.base.Label;
 import insane96mcp.insanelib.base.Module;
-import insane96mcp.insanelib.base.config.ConfigBool;
 import insane96mcp.insanelib.base.config.ConfigOption;
 import insane96mcp.insanelib.util.MCUtils;
 import net.minecraft.world.entity.Entity;
@@ -28,19 +27,15 @@ public class FixFeature extends Feature {
 
 	@ConfigOption
 	@Label(name = "Fix Follow Range", description = "If true, mobs will have their follow range fixed. https://bugs.mojang.com/browse/MC-145656")
-	@ConfigBool
 	public static boolean fixFollowRange = true;
 	@ConfigOption
 	@Label(name = "Remove Zombies Bonus Health", description = "Removes the random bonus health given to Leader Zombies. In vanilla it's useless since doesn't work. https://minecraft.fandom.com/wiki/Attribute#Vanilla_modifiers")
-	@ConfigBool
 	public static boolean removeZombiesBonusHealth = true;
 	@ConfigOption
 	@Label(name = "Fix Flying Speed", description = "When affected by slowness the player can still jump really far away. When true, jumps length will be calculated based off player's movement speed.")
-	@ConfigBool
 	public static boolean fixFlyingSpeed = true;
 	@ConfigOption
 	@Label(name = "Fix Jump Movement Factor Slowdown Only", description = "The fix for Jump Movement Factor is applied only when the player is slowed down. If false, the player will jump really farther when going faster.")
-	@ConfigBool
 	public static boolean slowdownOnly = true;
 
 	public FixFeature(Module module) {

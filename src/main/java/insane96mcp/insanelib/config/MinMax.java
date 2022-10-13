@@ -34,8 +34,8 @@ public class MinMax {
 
     public static class Config extends ConfigOpt<MinMax> {
 
-        private ForgeConfigSpec.DoubleValue minConfig;
-        private ForgeConfigSpec.DoubleValue maxConfig;
+        private final ForgeConfigSpec.DoubleValue minConfig;
+        private final ForgeConfigSpec.DoubleValue maxConfig;
 
         public Config(ForgeConfigSpec.Builder builder, String name, String description, MinMax defaultValue, double rangeMin, double rangeMax) {
             super(builder, name, description);
