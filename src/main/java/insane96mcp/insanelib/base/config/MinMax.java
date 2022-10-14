@@ -1,6 +1,6 @@
-package insane96mcp.insanelib.config;
+package insane96mcp.insanelib.base.config;
 
-import insane96mcp.insanelib.base.config.ConfigOption;
+import insane96mcp.insanelib.base.ConfigOption;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraftforge.common.ForgeConfigSpec;

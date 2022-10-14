@@ -1,15 +1,10 @@
 package insane96mcp.insanelib.module.base;
 
 import insane96mcp.insanelib.base.Label;
-import insane96mcp.insanelib.base.Module;
-import insane96mcp.insanelib.module.base.feature.AEC3DFeature;
-import insane96mcp.insanelib.module.base.feature.FixFeature;
-import insane96mcp.insanelib.module.base.feature.TagsFeature;
-import insane96mcp.insanelib.setup.Config;
 
 @Label(name = "Base")
-public class BaseModule extends Module {
-	public AEC3DFeature aec3D;
+public class BaseModule {
+	/*public AEC3DFeature aec3D;
 	public FixFeature fix;
 	public TagsFeature tags;
 
@@ -28,5 +23,5 @@ public class BaseModule extends Module {
 		aec3D.loadConfig();
 		fix.loadConfig();
 		tags.loadConfig();
-	}
+	}*/
 }

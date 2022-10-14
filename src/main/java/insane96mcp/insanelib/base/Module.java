@@ -1,9 +1,12 @@
 package insane96mcp.insanelib.base;
 
-import insane96mcp.insanelib.util.LogHelper;
+import insane96mcp.insanelib.setup.Config;
 import net.minecraftforge.common.ForgeConfigSpec;
+import net.minecraftforge.common.IExtensibleEnum;
 
-public class Module {
+public enum Module implements IExtensibleEnum {
+    BASE(Config.builder, "base", "", true, false);
+
     private final ForgeConfigSpec.ConfigValue<Boolean> enabledConfig;
 
     protected final ForgeConfigSpec.Builder builder;
@@ -15,28 +18,30 @@ public class Module {
     private final String name;
     private final String description;
 
-    public Module(final ForgeConfigSpec.Builder builder, boolean enabledByDefault, boolean canBeDisabled) {
+    Module(final ForgeConfigSpec.Builder builder, String moduleName, String description, boolean enabledByDefault, boolean canBeDisabled) {
         this.builder = builder;
-        if (!this.getClass().isAnnotationPresent(Label.class))
-            LogHelper.error("%s is missing the Label Annotation.".formatted(this.getClass().getName()));
-        this.name = this.getClass().getAnnotation(Label.class).name();
-        this.description = this.getClass().getAnnotation(Label.class).description();
+        this.name = moduleName;
+        this.description = description;
         this.canBeDisabled = canBeDisabled;
         if (canBeDisabled)
             if (!description.equals(""))
-                enabledConfig = this.builder.comment(this.description).define("Enable " + this.name + " module", enabledByDefault);
+                enabledConfig = this.builder.comment(description).define("Enable " + this.name + " module", enabledByDefault);
             else
                 enabledConfig = this.builder.define("Enable " + this.name, enabledByDefault);
         else
             enabledConfig = null;
     }
 
-    public Module(final ForgeConfigSpec.Builder builder, boolean enabledByDefault) {
-        this(builder, enabledByDefault, true);
+    Module(final ForgeConfigSpec.Builder builder, String moduleName, String description, boolean enabledByDefault) {
+        this(builder, moduleName, description, enabledByDefault, true);
     }
 
-    public Module(final ForgeConfigSpec.Builder builder) {
-        this(builder, true);
+    Module(final ForgeConfigSpec.Builder builder, String moduleName, String description) {
+        this(builder, moduleName, description, true);
+    }
+
+    Module(final ForgeConfigSpec.Builder builder, String moduleName) {
+        this(builder, moduleName, "", true);
     }
 
     public boolean isEnabled() {
@@ -45,10 +50,6 @@ public class Module {
 
     public String getName() {
         return this.name;
-    }
-
-    public String getDescription() {
-        return description;
     }
 
     public void loadConfig() {
@@ -63,11 +64,35 @@ public class Module {
             this.builder.push(this.getName());
         }
         else {
-            this.builder.comment(this.getDescription()).push(this.getName());
+            this.builder.comment(this.description).push(this.getName());
         }
     }
 
-    protected void popConfig() {
+    public void popConfig() {
         this.builder.pop();
+    }
+
+    public static void loadFeatures() {
+
+    }
+
+    public static Module create(String name, final ForgeConfigSpec.Builder builder, String moduleName)
+    {
+        throw new IllegalStateException("Enum not extended");
+    }
+
+    public static Module create(String name, final ForgeConfigSpec.Builder builder, String moduleName, String description)
+    {
+        throw new IllegalStateException("Enum not extended");
+    }
+
+    public static Module create(String name, final ForgeConfigSpec.Builder builder, String moduleName, String description, boolean enabledByDefault)
+    {
+        throw new IllegalStateException("Enum not extended");
+    }
+
+    public static Module create(String name, final ForgeConfigSpec.Builder builder, String moduleName, String description, boolean enabledByDefault, boolean canBeDisabled)
+    {
+        throw new IllegalStateException("Enum not extended");
     }
 }

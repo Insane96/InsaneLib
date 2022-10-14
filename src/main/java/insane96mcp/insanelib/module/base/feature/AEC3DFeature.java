@@ -4,6 +4,7 @@ import insane96mcp.insanelib.base.Feature;
 import insane96mcp.insanelib.base.Label;
 import insane96mcp.insanelib.base.Module;
 import insane96mcp.insanelib.base.config.Config;
+import insane96mcp.insanelib.base.config.LoadFeature;
 import insane96mcp.insanelib.entity.AreaEffectCloud3DEntity;
 import net.minecraft.server.TickTask;
 import net.minecraft.util.thread.BlockableEventLoop;
@@ -15,16 +16,13 @@ import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.LogicalSide;
 
+@LoadFeature(module = Module.BASE)
 @Label(name = "Area Effect Cloud 3D", description = "No more boring 2D Area of Effect Clouds")
 public class AEC3DFeature extends Feature {
 
 	@Config
 	@Label(name = "Replace Vanilla Area of Effect Clouds", description = "If true, vanilla Area of Effect Clouds will be replaced with 3D versions of them")
 	public static Boolean replaceVanillaAEC = true;
-
-	@Config
-	@Label(name = "Test Enum", description = "Enum testtesttesttesttesttest")
-	public static TestEnum testEnum = TestEnum.TWO;
 
 	public AEC3DFeature(Module module) {
 		super(module);
@@ -50,11 +48,5 @@ public class AEC3DFeature extends Feature {
 
 		BlockableEventLoop<? super TickTask> executor = LogicalSidedProvider.WORKQUEUE.get(event.getLevel().isClientSide ? LogicalSide.CLIENT : LogicalSide.SERVER);
 		executor.tell(new TickTask(0, () -> areaEffectCloud3D.level.addFreshEntity(areaEffectCloud3D)));
-	}
-
-	public enum TestEnum {
-		ONE,
-		TWO,
-		THREE
 	}
 }

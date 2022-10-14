@@ -1,7 +1,6 @@
 package insane96mcp.insanelib.setup;
 
 import insane96mcp.insanelib.InsaneLib;
-import insane96mcp.insanelib.module.Modules;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -24,7 +23,7 @@ public class Config {
 
 	public static class CommonConfig {
 		public CommonConfig(final ForgeConfigSpec.Builder builder) {
-			Modules.init();
+			//Modules.init();
 		}
 	}
 

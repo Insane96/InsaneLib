@@ -1,4 +1,4 @@
-package insane96mcp.insanelib.base.config;
+package insane96mcp.insanelib.base;
 
 import net.minecraftforge.common.ForgeConfigSpec;
 

@@ -1,8 +1,7 @@
 package insane96mcp.insanelib.base;
 
 import insane96mcp.insanelib.base.config.Config;
-import insane96mcp.insanelib.base.config.ConfigOption;
-import insane96mcp.insanelib.config.MinMax;
+import insane96mcp.insanelib.base.config.MinMax;
 import insane96mcp.insanelib.util.LogHelper;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.MinecraftForge;
