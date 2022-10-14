@@ -28,12 +28,9 @@ public abstract class ConfigOption<T> {
 
         public final ForgeConfigSpec.ConfigValue<?> valueConfig;
 
-        public GenericOption(ForgeConfigSpec.Builder builder, String name, String description, Object defaultValue, boolean isEnum) {
+        public GenericOption(ForgeConfigSpec.Builder builder, String name, String description, Object defaultValue) {
             super(builder, name, description);
-            if (isEnum)
-                valueConfig = builder.defineEnum(name, defaultValue);
-            else
-                valueConfig = builder.define(name, defaultValue);
+            valueConfig = builder.define(name, defaultValue);
         }
 
         @Override
@@ -108,6 +105,21 @@ public abstract class ConfigOption<T> {
         }
 
         public List<? extends String> get() {
+            return valueConfig.get();
+        }
+    }
+
+    public static class EnumOption<T extends Enum<T>> extends ConfigOption<T> {
+
+        public final ForgeConfigSpec.ConfigValue<T> valueConfig;
+
+        public EnumOption(ForgeConfigSpec.Builder builder, String name, String description, T defaultValue) {
+            super(builder, name, description);
+            valueConfig = builder.defineEnum(name, defaultValue);
+        }
+
+        @Override
+        public T get() {
             return valueConfig.get();
         }
     }
