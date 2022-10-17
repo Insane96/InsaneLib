@@ -19,6 +19,7 @@ import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.event.config.ModConfigEvent;
 
 import java.util.Objects;
 import java.util.Set;
@@ -40,13 +41,13 @@ public class FixFeature extends Feature {
 	@Label(name = "Fix Jump Movement Factor Slowdown Only", description = "The fix for Jump Movement Factor is applied only when the player is slowed down. If false, the player will jump really farther when going faster.")
 	public static Boolean slowdownOnly = true;
 
-	public FixFeature(Module module) {
-		super(module);
+	public FixFeature(Module module, boolean enabledByDefault, boolean canBeDisabled) {
+		super(module, enabledByDefault, canBeDisabled);
 	}
 
 	@Override
-	public void loadConfig() {
-		super.loadConfig();
+	public void loadConfig(final ModConfigEvent event) {
+		super.loadConfig(event);
 	}
 
 	@SubscribeEvent(priority = EventPriority.LOWEST)

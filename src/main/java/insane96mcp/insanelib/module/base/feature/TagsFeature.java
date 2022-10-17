@@ -14,18 +14,19 @@ import net.minecraftforge.event.entity.living.LivingSpawnEvent;
 import net.minecraftforge.event.level.ExplosionEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.event.config.ModConfigEvent;
 
-@LoadFeature(module = Module.BASE)
+@LoadFeature(module = Module.BASE, canBeDisabled = false)
 @Label(name = "Tags", description = "Set and use some tags to set some mobs properties. E.g. cause fire explosion for mobs or get if a mob has been spawned from spawner.")
 public class TagsFeature extends Feature {
 
-	public TagsFeature(Module module) {
-		super(module, true, false);
+	public TagsFeature(Module module, boolean enabledByDefault, boolean canBeDisabled) {
+		super(module, enabledByDefault, canBeDisabled);
 	}
 
 	@Override
-	public void loadConfig() {
-		super.loadConfig();
+	public void loadConfig(final ModConfigEvent event) {
+		super.loadConfig(event);
 	}
 
 	@SubscribeEvent(priority = EventPriority.HIGHEST)

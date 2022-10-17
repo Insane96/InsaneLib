@@ -1,5 +1,6 @@
 package insane96mcp.insanelib;
 
+import insane96mcp.insanelib.base.Module;
 import insane96mcp.insanelib.setup.ClientSetup;
 import insane96mcp.insanelib.setup.Config;
 import insane96mcp.insanelib.setup.ILEntities;
@@ -22,5 +23,6 @@ public class InsaneLib
         FMLJavaModLoadingContext.get().getModEventBus().addListener(ClientSetup::init);
         final IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
         ILEntities.ENTITIES.register(modEventBus);
+        Module.loadFeatures(MOD_ID, this.getClass().getClassLoader());
     }
 }

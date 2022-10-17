@@ -6,6 +6,7 @@ import insane96mcp.insanelib.util.LogHelper;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.event.config.ModConfigEvent;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -38,14 +39,6 @@ public class Feature {
             enabledConfig = null;
         this.registerEvents();
         this.loadConfigOptions();
-    }
-
-    public Feature(Module module, boolean enabledByDefault) {
-        this(module, enabledByDefault, true);
-    }
-
-    public Feature(Module module) {
-        this(module, true);
     }
 
     /**
@@ -152,7 +145,7 @@ public class Feature {
         this.popConfig();
     }
 
-    public void loadConfig() {
+    public void loadConfig(final ModConfigEvent event) {
         if (canBeDisabled)
             this.enabled = enabledConfig.get();
         else

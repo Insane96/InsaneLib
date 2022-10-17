@@ -15,6 +15,7 @@ import net.minecraftforge.common.util.LogicalSidedProvider;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.LogicalSide;
+import net.minecraftforge.fml.event.config.ModConfigEvent;
 
 @LoadFeature(module = Module.BASE)
 @Label(name = "Area Effect Cloud 3D", description = "No more boring 2D Area of Effect Clouds")
@@ -24,13 +25,13 @@ public class AEC3DFeature extends Feature {
 	@Label(name = "Replace Vanilla Area of Effect Clouds", description = "If true, vanilla Area of Effect Clouds will be replaced with 3D versions of them")
 	public static Boolean replaceVanillaAEC = true;
 
-	public AEC3DFeature(Module module) {
-		super(module);
+	public AEC3DFeature(Module module, boolean enabledByDefault, boolean canBeDisabled) {
+		super(module, enabledByDefault, canBeDisabled);
 	}
 
 	@Override
-	public void loadConfig() {
-		super.loadConfig();
+	public void loadConfig(final ModConfigEvent event) {
+		super.loadConfig(event);
 	}
 
 	@SubscribeEvent

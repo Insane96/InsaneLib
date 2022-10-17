@@ -23,12 +23,12 @@ public class Config {
 
 	public static class CommonConfig {
 		public CommonConfig(final ForgeConfigSpec.Builder builder) {
-			//Modules.init();
+			//Module.loadFeatures(InsaneLib.MOD_ID, this.getClass().getClassLoader());
 		}
 	}
 
 	@SubscribeEvent
 	public static void onModConfigEvent(final ModConfigEvent event) {
-		Modules.loadConfig();
+		//Module.loadConfig();
 	}
 }
