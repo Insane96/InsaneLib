@@ -1,7 +1,9 @@
 package insane96mcp.insanelib.base;
 
+import insane96mcp.insanelib.base.config.Blacklist;
 import insane96mcp.insanelib.base.config.Config;
 import insane96mcp.insanelib.base.config.MinMax;
+import insane96mcp.insanelib.util.IdTagMatcher;
 import insane96mcp.insanelib.util.LogHelper;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.MinecraftForge;
@@ -104,18 +106,6 @@ public class Feature {
                     ConfigOption.IntOption intOption = new ConfigOption.IntOption(this.getBuilder(), name, description, defaultValue, (int) min, (int) max);
                     this.configOptions.put(field, intOption);
                 }
-                else if (field.getType().isAssignableFrom(Boolean.class))
-                {
-                    boolean defaultValue = (boolean) field.get(null);
-                    ConfigOption.BoolOption boolOption = new ConfigOption.BoolOption(this.getBuilder(), name, description, defaultValue);
-                    this.configOptions.put(field, boolOption);
-                }
-                else if (field.getType().isAssignableFrom(String.class))
-                {
-                    String defaultValue = (String) field.get(null);
-                    ConfigOption.StringOption stringOption = new ConfigOption.StringOption(this.getBuilder(), name, description, defaultValue);
-                    this.configOptions.put(field, stringOption);
-                }
                 else if (field.getType().isAssignableFrom(List.class))
                 {
                     List<String> defaultValue = (List<String>) field.get(null);
@@ -134,7 +124,18 @@ public class Feature {
                     MinMax.Config minMaxConfig = new MinMax.Config(this.getBuilder(), name, description, defaultValue, min, max);
                     this.configOptions.put(field, minMaxConfig);
                 }
-                //TODO Missing Blacklist Config
+                else if (field.getType().isAssignableFrom(Blacklist.class))
+                {
+                    Blacklist defaultValue = (Blacklist) field.get(null);
+                    Blacklist.Config blacklistConfig = new Blacklist.Config(this.getBuilder(), name, description, defaultValue);
+                    this.configOptions.put(field, blacklistConfig);
+                }
+                else if (field.getType().isAssignableFrom(IdTagMatcher.class))
+                {
+                    IdTagMatcher defaultValue = (IdTagMatcher) field.get(null);
+                    IdTagMatcher.Config idTagMatcherConfig = new IdTagMatcher.Config(this.getBuilder(), name, description, defaultValue);
+                    this.configOptions.put(field, idTagMatcherConfig);
+                }
                 else {
                     Object defaultValue = field.get(null);
                     ConfigOption.GenericOption genericOption = new ConfigOption.GenericOption(this.getBuilder(), name, description, defaultValue);

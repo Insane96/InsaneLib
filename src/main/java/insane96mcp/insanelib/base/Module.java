@@ -5,10 +5,9 @@ import insane96mcp.insanelib.setup.Config;
 import insane96mcp.insanelib.util.LogHelper;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.IExtensibleEnum;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.event.config.ModConfigEvent;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.loading.moddiscovery.ModAnnotation;
 import net.minecraftforge.forgespi.language.ModFileScanData;
 import org.objectweb.asm.Type;
@@ -47,7 +46,7 @@ public enum Module implements IExtensibleEnum {
         else
             enabledConfig = null;
 
-        MinecraftForge.EVENT_BUS.register(this);
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::loadConfig);
     }
 
     Module(final ForgeConfigSpec.Builder builder, String moduleName, String description, boolean enabledByDefault) {
@@ -74,7 +73,6 @@ public enum Module implements IExtensibleEnum {
         return this.features;
     }
 
-    @SubscribeEvent
     public void loadConfig(final ModConfigEvent event) {
         if (canBeDisabled)
             this.enabled = enabledConfig.get();
@@ -97,10 +95,9 @@ public enum Module implements IExtensibleEnum {
     }
 
     private static final Type LOAD_FEATURE_TYPE = Type.getType(LoadFeature.class);
-    private static final ArrayList<Module> MODULES = new ArrayList<>();
 
     public static void loadFeatures(String modId, ClassLoader classLoader) {
-        MODULES.clear();
+        ArrayList<Module> moduleToLoad = new ArrayList<>();
         ModFileScanData modFileScanData = ModList.get().getModFileById(modId).getFile().getScanResult();
         modFileScanData.getAnnotations().stream()
                 .filter(annotationData -> LOAD_FEATURE_TYPE.equals(annotationData.annotationType()))
@@ -124,14 +121,14 @@ public enum Module implements IExtensibleEnum {
 
                         Feature feature = (Feature) clazz.getDeclaredConstructor(Module.class, boolean.class, boolean.class).newInstance(module, enabledByDefault, canBeDisabled);
                         module.features.add(feature);
-                        if (!MODULES.contains(module))
-                            MODULES.add(module);
+                        if (!moduleToLoad.contains(module))
+                            moduleToLoad.add(module);
                     }
                     catch (Exception e) {
                         throw new RuntimeException("Failed to load Module %s".formatted(annotationData), e);
                     }
                 });
-        MODULES.forEach(m -> {
+        moduleToLoad.forEach(m -> {
             m.pushConfig();
             m.getFeatures().forEach(Feature::loadConfigOptions);
             m.popConfig();

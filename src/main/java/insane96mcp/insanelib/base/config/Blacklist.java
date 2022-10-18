@@ -1,5 +1,6 @@
 package insane96mcp.insanelib.base.config;
 
+import insane96mcp.insanelib.base.ConfigOption;
 import insane96mcp.insanelib.util.IdTagMatcher;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -15,12 +16,20 @@ import java.util.List;
  * IdTagMatcher Black/Whitelist
  */
 public class Blacklist {
-	public ArrayList<IdTagMatcher> blacklist;
+	public List<IdTagMatcher> blacklist;
 	public boolean blacklistAsWhitelist;
 
-	public Blacklist(ArrayList<IdTagMatcher> blacklist, boolean blacklistAsWhitelist) {
+	public Blacklist(List<IdTagMatcher> blacklist, boolean blacklistAsWhitelist) {
 		this.blacklist = blacklist;
 		this.blacklistAsWhitelist = blacklistAsWhitelist;
+	}
+
+	public List<String> getStringList() {
+		List<String> list = new ArrayList<>();
+		for (IdTagMatcher idTagMatcher : this.blacklist) {
+			list.add(idTagMatcher.asString());
+		}
+		return list;
 	}
 
 	public boolean isBlockBlackOrNotWhiteListed(Block entry) {
@@ -108,32 +117,19 @@ public class Blacklist {
 		return isInBlacklist || (!isInWhitelist && this.blacklistAsWhitelist);
 	}
 
-	public static class Config {
-		private final ForgeConfigSpec.Builder builder;
-
+	public static class Config extends ConfigOption<Blacklist> {
 		public ForgeConfigSpec.ConfigValue<List<? extends String>> listConfig;
 		public ForgeConfigSpec.ConfigValue<Boolean> listAsWhitelistConfig;
 
-		public Config(ForgeConfigSpec.Builder builder, String optionName, String description) {
-			this.builder = builder;
-			builder.comment(description).push(optionName);
-		}
-
-		public Blacklist.Config setDefaultList(List<String> defaultValue) {
-			listConfig = builder.defineList("Blacklist", defaultValue, o -> o instanceof String);
-			return this;
-		}
-
-		public Blacklist.Config setIsDefaultWhitelist(boolean isDefaultWhitelist) {
-			listAsWhitelistConfig = builder.comment("If true the list will be treated as a whitelist instead of blacklist").define("List as Whitelist", isDefaultWhitelist);
-			return this;
-		}
-
-		public Blacklist.Config build() {
+		public Config(ForgeConfigSpec.Builder builder, String name, String description, Blacklist defaultValue) {
+			super(builder, name, description);
+			builder.push(name);
+			listConfig = builder.defineList("Blacklist", defaultValue.getStringList(), o -> o instanceof String);
+			listAsWhitelistConfig = builder.comment("If true the list will be treated as a whitelist instead of blacklist").define("List as Whitelist", defaultValue.blacklistAsWhitelist);
 			builder.pop();
-			return this;
 		}
 
+		@Override
 		public Blacklist get() {
 			return new Blacklist((ArrayList<IdTagMatcher>) IdTagMatcher.parseStringList(this.listConfig.get()), this.listAsWhitelistConfig.get());
 		}

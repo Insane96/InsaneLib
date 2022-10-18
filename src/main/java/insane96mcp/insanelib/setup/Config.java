@@ -1,10 +1,9 @@
 package insane96mcp.insanelib.setup;
 
 import insane96mcp.insanelib.InsaneLib;
+import insane96mcp.insanelib.base.Module;
 import net.minecraftforge.common.ForgeConfigSpec;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.config.ModConfigEvent;
 import org.apache.commons.lang3.tuple.Pair;
 
 @Mod.EventBusSubscriber(modid = InsaneLib.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
@@ -23,12 +22,7 @@ public class Config {
 
 	public static class CommonConfig {
 		public CommonConfig(final ForgeConfigSpec.Builder builder) {
-			//Module.loadFeatures(InsaneLib.MOD_ID, this.getClass().getClassLoader());
+			Module.loadFeatures(InsaneLib.MOD_ID, this.getClass().getClassLoader());
 		}
-	}
-
-	@SubscribeEvent
-	public static void onModConfigEvent(final ModConfigEvent event) {
-		//Module.loadConfig();
 	}
 }

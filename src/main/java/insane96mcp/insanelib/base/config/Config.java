@@ -10,5 +10,4 @@ import java.lang.annotation.Target;
 public @interface Config {
     double min() default Double.MIN_VALUE;
     double max() default Double.MAX_VALUE;
-    boolean isEnum() default false;
 }

@@ -1,6 +1,7 @@
 package insane96mcp.insanelib.util;
 
 
+import insane96mcp.insanelib.base.ConfigOption;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
@@ -10,6 +11,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.material.Fluid;
+import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.tags.ITag;
@@ -36,6 +38,14 @@ public class IdTagMatcher {
 
     public IdTagMatcher(Type type, ResourceLocation location) {
         this(type, location, null);
+    }
+
+    public IdTagMatcher(Type type, String location, String dimension) {
+        this(type, new ResourceLocation(location), new ResourceLocation(dimension));
+    }
+
+    public IdTagMatcher(Type type, String location) {
+        this(type, new ResourceLocation(location), null);
     }
 
     /**
@@ -71,6 +81,14 @@ public class IdTagMatcher {
             }
             return new IdTagMatcher(Type.ID, id, dimension);
         }
+    }
+
+    public String asString() {
+        String s = type == Type.TAG ? "#" : "";
+        s += this.location.toString();
+        if (this.dimension != null)
+            s += "," + this.dimension;
+        return s;
     }
 
     public static ArrayList<? extends IdTagMatcher> parseStringList(List<? extends String> list) {
@@ -247,6 +265,21 @@ public class IdTagMatcher {
             entityTypes.addAll(entityTag.stream().toList());
         }
         return entityTypes;
+    }
+
+    public static class Config extends ConfigOption<IdTagMatcher> {
+
+        private final ForgeConfigSpec.ConfigValue<String> idTagMatcherValue;
+
+        public Config(ForgeConfigSpec.Builder builder, String name, String description, IdTagMatcher defaultValue) {
+            super(builder, name, description);
+            idTagMatcherValue = builder.define(name, defaultValue.asString());
+        }
+
+        @Override
+        public IdTagMatcher get() {
+            return IdTagMatcher.parseLine(idTagMatcherValue.get());
+        }
     }
 
     public enum Type {
