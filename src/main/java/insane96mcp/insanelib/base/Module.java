@@ -109,7 +109,7 @@ public class Module {
             this.enabled = enabledConfig.get();
         else
             this.enabled = true;
-        this.features.forEach(feature -> feature.loadConfig(event));
+        this.features.forEach(feature -> feature.readConfig(event));
     }
 
     public void pushConfig() {
@@ -164,7 +164,7 @@ public class Module {
                 });
         moduleToLoad.forEach(m -> {
             m.pushConfig();
-            m.getFeatures().forEach(Feature::loadConfigOptions);
+            m.getFeatures().forEach(Feature::loadConfig);
             m.popConfig();
         });
     }

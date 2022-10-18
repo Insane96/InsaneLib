@@ -30,8 +30,8 @@ public class AEC3DFeature extends Feature {
 	}
 
 	@Override
-	public void loadConfig(final ModConfigEvent event) {
-		super.loadConfig(event);
+	public void readConfig(final ModConfigEvent event) {
+		super.readConfig(event);
 	}
 
 	@SubscribeEvent

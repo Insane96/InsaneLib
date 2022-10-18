@@ -67,15 +67,10 @@ public class Feature {
 
     HashMap<Field, ConfigOption<?>> configOptions = new HashMap<>();
 
+    /**
+     * Override to add custom config options
+     */
     public void loadConfigOptions() {
-        if (canBeDisabled)
-            if (!description.equals(""))
-                enabledConfig = this.module.builder.comment(getDescription()).define("Enable " + getName(), enabledByDefault);
-            else
-                enabledConfig = this.module.builder.define("Enable " + getName(), enabledByDefault);
-        else
-            enabledConfig = null;
-        this.pushConfig();
         try {
             for (Field field : this.getClass().getDeclaredFields())
             {
@@ -146,10 +141,22 @@ public class Feature {
         catch (Exception e) {
             throw new RuntimeException("Failed to load Feature '%s'".formatted(this.name), e);
         }
+    }
+
+    public final void loadConfig() {
+        if (canBeDisabled)
+            if (!description.equals(""))
+                enabledConfig = this.module.builder.comment(getDescription()).define("Enable " + getName(), enabledByDefault);
+            else
+                enabledConfig = this.module.builder.define("Enable " + getName(), enabledByDefault);
+        else
+            enabledConfig = null;
+        this.pushConfig();
+        this.loadConfigOptions();
         this.popConfig();
     }
 
-    public void loadConfig(final ModConfigEvent event) {
+    public void readConfig(final ModConfigEvent event) {
         if (canBeDisabled) {
             this.enabled = enabledConfig.get();
         }
