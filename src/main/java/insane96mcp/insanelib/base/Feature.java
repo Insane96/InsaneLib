@@ -16,9 +16,10 @@ import java.util.List;
 public class Feature {
     private final String name;
     private final String description;
-    private final ForgeConfigSpec.ConfigValue<Boolean> enabledConfig;
+    private ForgeConfigSpec.ConfigValue<Boolean> enabledConfig;
     private final Module module;
 
+    private final boolean enabledByDefault;
     private final boolean canBeDisabled;
 
     private boolean enabled;
@@ -29,16 +30,10 @@ public class Feature {
         this.name = this.getClass().getAnnotation(Label.class).name();
         this.description = this.getClass().getAnnotation(Label.class).description();
         this.module = module;
+        this.enabledByDefault = enabledByDefault;
         this.canBeDisabled = canBeDisabled;
-        if (canBeDisabled)
-            if (!description.equals(""))
-                enabledConfig = this.module.builder.comment(getDescription()).define("Enable " + getName(), enabledByDefault);
-            else
-                enabledConfig = this.module.builder.define("Enable " + getName(), enabledByDefault);
-        else
-            enabledConfig = null;
         this.registerEvents();
-        this.loadConfigOptions();
+        //this.loadConfigOptions();
     }
 
     /**
@@ -70,7 +65,14 @@ public class Feature {
 
     HashMap<Field, ConfigOption<?>> configOptions = new HashMap<>();
 
-    private void loadConfigOptions() {
+    public void loadConfigOptions() {
+        if (canBeDisabled)
+            if (!description.equals(""))
+                enabledConfig = this.module.builder.comment(getDescription()).define("Enable " + getName(), enabledByDefault);
+            else
+                enabledConfig = this.module.builder.define("Enable " + getName(), enabledByDefault);
+        else
+            enabledConfig = null;
         this.pushConfig();
         try {
             for (Field field : this.getClass().getDeclaredFields())
@@ -132,6 +134,7 @@ public class Feature {
                     MinMax.Config minMaxConfig = new MinMax.Config(this.getBuilder(), name, description, defaultValue, min, max);
                     this.configOptions.put(field, minMaxConfig);
                 }
+                //TODO Missing Blacklist Config
                 else {
                     Object defaultValue = field.get(null);
                     ConfigOption.GenericOption genericOption = new ConfigOption.GenericOption(this.getBuilder(), name, description, defaultValue);

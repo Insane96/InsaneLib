@@ -47,7 +47,6 @@ public enum Module implements IExtensibleEnum {
         else
             enabledConfig = null;
 
-        pushConfig();
         MinecraftForge.EVENT_BUS.register(this);
     }
 
@@ -69,6 +68,10 @@ public enum Module implements IExtensibleEnum {
 
     public String getName() {
         return this.name;
+    }
+
+    public List<Feature> getFeatures() {
+        return this.features;
     }
 
     @SubscribeEvent
@@ -94,8 +97,10 @@ public enum Module implements IExtensibleEnum {
     }
 
     private static final Type LOAD_FEATURE_TYPE = Type.getType(LoadFeature.class);
+    private static final ArrayList<Module> MODULES = new ArrayList<>();
 
     public static void loadFeatures(String modId, ClassLoader classLoader) {
+        MODULES.clear();
         ModFileScanData modFileScanData = ModList.get().getModFileById(modId).getFile().getScanResult();
         modFileScanData.getAnnotations().stream()
                 .filter(annotationData -> LOAD_FEATURE_TYPE.equals(annotationData.annotationType()))
@@ -119,11 +124,18 @@ public enum Module implements IExtensibleEnum {
 
                         Feature feature = (Feature) clazz.getDeclaredConstructor(Module.class, boolean.class, boolean.class).newInstance(module, enabledByDefault, canBeDisabled);
                         module.features.add(feature);
+                        if (!MODULES.contains(module))
+                            MODULES.add(module);
                     }
                     catch (Exception e) {
                         throw new RuntimeException("Failed to load Module %s".formatted(annotationData), e);
                     }
                 });
+        MODULES.forEach(m -> {
+            m.pushConfig();
+            m.getFeatures().forEach(Feature::loadConfigOptions);
+            m.popConfig();
+        });
     }
 
     public static Module create(String name, final ForgeConfigSpec.Builder builder, String moduleName)
