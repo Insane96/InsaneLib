@@ -22,7 +22,7 @@ public class Config {
 
 	public static class CommonConfig {
 		public CommonConfig(final ForgeConfigSpec.Builder builder) {
-			Module.loadFeatures(InsaneLib.MOD_ID, this.getClass().getClassLoader());
+			Module.loadFeatures(InsaneLib.MOD_ID, this.getClass().getClassLoader(), builder);
 		}
 	}
 }

@@ -24,7 +24,7 @@ import net.minecraftforge.fml.event.config.ModConfigEvent;
 import java.util.Objects;
 import java.util.Set;
 
-@LoadFeature(module = Module.BASE)
+@LoadFeature(module = "insanelib:base")
 @Label(name = "Fixes", description = "A few fixes")
 public class FixFeature extends Feature {
 

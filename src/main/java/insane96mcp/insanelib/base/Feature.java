@@ -150,10 +150,12 @@ public class Feature {
     }
 
     public void loadConfig(final ModConfigEvent event) {
-        if (canBeDisabled)
+        if (canBeDisabled) {
             this.enabled = enabledConfig.get();
-        else
+        }
+        else {
             this.enabled = true;
+        }
 
         readConfigOptions();
     }

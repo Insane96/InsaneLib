@@ -1,5 +1,8 @@
 InsaneLib's Changelog
 
+## Upcoming
+* Overhauled Modules, Features and Config Options registration
+
 ## 1.6.2
 * Fixed `MathHelper.getAmountWithDecimalChance` not using RandomSource
 

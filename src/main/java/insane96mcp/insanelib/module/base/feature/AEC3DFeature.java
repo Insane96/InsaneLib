@@ -17,7 +17,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.event.config.ModConfigEvent;
 
-@LoadFeature(module = Module.BASE)
+@LoadFeature(module = "insanelib:base")
 @Label(name = "Area Effect Cloud 3D", description = "No more boring 2D Area of Effect Clouds")
 public class AEC3DFeature extends Feature {
 

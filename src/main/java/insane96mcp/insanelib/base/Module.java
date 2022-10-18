@@ -1,68 +1,99 @@
 package insane96mcp.insanelib.base;
 
 import insane96mcp.insanelib.base.config.LoadFeature;
-import insane96mcp.insanelib.setup.Config;
 import insane96mcp.insanelib.util.LogHelper;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.ForgeConfigSpec;
-import net.minecraftforge.common.IExtensibleEnum;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.event.config.ModConfigEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.fml.loading.moddiscovery.ModAnnotation;
 import net.minecraftforge.forgespi.language.ModFileScanData;
 import org.objectweb.asm.Type;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
-public enum Module implements IExtensibleEnum {
-    BASE(Config.builder, "Base", "", true, false);
+public class Module {
 
-    private final ForgeConfigSpec.ConfigValue<Boolean> enabledConfig;
+    static final HashMap<ResourceLocation, Module> modules = new HashMap<>();
 
-    final ForgeConfigSpec.Builder builder;
+    private ForgeConfigSpec.ConfigValue<Boolean> enabledConfig;
+
+    ForgeConfigSpec.Builder builder;
 
     private boolean enabled;
+    private boolean canBeDisabled;
 
-    private final boolean canBeDisabled;
-
+    private final ResourceLocation id;
     private final String name;
-    private final String description;
+    private String description = "";
 
     private final List<Feature> features = new ArrayList<>();
 
-    Module(final ForgeConfigSpec.Builder builder, String moduleName, String description, boolean enabledByDefault, boolean canBeDisabled) {
-        this.builder = builder;
-        this.name = moduleName;
-        this.description = description;
-        this.canBeDisabled = canBeDisabled;
-        if (canBeDisabled)
-            if (!description.equals(""))
-                enabledConfig = this.builder.comment(description).define("Enable " + this.name + " module", enabledByDefault);
-            else
-                enabledConfig = this.builder.define("Enable " + this.name, enabledByDefault);
-        else
-            enabledConfig = null;
+    Module(String id, String name) {
+        this.id = new ResourceLocation(id);
+        this.name = name;
+        this.enabled = true;
+        this.canBeDisabled = true;
 
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::loadConfig);
     }
 
-    Module(final ForgeConfigSpec.Builder builder, String moduleName, String description, boolean enabledByDefault) {
-        this(builder, moduleName, description, enabledByDefault, true);
+    public static class Builder {
+        private final Module module;
+
+        public Builder(String id, String name) {
+            this.module = new Module(id, name);
+        }
+
+        public static Builder create(String id, String name) {
+            return new Builder(id, name);
+        }
+
+        public Builder setDescription(String description) {
+            module.description = description;
+            return this;
+        }
+
+        public Builder canBeDisabled(boolean canBeDisabled) {
+            module.canBeDisabled = canBeDisabled;
+            return this;
+        }
+
+        public Builder enabledByDefault(boolean enabledByDefault) {
+            module.enabled = enabledByDefault;
+            return this;
+        }
+
+        public Module build() {
+            if (module.canBeDisabled) {
+                if (!module.description.equals("")) {
+                    module.enabledConfig = module.builder.comment(module.description).define("Enable %s".formatted(module.name), module.enabled);
+                }
+                else {
+                    module.enabledConfig = module.builder.define("Enable %s".formatted(module.id), module.enabled);
+                }
+            }
+            else {
+                module.enabledConfig = null;
+            }
+
+            Module.modules.putIfAbsent(module.id, module);
+
+            return module;
+        }
     }
 
-    Module(final ForgeConfigSpec.Builder builder, String moduleName, String description) {
-        this(builder, moduleName, description, true);
-    }
-
-    Module(final ForgeConfigSpec.Builder builder, String moduleName) {
-        this(builder, moduleName, "", true);
+    public void setConfigBuilder(final ForgeConfigSpec.Builder builder) {
+        if (this.builder == null)
+            this.builder = builder;
     }
 
     public boolean isEnabled() {
         return enabled;
+    }
+
+    public ResourceLocation getId() {
+        return this.id;
     }
 
     public String getName() {
@@ -96,7 +127,7 @@ public enum Module implements IExtensibleEnum {
 
     private static final Type LOAD_FEATURE_TYPE = Type.getType(LoadFeature.class);
 
-    public static void loadFeatures(String modId, ClassLoader classLoader) {
+    public static void loadFeatures(String modId, ClassLoader classLoader, ForgeConfigSpec.Builder builder) {
         ArrayList<Module> moduleToLoad = new ArrayList<>();
         ModFileScanData modFileScanData = ModList.get().getModFileById(modId).getFile().getScanResult();
         modFileScanData.getAnnotations().stream()
@@ -109,7 +140,10 @@ public enum Module implements IExtensibleEnum {
                         LogHelper.info("Found InsaneLib Feature class " + type.getClassName());
 
                         Map<String, Object> vals = annotationData.annotationData();
-                        Module module = Module.valueOf(((ModAnnotation.EnumHolder) vals.get("module")).getValue());
+                        String moduleString = (String) vals.get("module");
+                        ResourceLocation moduleId = new ResourceLocation(moduleString);
+                        Module module = Module.modules.get(moduleId);
+                        module.setConfigBuilder(builder);
 
                         boolean enabledByDefault = true;
                         if (vals.containsKey("enabledByDefault"))
@@ -133,25 +167,5 @@ public enum Module implements IExtensibleEnum {
             m.getFeatures().forEach(Feature::loadConfigOptions);
             m.popConfig();
         });
-    }
-
-    public static Module create(String name, final ForgeConfigSpec.Builder builder, String moduleName)
-    {
-        throw new IllegalStateException("Enum not extended");
-    }
-
-    public static Module create(String name, final ForgeConfigSpec.Builder builder, String moduleName, String description)
-    {
-        throw new IllegalStateException("Enum not extended");
-    }
-
-    public static Module create(String name, final ForgeConfigSpec.Builder builder, String moduleName, String description, boolean enabledByDefault)
-    {
-        throw new IllegalStateException("Enum not extended");
-    }
-
-    public static Module create(String name, final ForgeConfigSpec.Builder builder, String moduleName, String description, boolean enabledByDefault, boolean canBeDisabled)
-    {
-        throw new IllegalStateException("Enum not extended");
     }
 }
