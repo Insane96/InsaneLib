@@ -38,6 +38,8 @@ public class Module {
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::loadConfig);
     }
 
+    static Object _lock;
+
     public static class Builder {
         private final Module module;
 
@@ -77,7 +79,9 @@ public class Module {
                 module.enabledConfig = null;
             }
 
-            Module.modules.putIfAbsent(module.id, module);
+            synchronized (_lock) {
+                Module.modules.putIfAbsent(module.id, module);
+            }
 
             return module;
         }
