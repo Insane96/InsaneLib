@@ -117,11 +117,13 @@ public class Module {
     }
 
     public void pushConfig() {
-        if (description.equals("")) {
-            this.builder.push(this.getName());
-        }
-        else {
-            this.builder.comment(this.description).push(this.getName());
+        if (this.canBeDisabled) {
+            if (this.description.equals("")) {
+                this.builder.push(this.getName());
+            }
+            else {
+                this.builder.comment(this.description).push(this.getName());
+            }
         }
     }
 
@@ -143,19 +145,19 @@ public class Module {
                         Class<?> clazz = Class.forName(type.getClassName(), false, classLoader);
                         LogHelper.info("Found InsaneLib Feature class " + type.getClassName());
 
-                        Map<String, Object> vals = annotationData.annotationData();
-                        String moduleString = (String) vals.get("module");
+                        Map<String, Object> annotationDataMap = annotationData.annotationData();
+                        String moduleString = (String) annotationDataMap.get("module");
                         ResourceLocation moduleId = new ResourceLocation(moduleString);
                         Module module = Module.modules.get(moduleId);
                         module.setConfigBuilder(builder);
 
                         boolean enabledByDefault = true;
-                        if (vals.containsKey("enabledByDefault"))
-                            enabledByDefault = (Boolean) vals.get("enabledByDefault");
+                        if (annotationDataMap.containsKey("enabledByDefault"))
+                            enabledByDefault = (Boolean) annotationDataMap.get("enabledByDefault");
 
                         boolean canBeDisabled = true;
-                        if (vals.containsKey("canBeDisabled"))
-                            canBeDisabled = (Boolean) vals.get("canBeDisabled");
+                        if (annotationDataMap.containsKey("canBeDisabled"))
+                            canBeDisabled = (Boolean) annotationDataMap.get("canBeDisabled");
 
                         Feature feature = (Feature) clazz.getDeclaredConstructor(Module.class, boolean.class, boolean.class).newInstance(module, enabledByDefault, canBeDisabled);
                         module.features.add(feature);
