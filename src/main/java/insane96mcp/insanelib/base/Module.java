@@ -128,7 +128,9 @@ public class Module {
     }
 
     public void popConfig() {
-        this.builder.pop();
+        if (this.canBeDisabled) {
+            this.builder.pop();
+        }
     }
 
     private static final Type LOAD_FEATURE_TYPE = Type.getType(LoadFeature.class);
