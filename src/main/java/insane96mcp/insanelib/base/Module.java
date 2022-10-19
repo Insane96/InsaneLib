@@ -38,7 +38,7 @@ public class Module {
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::loadConfig);
     }
 
-    static Object _lock;
+    static final Object _lock = new Object();
 
     public static class Builder {
         private final Module module;
