@@ -35,7 +35,6 @@ public class Feature {
         this.enabledByDefault = enabledByDefault;
         this.canBeDisabled = canBeDisabled;
         this.registerEvents();
-        //this.loadConfigOptions();
     }
 
     /**
@@ -205,5 +204,9 @@ public class Feature {
 
             MinecraftForge.EVENT_BUS.register(this);
         }
+    }
+
+    public static boolean isEnabled(Class<? extends Feature> feature) {
+        return Module.getFeature(feature).isEnabled();
     }
 }

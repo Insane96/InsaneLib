@@ -10,7 +10,10 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.forgespi.language.ModFileScanData;
 import org.objectweb.asm.Type;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Module {
 
@@ -27,7 +30,8 @@ public class Module {
     private final String name;
     private String description = "";
 
-    private final List<Feature> features = new ArrayList<>();
+    private static final Map<Class<? extends Feature>, Feature> loadedFeatures = new HashMap<>();
+    private final Map<Class<? extends Feature>, Feature> features = new HashMap<>();
 
     Module(String id, String name) {
         this.id = new ResourceLocation(id);
@@ -104,7 +108,7 @@ public class Module {
         return this.name;
     }
 
-    public List<Feature> getFeatures() {
+    public Map<Class<? extends Feature>, Feature> getFeatures() {
         return this.features;
     }
 
@@ -113,7 +117,7 @@ public class Module {
             this.enabled = enabledConfig.get();
         else
             this.enabled = true;
-        this.features.forEach(feature -> feature.readConfig(event));
+        this.features.forEach((clazz, feature) -> feature.readConfig(event));
     }
 
     public void pushConfig() {
@@ -145,6 +149,8 @@ public class Module {
                     try {
                         Type type = annotationData.clazz();
                         Class<?> clazz = Class.forName(type.getClassName(), false, classLoader);
+                        @SuppressWarnings("unchecked")
+                        Class<? extends Feature> featureClazz = (Class<? extends Feature>) clazz;
                         LogHelper.info("Found InsaneLib Feature class " + type.getClassName());
 
                         Map<String, Object> annotationDataMap = annotationData.annotationData();
@@ -154,17 +160,21 @@ public class Module {
                         module.setConfigBuilder(builder);
 
                         boolean enabledByDefault = true;
-                        if (annotationDataMap.containsKey("enabledByDefault"))
+                        if (annotationDataMap.containsKey("enabledByDefault")) {
                             enabledByDefault = (Boolean) annotationDataMap.get("enabledByDefault");
+                        }
 
                         boolean canBeDisabled = true;
-                        if (annotationDataMap.containsKey("canBeDisabled"))
+                        if (annotationDataMap.containsKey("canBeDisabled")) {
                             canBeDisabled = (Boolean) annotationDataMap.get("canBeDisabled");
+                        }
 
                         Feature feature = (Feature) clazz.getDeclaredConstructor(Module.class, boolean.class, boolean.class).newInstance(module, enabledByDefault, canBeDisabled);
-                        module.features.add(feature);
-                        if (!moduleToLoad.contains(module))
+                        module.features.put(featureClazz, feature);
+                        loadedFeatures.put(featureClazz, feature);
+                        if (!moduleToLoad.contains(module)) {
                             moduleToLoad.add(module);
+                        }
                     }
                     catch (Exception e) {
                         throw new RuntimeException("Failed to load Module %s".formatted(annotationData), e);
@@ -172,8 +182,16 @@ public class Module {
                 });
         moduleToLoad.forEach(m -> {
             m.pushConfig();
-            m.getFeatures().forEach(Feature::loadConfig);
+            m.getFeatures().forEach((clazz, feature) -> feature.loadConfig());
             m.popConfig();
         });
+    }
+
+    public static Map<Class<? extends Feature>, Feature> getAllLoadedFeatures() {
+        return loadedFeatures;
+    }
+
+    public static Feature getFeature(Class<? extends Feature> featureClazz) {
+        return loadedFeatures.get(featureClazz);
     }
 }
