@@ -102,7 +102,7 @@ public class Feature {
                 {
                     int defaultValue = (int) field.get(null);
                     if (min == Double.MIN_VALUE) min = Integer.MIN_VALUE;
-                    if (max == Double.MAX_VALUE) min = Integer.MAX_VALUE;
+                    if (max == Double.MAX_VALUE) max = Integer.MAX_VALUE;
                     ConfigOption.IntOption intOption = new ConfigOption.IntOption(this.getBuilder(), name, description, defaultValue, (int) min, (int) max);
                     this.configOptions.put(field, intOption);
                 }
