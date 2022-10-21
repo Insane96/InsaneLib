@@ -65,7 +65,7 @@ public class FixFeature extends Feature {
 				|| zombie.getAttribute(Attributes.MAX_HEALTH) == null)
 			return;
 
-		Set<AttributeModifier> modifiers = zombie.getAttribute(Attributes.MAX_HEALTH).getModifiers();
+		@SuppressWarnings("ConstantConditions") Set<AttributeModifier> modifiers = zombie.getAttribute(Attributes.MAX_HEALTH).getModifiers();
 		for (AttributeModifier attributeModifier : modifiers)
 			if (attributeModifier.getName().equals("Leader zombie bonus"))
 				Objects.requireNonNull(zombie.getAttribute(Attributes.MAX_HEALTH)).removeModifier(attributeModifier.getId());
@@ -99,7 +99,7 @@ public class FixFeature extends Feature {
 
 		double playerSpeedRatio = MCUtils.getMovementSpeedRatio(event.player);
 
-		if (playerSpeedRatio > 1d && this.slowdownOnly)
+		if (playerSpeedRatio > 1d && slowdownOnly)
 			return;
 
 		event.player.flyingSpeed = (float) (playerSpeedRatio * baseFlyingSpeed);
