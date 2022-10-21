@@ -12,6 +12,7 @@ import net.minecraftforge.fml.event.config.ModConfigEvent;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.List;
 
@@ -79,6 +80,11 @@ public class Feature {
                 if (!field.isAnnotationPresent(Label.class)) {
                     LogHelper.error("%s config option is missing the Label Annotation.".formatted(field.getName()));
                     continue;
+                }
+
+                if (!Modifier.isStatic(field.getModifiers()))
+                {
+                    throw new UnsupportedOperationException("Failed to load %s field. The field is not static".formatted(field));
                 }
 
                 String name = field.getAnnotation(Label.class).name();
