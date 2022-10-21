@@ -61,7 +61,7 @@ public class Feature {
     }
 
     public ForgeConfigSpec.Builder getBuilder() {
-        return this.module.builder;
+        return this.module.configBuilder;
     }
 
     HashMap<Field, ConfigOption<?>> configOptions = new HashMap<>();
@@ -143,13 +143,17 @@ public class Feature {
     }
 
     public final void loadConfig() {
-        if (canBeDisabled)
-            if (!description.equals(""))
-                enabledConfig = this.module.builder.comment(getDescription()).define("Enable " + getName(), enabledByDefault);
-            else
-                enabledConfig = this.module.builder.define("Enable " + getName(), enabledByDefault);
-        else
+        if (canBeDisabled) {
+            if (!description.equals("")) {
+                enabledConfig = this.module.configBuilder.comment(getDescription()).define("Enable " + getName(), enabledByDefault);
+            }
+            else {
+                enabledConfig = this.module.configBuilder.define("Enable " + getName(), enabledByDefault);
+            }
+        }
+        else {
             enabledConfig = null;
+        }
         this.pushConfig();
         this.loadConfigOptions();
         this.popConfig();
@@ -188,13 +192,13 @@ public class Feature {
 
     public void pushConfig() {
         if (!description.equals(""))
-            this.module.builder.comment(this.getDescription()).push(this.getName());
+            this.module.configBuilder.comment(this.getDescription()).push(this.getName());
         else
-            this.module.builder.push(this.getName());
+            this.module.configBuilder.push(this.getName());
     }
 
     protected void popConfig() {
-        this.module.builder.pop();
+        this.module.configBuilder.pop();
     }
 
     public void registerEvents() {

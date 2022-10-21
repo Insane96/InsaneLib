@@ -2,6 +2,7 @@ package insane96mcp.insanelib.setup;
 
 import insane96mcp.insanelib.InsaneLib;
 import insane96mcp.insanelib.base.Module;
+import insane96mcp.insanelib.module.Modules;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.fml.common.Mod;
 import org.apache.commons.lang3.tuple.Pair;
@@ -22,7 +23,8 @@ public class Config {
 
 	public static class CommonConfig {
 		public CommonConfig(final ForgeConfigSpec.Builder builder) {
-			Module.loadFeatures(InsaneLib.MOD_ID, this.getClass().getClassLoader(), builder);
+			Modules.init();
+			Module.loadFeatures(InsaneLib.MOD_ID, this.getClass().getClassLoader());
 		}
 	}
 }

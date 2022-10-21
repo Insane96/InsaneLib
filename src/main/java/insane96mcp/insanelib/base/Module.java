@@ -15,13 +15,14 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 
+@SuppressWarnings("unused")
 public class Module {
 
     static final HashMap<ResourceLocation, Module> modules = new HashMap<>();
 
     private ForgeConfigSpec.ConfigValue<Boolean> enabledConfig;
 
-    ForgeConfigSpec.Builder builder;
+    ForgeConfigSpec.Builder configBuilder;
 
     private boolean enabled;
     private boolean canBeDisabled;
@@ -33,13 +34,14 @@ public class Module {
     private static final Map<Class<? extends Feature>, Feature> loadedFeatures = new HashMap<>();
     private final Map<Class<? extends Feature>, Feature> features = new HashMap<>();
 
-    Module(String id, String name) {
+    Module(ForgeConfigSpec.Builder configBuilder, String id, String name) {
         this.id = new ResourceLocation(id);
         this.name = name;
         this.enabled = true;
         this.canBeDisabled = true;
+        this.configBuilder = configBuilder;
 
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::loadConfig);
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::readConfig);
     }
 
     static final Object _lock = new Object();
@@ -47,12 +49,12 @@ public class Module {
     public static class Builder {
         private final Module module;
 
-        public Builder(String id, String name) {
-            this.module = new Module(id, name);
+        public Builder(ForgeConfigSpec.Builder configBuilder, String id, String name) {
+            this.module = new Module(configBuilder, id, name);
         }
 
-        public static Builder create(String id, String name) {
-            return new Builder(id, name);
+        public static Builder create(ForgeConfigSpec.Builder configBuilder, String id, String name) {
+            return new Builder(configBuilder, id, name);
         }
 
         public Builder setDescription(String description) {
@@ -71,17 +73,7 @@ public class Module {
         }
 
         public Module build() {
-            if (module.canBeDisabled) {
-                if (!module.description.equals("")) {
-                    module.enabledConfig = module.builder.comment(module.description).define("Enable %s".formatted(module.name), module.enabled);
-                }
-                else {
-                    module.enabledConfig = module.builder.define("Enable %s".formatted(module.id), module.enabled);
-                }
-            }
-            else {
-                module.enabledConfig = null;
-            }
+            module.loadConfig();
 
             synchronized (_lock) {
                 Module.modules.putIfAbsent(module.id, module);
@@ -92,8 +84,8 @@ public class Module {
     }
 
     public void setConfigBuilder(final ForgeConfigSpec.Builder builder) {
-        if (this.builder == null)
-            this.builder = builder;
+        if (this.configBuilder == null)
+            this.configBuilder = builder;
     }
 
     public boolean isEnabled() {
@@ -112,7 +104,21 @@ public class Module {
         return this.features;
     }
 
-    public void loadConfig(final ModConfigEvent event) {
+    public void loadConfig() {
+        if (this.canBeDisabled) {
+            if (!this.description.equals("")) {
+                this.enabledConfig = this.configBuilder.comment(this.description).define("Enable %s".formatted(this.name), this.enabled);
+            }
+            else {
+                this.enabledConfig = this.configBuilder.define("Enable %s".formatted(this.name), this.enabled);
+            }
+        }
+        else {
+            this.enabledConfig = null;
+        }
+    }
+
+    public void readConfig(final ModConfigEvent event) {
         if (canBeDisabled)
             this.enabled = enabledConfig.get();
         else
@@ -123,23 +129,23 @@ public class Module {
     public void pushConfig() {
         if (this.canBeDisabled) {
             if (this.description.equals("")) {
-                this.builder.push(this.getName());
+                this.configBuilder.push(this.getName());
             }
             else {
-                this.builder.comment(this.description).push(this.getName());
+                this.configBuilder.comment(this.description).push(this.getName());
             }
         }
     }
 
     public void popConfig() {
         if (this.canBeDisabled) {
-            this.builder.pop();
+            this.configBuilder.pop();
         }
     }
 
     private static final Type LOAD_FEATURE_TYPE = Type.getType(LoadFeature.class);
 
-    public static void loadFeatures(String modId, ClassLoader classLoader, ForgeConfigSpec.Builder builder) {
+    public static void loadFeatures(String modId, ClassLoader classLoader) {
         ArrayList<Module> moduleToLoad = new ArrayList<>();
         ModFileScanData modFileScanData = ModList.get().getModFileById(modId).getFile().getScanResult();
         modFileScanData.getAnnotations().stream()
@@ -157,7 +163,6 @@ public class Module {
                         String moduleString = (String) annotationDataMap.get("module");
                         ResourceLocation moduleId = new ResourceLocation(moduleString);
                         Module module = Module.modules.get(moduleId);
-                        module.setConfigBuilder(builder);
 
                         boolean enabledByDefault = true;
                         if (annotationDataMap.containsKey("enabledByDefault")) {
