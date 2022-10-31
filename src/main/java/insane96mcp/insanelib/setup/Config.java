@@ -5,6 +5,7 @@ import insane96mcp.insanelib.base.Module;
 import insane96mcp.insanelib.module.Modules;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.config.ModConfig;
 import org.apache.commons.lang3.tuple.Pair;
 
 @Mod.EventBusSubscriber(modid = InsaneLib.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
@@ -24,7 +25,7 @@ public class Config {
 	public static class CommonConfig {
 		public CommonConfig(final ForgeConfigSpec.Builder builder) {
 			Modules.init();
-			Module.loadFeatures(InsaneLib.MOD_ID, this.getClass().getClassLoader());
+			Module.loadFeatures(ModConfig.Type.COMMON, InsaneLib.MOD_ID, this.getClass().getClassLoader());
 		}
 	}
 }

@@ -162,7 +162,7 @@ public class Module {
 
     private static final Type LOAD_FEATURE_TYPE = Type.getType(LoadFeature.class);
 
-    public static void loadFeatures(String modId, ClassLoader classLoader) {
+    public static void loadFeatures(ModConfig.Type modConfigType, String modId, ClassLoader classLoader) {
         ArrayList<Module> moduleToLoad = new ArrayList<>();
         ModFileScanData modFileScanData = ModList.get().getModFileById(modId).getFile().getScanResult();
         modFileScanData.getAnnotations().stream()
@@ -170,16 +170,18 @@ public class Module {
                 .sorted(Comparator.comparing(d -> d.getClass().getName()))
                 .forEach(annotationData -> {
                     try {
-                        Type type = annotationData.clazz();
-                        Class<?> clazz = Class.forName(type.getClassName(), false, classLoader);
-                        @SuppressWarnings("unchecked")
-                        Class<? extends Feature> featureClazz = (Class<? extends Feature>) clazz;
-                        LogHelper.info("Found InsaneLib Feature class " + type.getClassName());
-
                         Map<String, Object> annotationDataMap = annotationData.annotationData();
                         String moduleString = (String) annotationDataMap.get("module");
                         ResourceLocation moduleId = new ResourceLocation(moduleString);
                         Module module = Module.modules.get(moduleId);
+                        if (module.modConfigType != modConfigType)
+                            return;
+
+                        Type type = annotationData.clazz();
+                        Class<?> clazz = Class.forName(type.getClassName(), false, classLoader);
+                        @SuppressWarnings("unchecked")
+                        Class<? extends Feature> featureClazz = (Class<? extends Feature>) clazz;
+                        LogHelper.info("Found (%s) InsaneLib Feature class %s".formatted(modConfigType, type.getClassName()));
 
                         boolean enabledByDefault = true;
                         if (annotationDataMap.containsKey("enabledByDefault")) {
