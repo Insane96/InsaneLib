@@ -175,7 +175,7 @@ public class Module {
                         ResourceLocation moduleId = new ResourceLocation(moduleString);
                         Module module = Module.modules.get(moduleId);
                         if (!Module.modules.containsKey(moduleId)) {
-                            LogHelper.warn("No module found with ID %s".formatted(module));
+                            LogHelper.warn("No module found with ID %s".formatted(moduleId));
                             return;
                         }
                         if (module.modConfigType != modConfigType)
