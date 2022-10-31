@@ -55,12 +55,19 @@ public class Module {
     public static class Builder {
         private final Module module;
 
-        public Builder(String modId, String id, String name, ModConfig.Type modConfigType, ForgeConfigSpec.Builder configBuilder) {
+        private Builder(String modId, String id, String name, ModConfig.Type modConfigType, ForgeConfigSpec.Builder configBuilder) {
             this.module = new Module(modId, id, name, modConfigType, configBuilder);
         }
 
-        public static Builder create(String modId, String id, String name, ModConfig.Type modConfigType, ForgeConfigSpec.Builder configBuilder) {
+        public static Builder create(String modId, String id, String name, ModConfig.Type modConfigType, ForgeConfigSpec.Builder configBuilder)  {
             return new Builder(modId, id, name, modConfigType, configBuilder);
+        }
+
+        public static Builder create(String id, String name, ModConfig.Type modConfigType, ForgeConfigSpec.Builder configBuilder)  {
+            String[] split = id.split(":");
+            if (split.length != 2)
+                throw new IllegalArgumentException("id seems to not be a valid Resource Location. Must be modid:module_id");
+            return new Builder(split[0], split[1], name, modConfigType, configBuilder);
         }
 
         public Builder setDescription(String description) {
