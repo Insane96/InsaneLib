@@ -5,6 +5,7 @@ import insane96mcp.insanelib.util.LogHelper;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.fml.ModList;
+import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.config.ModConfigEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.forgespi.language.ModFileScanData;
@@ -31,14 +32,19 @@ public class Module {
     private final String name;
     private String description = "";
 
+    private final String modId;
+    private final ModConfig.Type modConfigType;
+
     private static final Map<Class<? extends Feature>, Feature> loadedFeatures = new HashMap<>();
     private final Map<Class<? extends Feature>, Feature> features = new HashMap<>();
 
-    Module(ForgeConfigSpec.Builder configBuilder, String id, String name) {
-        this.id = new ResourceLocation(id);
+    Module(String modId, String moduleId, String name, ModConfig.Type modConfigType, ForgeConfigSpec.Builder configBuilder) {
+        this.id = new ResourceLocation(modId, moduleId);
         this.name = name;
         this.enabled = true;
         this.canBeDisabled = true;
+        this.modId = modId;
+        this.modConfigType = modConfigType;
         this.configBuilder = configBuilder;
 
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::readConfig);
@@ -49,12 +55,12 @@ public class Module {
     public static class Builder {
         private final Module module;
 
-        public Builder(ForgeConfigSpec.Builder configBuilder, String id, String name) {
-            this.module = new Module(configBuilder, id, name);
+        public Builder(String modId, String id, String name, ModConfig.Type modConfigType, ForgeConfigSpec.Builder configBuilder) {
+            this.module = new Module(modId, id, name, modConfigType, configBuilder);
         }
 
-        public static Builder create(ForgeConfigSpec.Builder configBuilder, String id, String name) {
-            return new Builder(configBuilder, id, name);
+        public static Builder create(String modId, String id, String name, ModConfig.Type modConfigType, ForgeConfigSpec.Builder configBuilder) {
+            return new Builder(modId, id, name, modConfigType, configBuilder);
         }
 
         public Builder setDescription(String description) {
@@ -119,6 +125,10 @@ public class Module {
     }
 
     public void readConfig(final ModConfigEvent event) {
+        if (event.getConfig().getType() != this.modConfigType
+            || !event.getConfig().getModId().equals(this.modId))
+            return;
+
         if (canBeDisabled)
             this.enabled = enabledConfig.get();
         else

@@ -10,6 +10,7 @@ import net.minecraft.world.level.material.Fluid;
 import net.minecraftforge.common.ForgeConfigSpec;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -22,6 +23,14 @@ public class Blacklist {
 	public Blacklist(List<IdTagMatcher> blacklist, boolean blacklistAsWhitelist) {
 		this.blacklist = blacklist;
 		this.blacklistAsWhitelist = blacklistAsWhitelist;
+	}
+
+	public Blacklist(List<IdTagMatcher> blacklist) {
+		this(blacklist, false);
+	}
+
+	public Blacklist() {
+		this(Collections.emptyList(), false);
 	}
 
 	public List<String> getStringList() {

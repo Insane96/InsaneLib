@@ -1,6 +1,10 @@
 InsaneLib's Changelog
 
-## Upcoming
+## 1.7.1
+* Allow different config types in modules
+* Added more constructors to `Blacklist`
+
+## 1.7.0
 * Overhauled Modules, Features and Config Options registration
 
 ## 1.6.2
