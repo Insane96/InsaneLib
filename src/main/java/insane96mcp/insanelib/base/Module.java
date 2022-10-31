@@ -174,6 +174,10 @@ public class Module {
                         String moduleString = (String) annotationDataMap.get("module");
                         ResourceLocation moduleId = new ResourceLocation(moduleString);
                         Module module = Module.modules.get(moduleId);
+                        if (!Module.modules.containsKey(moduleId)) {
+                            LogHelper.warn("No module found with ID %s".formatted(module));
+                            return;
+                        }
                         if (module.modConfigType != modConfigType)
                             return;
 
