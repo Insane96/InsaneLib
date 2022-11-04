@@ -15,6 +15,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 
 public class Feature {
     private final String name;
@@ -194,6 +195,19 @@ public class Feature {
         }
         catch (Exception e) {
             throw new RuntimeException("Failed to set config option for %s".formatted(curField), e);
+        }
+    }
+
+    public void setConfig(String configName, Object value) {
+        Optional<ConfigOption<?>> configOptionOptional = this.configOptions.values()
+                .stream()
+                .filter(configOption -> configOption.name.equals(configName))
+                .findFirst();
+        if (configOptionOptional.isEmpty()) {
+            LogHelper.warn("Feature#setConfig failed as %s was not found".formatted(configName));
+        }
+        else {
+            configOptionOptional.get().set(value);
         }
     }
 

@@ -19,6 +19,8 @@ public abstract class ConfigOption<T> {
 
     public abstract T get();
 
+    public abstract void set(Object value);
+
     @Override
     public String toString() {
         return "ConfigOpt{name='%s'}".formatted(name);
@@ -26,7 +28,7 @@ public abstract class ConfigOption<T> {
 
     public static class GenericOption extends ConfigOption<Object> {
 
-        public final ForgeConfigSpec.ConfigValue<?> valueConfig;
+        public final ForgeConfigSpec.ConfigValue<Object> valueConfig;
 
         public GenericOption(ForgeConfigSpec.Builder builder, String name, String description, Object defaultValue) {
             super(builder, name, description);
@@ -36,6 +38,11 @@ public abstract class ConfigOption<T> {
         @Override
         public Object get() {
             return this.valueConfig.get();
+        }
+
+        @Override
+        public void set(Object value) {
+            this.valueConfig.set(value);
         }
     }
 
@@ -51,6 +58,11 @@ public abstract class ConfigOption<T> {
         public java.lang.Double get() {
             return valueConfig.get();
         }
+
+        @Override
+        public void set(Object value) {
+            this.valueConfig.set((Double) value);
+        }
     }
 
     public static class IntOption extends ConfigOption<Integer> {
@@ -64,6 +76,11 @@ public abstract class ConfigOption<T> {
 
         public Integer get() {
             return valueConfig.get();
+        }
+
+        @Override
+        public void set(Object value) {
+            this.valueConfig.set((Integer) value);
         }
     }
 
@@ -79,6 +96,11 @@ public abstract class ConfigOption<T> {
         public Boolean get() {
             return valueConfig.get();
         }
+
+        @Override
+        public void set(Object value) {
+            this.valueConfig.set((Boolean) value);
+        }
     }
 
     public static class StringOption extends ConfigOption<String> {
@@ -92,6 +114,11 @@ public abstract class ConfigOption<T> {
 
         public String get() {
             return valueConfig.get();
+        }
+
+        @Override
+        public void set(Object value) {
+            this.valueConfig.set((String) value);
         }
     }
 
@@ -107,6 +134,11 @@ public abstract class ConfigOption<T> {
         public List<? extends String> get() {
             return valueConfig.get();
         }
+
+        @Override
+        public void set(Object value) {
+            this.valueConfig.set((List<? extends String>) value);
+        }
     }
 
     public static class EnumOption<T extends Enum<T>> extends ConfigOption<T> {
@@ -121,6 +153,11 @@ public abstract class ConfigOption<T> {
         @Override
         public T get() {
             return valueConfig.get();
+        }
+
+        @Override
+        public void set(Object value) {
+            this.valueConfig.set((T) value);
         }
     }
 }

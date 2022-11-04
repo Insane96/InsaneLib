@@ -287,6 +287,11 @@ public class IdTagMatcher {
         public IdTagMatcher get() {
             return IdTagMatcher.parseLine(idTagMatcherValue.get());
         }
+
+        @Override
+        public void set(Object value) {
+            this.idTagMatcherValue.set(((IdTagMatcher)value).asString());
+        }
     }
 
     public enum Type {

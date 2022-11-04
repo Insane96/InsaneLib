@@ -126,6 +126,14 @@ public class Blacklist {
 		return isInBlacklist || (!isInWhitelist && this.blacklistAsWhitelist);
 	}
 
+	public List<? extends String> getListAsString() {
+		ArrayList<String> list = new ArrayList<>();
+		for (IdTagMatcher idTagMatcher : this.blacklist) {
+			list.add(idTagMatcher.asString());
+		}
+		return list;
+	}
+
 	public static class Config extends ConfigOption<Blacklist> {
 		public ForgeConfigSpec.ConfigValue<List<? extends String>> listConfig;
 		public ForgeConfigSpec.ConfigValue<Boolean> listAsWhitelistConfig;
@@ -141,6 +149,13 @@ public class Blacklist {
 		@Override
 		public Blacklist get() {
 			return new Blacklist((ArrayList<IdTagMatcher>) IdTagMatcher.parseStringList(this.listConfig.get()), this.listAsWhitelistConfig.get());
+		}
+
+		@Override
+		public void set(Object value) {
+			Blacklist blacklist = (Blacklist) value;
+			this.listConfig.set(blacklist.getListAsString());
+			this.listAsWhitelistConfig.set(blacklist.blacklistAsWhitelist);
 		}
 	}
 }

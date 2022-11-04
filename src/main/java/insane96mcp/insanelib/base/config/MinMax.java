@@ -49,5 +49,12 @@ public class MinMax {
         public MinMax get() {
             return new MinMax(minConfig.get(), maxConfig.get());
         }
+
+        @Override
+        public void set(Object value) {
+            MinMax minMax = (MinMax) value;
+            this.minConfig.set(minMax.min);
+            this.maxConfig.set(minMax.max);
+        }
     }
 }
