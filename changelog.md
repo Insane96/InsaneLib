@@ -1,5 +1,8 @@
 InsaneLib's Changelog
 
+## 1.7.2
+* Added a way to set config values
+
 ## 1.7.1
 * Allow different config types in modules
 * Added more constructors to `Blacklist`
