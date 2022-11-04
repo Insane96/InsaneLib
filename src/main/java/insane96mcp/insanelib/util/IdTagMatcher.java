@@ -1,10 +1,16 @@
 package insane96mcp.insanelib.util;
 
 
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParseException;
+import com.google.gson.annotations.JsonAdapter;
 import insane96mcp.insanelib.base.ConfigOption;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
+import net.minecraft.util.GsonHelper;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
@@ -21,6 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+@JsonAdapter(IdTagMatcher.Deserializer.class)
 public class IdTagMatcher {
     public Type type;
     public ResourceLocation location;
@@ -49,7 +56,7 @@ public class IdTagMatcher {
     }
 
     /**
-     * Returns null if can't parse the line
+     * Returns null if it can't parse the line
      */
     @Nullable
     public static IdTagMatcher parseLine(String line) {
@@ -285,5 +292,47 @@ public class IdTagMatcher {
     public enum Type {
         ID,
         TAG
+    }
+
+    public static class Deserializer implements JsonDeserializer<IdTagMatcher> {
+        @Override
+        public IdTagMatcher deserialize(JsonElement json, java.lang.reflect.Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+            String id = GsonHelper.getAsString(json.getAsJsonObject(), "id", "");
+            String tag = GsonHelper.getAsString(json.getAsJsonObject(), "tag", "");
+            String dimension = GsonHelper.getAsString(json.getAsJsonObject(), "dimension", "");
+
+            if (!id.equals("") && !ResourceLocation.isValidResourceLocation(id)) {
+                throw new JsonParseException("Invalid id for IdTagMatcher: %s".formatted(id));
+            }
+            if (!tag.equals("") && !ResourceLocation.isValidResourceLocation(id)) {
+                throw new JsonParseException("Invalid tag for IdTagMatcher: %s".formatted(tag));
+            }
+            if (!dimension.equals("") && !ResourceLocation.isValidResourceLocation(dimension)) {
+                throw new JsonParseException("Invalid dimension for IdTagMatcher: %s".formatted(dimension));
+            }
+
+            if (!id.equals("") && !tag.equals("")){
+                throw new JsonParseException("Invalid IdTagMatcher containing both tag (%s) and id (%s)".formatted(tag, id));
+            }
+            else if (!id.equals("")) {
+                if (dimension.equals("")) {
+                    return new IdTagMatcher(Type.ID, id);
+                }
+                else {
+                    return new IdTagMatcher(Type.ID, id, dimension);
+                }
+            }
+            else if (!tag.equals("")){
+                if (dimension.equals("")) {
+                    return new IdTagMatcher(Type.TAG, tag);
+                }
+                else {
+                    return new IdTagMatcher(Type.TAG, tag, dimension);
+                }
+            }
+            else {
+                throw new JsonParseException("Invalid IdTagMatcher missing either tag and id");
+            }
+        }
     }
 }
