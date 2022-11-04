@@ -65,6 +65,7 @@ public class Feature {
         return this.module.configBuilder;
     }
 
+    //TODO Get Or just set config option
     HashMap<Field, ConfigOption<?>> configOptions = new HashMap<>();
 
     /**
