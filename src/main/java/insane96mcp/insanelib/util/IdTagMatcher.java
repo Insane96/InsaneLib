@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+// TODO Make serializable
 public class IdTagMatcher {
     public Type type;
     public ResourceLocation location;
@@ -49,7 +50,7 @@ public class IdTagMatcher {
     }
 
     /**
-     * Returns null if can't parse the line
+     * Returns null if it can't parse the line
      */
     @Nullable
     public static IdTagMatcher parseLine(String line) {
