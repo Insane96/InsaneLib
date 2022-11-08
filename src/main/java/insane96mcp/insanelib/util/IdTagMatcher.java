@@ -4,6 +4,7 @@ package insane96mcp.insanelib.util;
 import com.google.gson.*;
 import com.google.gson.annotations.JsonAdapter;
 import insane96mcp.insanelib.base.ConfigOption;
+import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
@@ -193,24 +194,18 @@ public class IdTagMatcher {
         return false;
     }
 
-    public boolean matchesBiome(Biome biome) {
+    public boolean matchesBiome(Holder<Biome> biome) {
         return matchesBiome(biome, null);
     }
 
-    public boolean matchesBiome(Biome biome, @Nullable ResourceLocation dimensionId) {
+    public boolean matchesBiome(Holder<Biome> biome, @Nullable ResourceLocation dimensionId) {
         if (this.type == Type.TAG) {
             TagKey<Biome> tagKey = TagKey.create(Registry.BIOME_REGISTRY, this.location);
-            ITag<Biome> tag = ForgeRegistries.BIOMES.tags().getTag(tagKey);
-            if (!tag.contains(biome))
-                return false;
-            return this.dimension == null || this.dimension.equals(dimensionId);
+            return biome.is(tagKey) && (this.dimension == null || this.dimension.equals(dimensionId));
         }
         else {
-            ResourceLocation id = ForgeRegistries.BIOMES.getKey(biome);
-            if (id != null && id.equals(this.location))
-                return this.dimension == null || this.dimension.equals(dimensionId);
+            return biome.is(this.location) && (this.dimension == null || this.dimension.equals(dimensionId));
         }
-        return false;
     }
 
     public boolean matchesEnchantment(Enchantment enchantment) {
