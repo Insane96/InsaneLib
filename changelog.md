@@ -2,6 +2,7 @@ InsaneLib's Changelog
 
 ## 1.7.2
 * Added a way to set config values
+* IdTagMatcher can now be deserialized as a simple string
 
 ## 1.7.1
 * Allow different config types in modules

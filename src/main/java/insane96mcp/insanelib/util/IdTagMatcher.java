@@ -302,6 +302,11 @@ public class IdTagMatcher {
     public static class Deserializer implements JsonDeserializer<IdTagMatcher> {
         @Override
         public IdTagMatcher deserialize(JsonElement json, java.lang.reflect.Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+            if (json.isJsonPrimitive()) {
+                String s = json.getAsString();
+                return new IdTagMatcher(s.startsWith("#") ? Type.TAG : Type.ID, s.replace("#", ""));
+            }
+
             String id = GsonHelper.getAsString(json.getAsJsonObject(), "id", "");
             String tag = GsonHelper.getAsString(json.getAsJsonObject(), "tag", "");
             String dimension = GsonHelper.getAsString(json.getAsJsonObject(), "dimension", "");
