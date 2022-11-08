@@ -344,5 +344,7 @@ public class IdTagMatcher {
                 throw new JsonParseException("Invalid IdTagMatcher missing either tag and id");
             }
         }
+
+        //TODO Serialize
     }
 }
