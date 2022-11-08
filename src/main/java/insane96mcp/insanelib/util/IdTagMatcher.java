@@ -1,10 +1,7 @@
 package insane96mcp.insanelib.util;
 
 
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParseException;
+import com.google.gson.*;
 import com.google.gson.annotations.JsonAdapter;
 import insane96mcp.insanelib.base.ConfigOption;
 import net.minecraft.core.Registry;
@@ -27,7 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-@JsonAdapter(IdTagMatcher.Deserializer.class)
+@JsonAdapter(IdTagMatcher.Serializer.class)
 public class IdTagMatcher {
     public Type type;
     public ResourceLocation location;
@@ -299,7 +296,7 @@ public class IdTagMatcher {
         TAG
     }
 
-    public static class Deserializer implements JsonDeserializer<IdTagMatcher> {
+    public static class Serializer implements JsonDeserializer<IdTagMatcher>, JsonSerializer<IdTagMatcher> {
         @Override
         public IdTagMatcher deserialize(JsonElement json, java.lang.reflect.Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
             if (json.isJsonPrimitive()) {
@@ -345,6 +342,19 @@ public class IdTagMatcher {
             }
         }
 
-        //TODO Serialize
+        @Override
+        public JsonElement serialize(IdTagMatcher src, java.lang.reflect.Type typeOfSrc, JsonSerializationContext context) {
+            JsonObject jsonObject = new JsonObject();
+            if (src.type == Type.ID) {
+                jsonObject.addProperty("id", src.location.toString());
+            }
+            else if (src.type == Type.TAG) {
+                jsonObject.addProperty("tag", src.location.toString());
+            }
+            if (src.dimension != null) {
+                jsonObject.addProperty("dimension", src.dimension.toString());
+            }
+            return jsonObject;
+        }
     }
 }
