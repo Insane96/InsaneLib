@@ -12,6 +12,8 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraftforge.common.ForgeConfigSpec;
@@ -185,6 +187,46 @@ public class IdTagMatcher {
         }
         else {
             ResourceLocation id = ForgeRegistries.ENTITY_TYPES.getKey(entityType);
+            if (id != null && id.equals(this.location))
+                return this.dimension == null || this.dimension.equals(dimensionId);
+        }
+        return false;
+    }
+
+    public boolean matchesBiome(Biome biome) {
+        return matchesBiome(biome, null);
+    }
+
+    public boolean matchesBiome(Biome biome, @Nullable ResourceLocation dimensionId) {
+        if (this.type == Type.TAG) {
+            TagKey<Biome> tagKey = TagKey.create(Registry.BIOME_REGISTRY, this.location);
+            ITag<Biome> tag = ForgeRegistries.BIOMES.tags().getTag(tagKey);
+            if (!tag.contains(biome))
+                return false;
+            return this.dimension == null || this.dimension.equals(dimensionId);
+        }
+        else {
+            ResourceLocation id = ForgeRegistries.BIOMES.getKey(biome);
+            if (id != null && id.equals(this.location))
+                return this.dimension == null || this.dimension.equals(dimensionId);
+        }
+        return false;
+    }
+
+    public boolean matchesEnchantment(Enchantment enchantment) {
+        return matchesEnchantment(enchantment, null);
+    }
+
+    public boolean matchesEnchantment(Enchantment enchantment, @Nullable ResourceLocation dimensionId) {
+        if (this.type == Type.TAG) {
+            TagKey<Enchantment> tagKey = TagKey.create(Registry.ENCHANTMENT_REGISTRY, this.location);
+            ITag<Enchantment> tag = ForgeRegistries.ENCHANTMENTS.tags().getTag(tagKey);
+            if (!tag.contains(enchantment))
+                return false;
+            return this.dimension == null || this.dimension.equals(dimensionId);
+        }
+        else {
+            ResourceLocation id = ForgeRegistries.ENCHANTMENTS.getKey(enchantment);
             if (id != null && id.equals(this.location))
                 return this.dimension == null || this.dimension.equals(dimensionId);
         }
