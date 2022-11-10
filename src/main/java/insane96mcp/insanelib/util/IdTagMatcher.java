@@ -228,6 +228,10 @@ public class IdTagMatcher {
         return false;
     }
 
+    public boolean matchesDimension(ResourceLocation dimension) {
+        return this.dimension == null || this.dimension.equals(dimension);
+    }
+
     public List<Block> getAllBlocks() {
         List<Block> blocks = new ArrayList<>();
         if (this.type == Type.ID) {
