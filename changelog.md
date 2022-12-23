@@ -1,5 +1,8 @@
 InsaneLib's Changelog
 
+## 1.7.3
+* Updated to 1.19.3
+
 ## 1.7.2
 * Added a way to set config values
 * IdTagMatcher can now be deserialized as a simple string

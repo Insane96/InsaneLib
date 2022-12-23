@@ -5,7 +5,7 @@ import com.google.gson.*;
 import com.google.gson.annotations.JsonAdapter;
 import insane96mcp.insanelib.base.ConfigOption;
 import net.minecraft.core.Holder;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.GsonHelper;
@@ -114,7 +114,7 @@ public class IdTagMatcher {
 
     public boolean matchesBlock(Block block, @Nullable ResourceLocation dimensionId) {
         if (this.type == Type.TAG) {
-            TagKey<Block> tagKey = TagKey.create(Registry.BLOCK_REGISTRY, this.location);
+            TagKey<Block> tagKey = TagKey.create(Registries.BLOCK, this.location);
             ITag<Block> tag = ForgeRegistries.BLOCKS.tags().getTag(tagKey);
             if (!tag.contains(block))
                 return false;
@@ -134,7 +134,7 @@ public class IdTagMatcher {
 
     public boolean matchesItem(Item item, @Nullable ResourceLocation dimensionId) {
         if (this.type == Type.TAG) {
-            TagKey<Item> tagKey = TagKey.create(Registry.ITEM_REGISTRY, this.location);
+            TagKey<Item> tagKey = TagKey.create(Registries.ITEM, this.location);
             ITag<Item> tag = ForgeRegistries.ITEMS.tags().getTag(tagKey);
             if (!tag.contains(item))
                 return false;
@@ -154,7 +154,7 @@ public class IdTagMatcher {
 
     public boolean matchesFluid(Fluid fluid, @Nullable ResourceLocation dimensionId) {
         if (this.type == Type.TAG) {
-            TagKey<Fluid> tagKey = TagKey.create(Registry.FLUID_REGISTRY, this.location);
+            TagKey<Fluid> tagKey = TagKey.create(Registries.FLUID, this.location);
             ITag<Fluid> fluidTag = ForgeRegistries.FLUIDS.tags().getTag(tagKey);
             if (!fluidTag.contains(fluid))
                 return false;
@@ -180,7 +180,7 @@ public class IdTagMatcher {
 
     public boolean matchesEntity(EntityType<?> entityType, @Nullable ResourceLocation dimensionId) {
         if (this.type == Type.TAG) {
-            TagKey<EntityType<?>> tagKey = TagKey.create(Registry.ENTITY_TYPE_REGISTRY, this.location);
+            TagKey<EntityType<?>> tagKey = TagKey.create(Registries.ENTITY_TYPE, this.location);
             ITag<EntityType<?>> tag = ForgeRegistries.ENTITY_TYPES.tags().getTag(tagKey);
             if (!tag.contains(entityType))
                 return false;
@@ -200,7 +200,7 @@ public class IdTagMatcher {
 
     public boolean matchesBiome(Holder<Biome> biome, @Nullable ResourceLocation dimensionId) {
         if (this.type == Type.TAG) {
-            TagKey<Biome> tagKey = TagKey.create(Registry.BIOME_REGISTRY, this.location);
+            TagKey<Biome> tagKey = TagKey.create(Registries.BIOME, this.location);
             return biome.is(tagKey) && (this.dimension == null || this.dimension.equals(dimensionId));
         }
         else {
@@ -214,7 +214,7 @@ public class IdTagMatcher {
 
     public boolean matchesEnchantment(Enchantment enchantment, @Nullable ResourceLocation dimensionId) {
         if (this.type == Type.TAG) {
-            TagKey<Enchantment> tagKey = TagKey.create(Registry.ENCHANTMENT_REGISTRY, this.location);
+            TagKey<Enchantment> tagKey = TagKey.create(Registries.ENCHANTMENT, this.location);
             ITag<Enchantment> tag = ForgeRegistries.ENCHANTMENTS.tags().getTag(tagKey);
             if (!tag.contains(enchantment))
                 return false;
@@ -242,7 +242,7 @@ public class IdTagMatcher {
                 blocks.add(block);
         }
         else {
-            TagKey<Block> tagKey = TagKey.create(Registry.BLOCK_REGISTRY, this.location);
+            TagKey<Block> tagKey = TagKey.create(Registries.BLOCK, this.location);
             ITag<Block> blockTag = ForgeRegistries.BLOCKS.tags().getTag(tagKey);
             blocks.addAll(blockTag.stream().toList());
         }
@@ -259,7 +259,7 @@ public class IdTagMatcher {
                 items.add(item);
         }
         else {
-            TagKey<Item> tagKey = TagKey.create(Registry.ITEM_REGISTRY, this.location);
+            TagKey<Item> tagKey = TagKey.create(Registries.ITEM, this.location);
             ITag<Item> itemTag = ForgeRegistries.ITEMS.tags().getTag(tagKey);
             items.addAll(itemTag.stream().toList());
         }
@@ -282,7 +282,7 @@ public class IdTagMatcher {
                 fluids.add(fluid);
         }
         else {
-            TagKey<Fluid> tagKey = TagKey.create(Registry.FLUID_REGISTRY, this.location);
+            TagKey<Fluid> tagKey = TagKey.create(Registries.FLUID, this.location);
             ITag<Fluid> fluidTag = ForgeRegistries.FLUIDS.tags().getTag(tagKey);
             fluids.addAll(fluidTag.stream().toList());
         }
@@ -305,7 +305,7 @@ public class IdTagMatcher {
                 entityTypes.add(entityType);
         }
         else {
-            TagKey<EntityType<?>> tagKey = TagKey.create(Registry.ENTITY_TYPE_REGISTRY, this.location);
+            TagKey<EntityType<?>> tagKey = TagKey.create(Registries.ENTITY_TYPE, this.location);
             ITag<EntityType<?>> entityTag = ForgeRegistries.ENTITY_TYPES.tags().getTag(tagKey);
             entityTypes.addAll(entityTag.stream().toList());
         }
