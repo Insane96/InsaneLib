@@ -1,5 +1,8 @@
 InsaneLib's Changelog
 
+## 1.5.3
+* Fixed getAllItems/Blocks/Entities/Fluids returning air when the entry was not in the registry
+
 ## 1.5.2
 * Fixed dimension check begin wrong for IdTagMatcher
 
