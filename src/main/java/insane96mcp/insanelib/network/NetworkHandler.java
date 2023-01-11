@@ -15,6 +15,6 @@ public class NetworkHandler {
             .simpleChannel();
 
     public static void init() {
-        CHANNEL.registerMessage(1, MessageCreeperFuseSync.class, MessageCreeperFuseSync::encode, MessageCreeperFuseSync::decode, MessageCreeperFuseSync::handle);
+        CHANNEL.registerMessage(1, MessageCreeperDataSync.class, MessageCreeperDataSync::encode, MessageCreeperDataSync::decode, MessageCreeperDataSync::handle);
     }
 }
