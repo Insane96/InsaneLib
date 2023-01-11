@@ -1,11 +1,13 @@
 package insane96mcp.insanelib;
 
+import insane96mcp.insanelib.network.NetworkHandler;
 import insane96mcp.insanelib.setup.ClientSetup;
 import insane96mcp.insanelib.setup.Config;
 import insane96mcp.insanelib.setup.ILEntities;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -20,7 +22,12 @@ public class InsaneLib
     public InsaneLib() {
         ModLoadingContext.get().registerConfig(net.minecraftforge.fml.config.ModConfig.Type.COMMON, Config.COMMON_SPEC);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(ClientSetup::init);
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::preInit);
         final IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
         ILEntities.ENTITIES.register(modEventBus);
+    }
+
+    public void preInit(FMLCommonSetupEvent event) {
+        NetworkHandler.init();
     }
 }

@@ -1,5 +1,8 @@
 InsaneLib's Changelog
 
+## 1.7.4
+* Added Creeper Data Sync network message
+
 ## 1.7.3
 * Updated to 1.19.3
 
