@@ -2,8 +2,6 @@ package insane96mcp.insanelib.util;
 
 import net.minecraft.util.RandomSource;
 
-import java.util.Random;
-
 public class MathHelper {
 	public static double round(double value, int places) {
 		double scale = Math.pow(10, places);

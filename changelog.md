@@ -1,5 +1,8 @@
 InsaneLib's Changelog
 
+## 1.7.5
+* Fixed some leftover Randoms
+
 ## 1.7.2
 * Added a way to set config values
 * IdTagMatcher can now be deserialized as a simple string
