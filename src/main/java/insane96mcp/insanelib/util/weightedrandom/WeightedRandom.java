@@ -1,10 +1,10 @@
 package insane96mcp.insanelib.util.weightedrandom;
 
 import net.minecraft.Util;
+import net.minecraft.util.RandomSource;
 
 import javax.annotation.Nullable;
 import java.util.List;
-import java.util.Random;
 
 public class WeightedRandom {
 	/**
@@ -20,11 +20,11 @@ public class WeightedRandom {
 		return totalWeight;
 	}
 
-	public static <T extends IWeightedRandom> T getRandomItem(Random random, List<T> list) {
+	public static <T extends IWeightedRandom> T getRandomItem(RandomSource random, List<T> list) {
 		return getRandomItem(random, list, getTotalWeight(list));
 	}
 
-	public static <T extends IWeightedRandom> T getRandomItem(Random random, List<T> list, int totalWeight) {
+	public static <T extends IWeightedRandom> T getRandomItem(RandomSource random, List<T> list, int totalWeight) {
 		if (totalWeight <= 0) {
 			throw Util.pauseInIde(new IllegalArgumentException());
 		}
