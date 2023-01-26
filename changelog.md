@@ -1,5 +1,8 @@
 InsaneLib's Changelog
 
+## 1.8.0
+* Bump version for Minecraft 1.19.3. 1.8.x+ is now 1.19.3 and 1.7.x it's 1.19.2
+
 ## 1.7.4
 * Added Creeper Data Sync network message
 
