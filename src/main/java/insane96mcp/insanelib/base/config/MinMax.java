@@ -1,9 +1,12 @@
 package insane96mcp.insanelib.base.config;
 
 import insane96mcp.insanelib.base.ConfigOption;
+import insane96mcp.insanelib.util.ConfigUtils;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraftforge.common.ForgeConfigSpec;
+
+import java.util.List;
 
 public class MinMax {
     public double min, max;
@@ -39,10 +42,11 @@ public class MinMax {
 
         public Config(ForgeConfigSpec.Builder builder, String name, String description, MinMax defaultValue, double rangeMin, double rangeMax) {
             super(builder, name, description);
-            builder.push(name);
+            List<String> split = ConfigUtils.split(name);
+            builder.push(split);
             minConfig = builder.defineInRange("Minimum", defaultValue.min, rangeMin, rangeMax);
             maxConfig = builder.defineInRange("Maximum", defaultValue.max, rangeMin, rangeMax);
-            builder.pop();
+            builder.pop(split.size());
         }
 
         @Override

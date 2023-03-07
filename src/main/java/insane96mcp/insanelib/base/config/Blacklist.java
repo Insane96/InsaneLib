@@ -1,6 +1,7 @@
 package insane96mcp.insanelib.base.config;
 
 import insane96mcp.insanelib.base.ConfigOption;
+import insane96mcp.insanelib.util.ConfigUtils;
 import insane96mcp.insanelib.util.IdTagMatcher;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -140,10 +141,11 @@ public class Blacklist {
 
 		public Config(ForgeConfigSpec.Builder builder, String name, String description, Blacklist defaultValue) {
 			super(builder, name, description);
-			builder.push(name);
+			List<String> split = ConfigUtils.split(name);
+			builder.push(split);
 			listConfig = builder.defineList("Blacklist", defaultValue.getStringList(), o -> o instanceof String);
 			listAsWhitelistConfig = builder.comment("If true the list will be treated as a whitelist instead of blacklist").define("List as Whitelist", defaultValue.blacklistAsWhitelist);
-			builder.pop();
+			builder.pop(split.size());
 		}
 
 		@Override
