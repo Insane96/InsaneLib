@@ -1,6 +1,7 @@
 InsaneLib's Changelog
 
 ## 1.8.1
+* Added ILItemTier
 * Fixed nested Blacklist and MinMax configs not popping the path correctly
 
 ## 1.8.0
