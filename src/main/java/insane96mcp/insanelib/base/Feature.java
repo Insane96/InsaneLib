@@ -10,6 +10,7 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.event.config.ModConfigEvent;
 
+import javax.annotation.Nullable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -198,17 +199,23 @@ public class Feature {
         }
     }
 
-    public void setConfig(String configName, Object value) {
+    public void setConfigOption(String configName, Object value) {
+        ConfigOption<?> configOption = getConfigOption(configName);
+        if (configOption == null) {
+            LogHelper.warn("Feature#setConfig failed as %s was not found".formatted(configName));
+            return;
+        }
+
+        configOption.set(value);
+    }
+
+    @Nullable
+    public ConfigOption<?> getConfigOption(String configName) {
         Optional<ConfigOption<?>> configOptionOptional = this.configOptions.values()
                 .stream()
                 .filter(configOption -> configOption.name.equals(configName))
                 .findFirst();
-        if (configOptionOptional.isEmpty()) {
-            LogHelper.warn("Feature#setConfig failed as %s was not found".formatted(configName));
-        }
-        else {
-            configOptionOptional.get().set(value);
-        }
+        return configOptionOptional.orElse(null);
     }
 
     public void pushConfig() {
