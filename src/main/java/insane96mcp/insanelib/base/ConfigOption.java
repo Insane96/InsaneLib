@@ -2,6 +2,7 @@ package insane96mcp.insanelib.base;
 
 import net.minecraftforge.common.ForgeConfigSpec;
 
+import javax.annotation.Nullable;
 import java.util.List;
 
 public abstract class ConfigOption<T> {
@@ -20,6 +21,12 @@ public abstract class ConfigOption<T> {
     public abstract T get();
 
     public abstract void set(Object value);
+
+    /**
+     * Return the path of the config if the config is a simple one with one ConfigValue
+     */
+    @Nullable
+    public abstract List<String> getConfigPath();
 
     @Override
     public String toString() {
@@ -44,6 +51,12 @@ public abstract class ConfigOption<T> {
         public void set(Object value) {
             this.valueConfig.set(value);
         }
+
+        @Nullable
+        @Override
+        public List<String> getConfigPath() {
+            return valueConfig.getPath();
+        }
     }
 
     public static class DoubleOption extends ConfigOption<java.lang.Double> {
@@ -62,6 +75,12 @@ public abstract class ConfigOption<T> {
         @Override
         public void set(Object value) {
             this.valueConfig.set((Double) value);
+        }
+
+        @Nullable
+        @Override
+        public List<String> getConfigPath() {
+            return valueConfig.getPath();
         }
     }
 
@@ -82,6 +101,12 @@ public abstract class ConfigOption<T> {
         public void set(Object value) {
             this.valueConfig.set((Integer) value);
         }
+
+        @Nullable
+        @Override
+        public List<String> getConfigPath() {
+            return valueConfig.getPath();
+        }
     }
 
     public static class BoolOption extends ConfigOption<Boolean> {
@@ -100,6 +125,12 @@ public abstract class ConfigOption<T> {
         @Override
         public void set(Object value) {
             this.valueConfig.set((Boolean) value);
+        }
+
+        @Nullable
+        @Override
+        public List<String> getConfigPath() {
+            return valueConfig.getPath();
         }
     }
 
@@ -120,6 +151,12 @@ public abstract class ConfigOption<T> {
         public void set(Object value) {
             this.valueConfig.set((String) value);
         }
+
+        @Nullable
+        @Override
+        public List<String> getConfigPath() {
+            return valueConfig.getPath();
+        }
     }
 
     public static class StringListOption extends ConfigOption<List<? extends String>> {
@@ -138,6 +175,12 @@ public abstract class ConfigOption<T> {
         @Override
         public void set(Object value) {
             this.valueConfig.set((List<? extends String>) value);
+        }
+
+        @Nullable
+        @Override
+        public List<String> getConfigPath() {
+            return valueConfig.getPath();
         }
     }
 
@@ -158,6 +201,12 @@ public abstract class ConfigOption<T> {
         @Override
         public void set(Object value) {
             this.valueConfig.set((T) value);
+        }
+
+        @Nullable
+        @Override
+        public List<String> getConfigPath() {
+            return valueConfig.getPath();
         }
     }
 }

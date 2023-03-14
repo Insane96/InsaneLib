@@ -1,6 +1,7 @@
 InsaneLib's Changelog
 
 ## 1.8.1
+* Added `ConfigOption#getConfigPath`
 * Added `ILItemTier`
 * Added `Feature#getConfigOption` (and renamed `Feature#setConfig` to `Feature#setConfigOption`)
 * Fixed nested Blacklist and MinMax configs not popping the path correctly

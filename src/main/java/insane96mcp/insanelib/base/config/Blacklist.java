@@ -10,6 +10,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraftforge.common.ForgeConfigSpec;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -158,6 +159,12 @@ public class Blacklist {
 			Blacklist blacklist = (Blacklist) value;
 			this.listConfig.set(blacklist.getListAsString());
 			this.listAsWhitelistConfig.set(blacklist.blacklistAsWhitelist);
+		}
+
+		@Nullable
+		@Override
+		public List<String> getConfigPath() {
+			return null;
 		}
 	}
 }

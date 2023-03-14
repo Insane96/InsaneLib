@@ -6,6 +6,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraftforge.common.ForgeConfigSpec;
 
+import javax.annotation.Nullable;
 import java.util.List;
 
 public class MinMax {
@@ -59,6 +60,12 @@ public class MinMax {
             MinMax minMax = (MinMax) value;
             this.minConfig.set(minMax.min);
             this.maxConfig.set(minMax.max);
+        }
+
+        @Nullable
+        @Override
+        public List<String> getConfigPath() {
+            return null;
         }
     }
 }

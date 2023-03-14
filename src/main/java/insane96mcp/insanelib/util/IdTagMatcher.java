@@ -330,6 +330,12 @@ public class IdTagMatcher {
         public void set(Object value) {
             this.idTagMatcherValue.set(((IdTagMatcher)value).asString());
         }
+
+        @Nullable
+        @Override
+        public List<String> getConfigPath() {
+            return idTagMatcherValue.getPath();
+        }
     }
 
     public enum Type {
