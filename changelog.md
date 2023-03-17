@@ -5,6 +5,7 @@ InsaneLib's Changelog
 * Added `ILMobEffect`
 * Added `Feature#getConfigOption` (and renamed `Feature#setConfig` to `Feature#setConfigOption`)
 * Fixed nested Blacklist and MinMax configs not popping the path correctly
+* Fixed `WeightedRandom` still using `Random` instead of `RandomSource`
 
 ## 1.8.0
 * Bump version for Minecraft 1.19.3. 1.8.x+ is now 1.19.3 and 1.7.x it's 1.19.2
