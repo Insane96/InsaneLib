@@ -2,7 +2,6 @@ package insane96mcp.insanelib.module.base.feature;
 
 import insane96mcp.insanelib.base.Feature;
 import insane96mcp.insanelib.base.Label;
-import insane96mcp.insanelib.base.Module;
 import insane96mcp.insanelib.base.config.Config;
 import insane96mcp.insanelib.base.config.LoadFeature;
 import insane96mcp.insanelib.util.MCUtils;
@@ -80,7 +79,7 @@ public class FixFeature extends Feature {
 		if (followRangeAttribute != null) {
 			for (WrappedGoal pGoal : mobEntity.targetSelector.availableGoals) {
 				if (pGoal.getGoal() instanceof NearestAttackableTargetGoal<? extends LivingEntity> nearestAttackableTargetGoal) {
-					nearestAttackableTargetGoal.targetConditions.range(mobEntity.getAttributeValue(Attributes.FOLLOW_RANGE));
+					nearestAttackableTargetGoal.targetConditions = nearestAttackableTargetGoal.targetConditions.copy().range(mobEntity.getAttributeValue(Attributes.FOLLOW_RANGE));
 				}
 			}
 		}
