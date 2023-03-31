@@ -8,6 +8,6 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
 public @interface Config {
-    double min() default Double.MIN_VALUE;
+    double min() default -Double.MAX_VALUE;
     double max() default Double.MAX_VALUE;
 }
