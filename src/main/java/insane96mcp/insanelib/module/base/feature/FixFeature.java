@@ -15,13 +15,14 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.WrappedGoal;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.monster.Zombie;
-import net.minecraftforge.event.TickEvent;
+import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.event.config.ModConfigEvent;
 
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 
 @LoadFeature(module = "insanelib:base")
@@ -86,22 +87,20 @@ public class FixFeature extends Feature {
 		}
 	}
 
-	@SubscribeEvent(priority = EventPriority.LOWEST)
-	public void onUpdate(TickEvent.PlayerTickEvent event) {
-		if (!this.isEnabled()
-				|| !fixFlyingSpeed
-				|| event.phase != TickEvent.Phase.START)
-			return;
+	public static Optional<Float> getFlyingSpeed(Player player) {
+		if (!Feature.isEnabled(FixFeature.class)
+				|| !fixFlyingSpeed)
+			return Optional.empty();
 
 		float baseFlyingSpeed = 0.02f;
-		if (event.player.isSprinting())
+		if (player.isSprinting())
 			baseFlyingSpeed += 0.006f;
 
-		double playerSpeedRatio = MCUtils.getMovementSpeedRatio(event.player);
+		double playerSpeedRatio = MCUtils.getMovementSpeedRatio(player);
 
 		if (playerSpeedRatio > 1d && slowdownOnly)
-			return;
+			return Optional.empty();
 
-		event.player.flyingSpeed = (float) (playerSpeedRatio * baseFlyingSpeed);
+		return Optional.of((float) (playerSpeedRatio * baseFlyingSpeed));
 	}
 }

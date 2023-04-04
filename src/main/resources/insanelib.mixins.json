@@ -4,6 +4,7 @@
 	"compatibilityLevel": "JAVA_8",
 	"refmap": "insanelib.refmap.json",
 	"mixins": [
+		"PlayerMixin"
 	],
 	"minVersion": "0.8"
 }

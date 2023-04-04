@@ -10,7 +10,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.level.Explosion;
 import net.minecraftforge.event.entity.living.LivingExperienceDropEvent;
-import net.minecraftforge.event.entity.living.LivingSpawnEvent;
+import net.minecraftforge.event.entity.living.MobSpawnEvent;
 import net.minecraftforge.event.level.ExplosionEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -44,10 +44,10 @@ public class TagsFeature extends Feature {
 	}
 
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
-	public void onSpawn(LivingSpawnEvent.CheckSpawn event) {
-		if (event.getSpawnReason() == MobSpawnType.SPAWNER)
+	public void onSpawn(MobSpawnEvent.FinalizeSpawn event) {
+		if (event.getSpawnType() == MobSpawnType.SPAWNER)
 			event.getEntity().getPersistentData().putBoolean(ILStrings.Tags.SPAWNED_FROM_SPAWNER, true);
-		if (event.getSpawnReason() == MobSpawnType.STRUCTURE)
+		if (event.getSpawnType() == MobSpawnType.STRUCTURE)
 			event.getEntity().getPersistentData().putBoolean(ILStrings.Tags.SPAWNED_FROM_STRUCTURE, true);
 	}
 

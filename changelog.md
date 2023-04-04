@@ -1,5 +1,8 @@
 InsaneLib's Changelog
 
+## 1.9.0
+* Port to 1.19.4
+
 ## 1.8.1
 * Added `ConfigOption#getConfigPath`
 * Added `ILItemTier`
