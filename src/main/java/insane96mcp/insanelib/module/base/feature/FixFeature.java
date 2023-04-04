@@ -1,5 +1,6 @@
 package insane96mcp.insanelib.module.base.feature;
 
+import insane96mcp.insanelib.ai.ILNearestAttackableTargetGoal;
 import insane96mcp.insanelib.base.Feature;
 import insane96mcp.insanelib.base.Label;
 import insane96mcp.insanelib.base.Module;
@@ -82,6 +83,9 @@ public class FixFeature extends Feature {
 			for (WrappedGoal pGoal : mobEntity.targetSelector.availableGoals) {
 				if (pGoal.getGoal() instanceof NearestAttackableTargetGoal<? extends LivingEntity> nearestAttackableTargetGoal) {
 					nearestAttackableTargetGoal.targetConditions.range(mobEntity.getAttributeValue(Attributes.FOLLOW_RANGE));
+				}
+				else if (pGoal.getGoal() instanceof ILNearestAttackableTargetGoal<? extends LivingEntity> nearestAttackableTarget) {
+					nearestAttackableTarget.targetEntitySelector.range(mobEntity.getAttributeValue(Attributes.FOLLOW_RANGE));
 				}
 			}
 		}
