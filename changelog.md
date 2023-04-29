@@ -1,5 +1,9 @@
 InsaneLib's Changelog
 
+## 1.9.1
+* Added Difficulty Config
+  * Holds easy normal and hard values
+
 ## 1.9.0
 * Port to 1.19.4
 

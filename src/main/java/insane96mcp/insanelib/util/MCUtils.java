@@ -18,7 +18,6 @@ import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.alchemy.PotionUtils;
 import net.minecraft.world.level.Level;
@@ -32,12 +31,14 @@ public class MCUtils {
 	/**
 	 * Returns the current speed of the player compared to his normal speed
 	 */
-	public static double getMovementSpeedRatio(Player player) {
+	public static double getMovementSpeedRatio(LivingEntity livingEntity) {
 		double baseMS = 0.1d;
-		if (player.isSprinting())
-			baseMS += 0.03f;
-		double playerMS = player.getAttributeValue(Attributes.MOVEMENT_SPEED);
-		return playerMS / baseMS;
+		if (livingEntity.isSprinting()) {
+			baseMS += 0.029999999329447746;
+		}
+
+		double entityMS = livingEntity.getAttributeValue(Attributes.MOVEMENT_SPEED);
+		return entityMS / baseMS;
 	}
 
 	/**
