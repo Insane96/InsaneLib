@@ -2,6 +2,7 @@ package insane96mcp.insanelib.base;
 
 import insane96mcp.insanelib.base.config.Blacklist;
 import insane96mcp.insanelib.base.config.Config;
+import insane96mcp.insanelib.base.config.Difficulty;
 import insane96mcp.insanelib.base.config.MinMax;
 import insane96mcp.insanelib.util.IdTagMatcher;
 import insane96mcp.insanelib.util.LogHelper;
@@ -126,6 +127,12 @@ public class Feature {
                     MinMax defaultValue = (MinMax) field.get(null);
                     MinMax.Config minMaxConfig = new MinMax.Config(this.getBuilder(), name, description, defaultValue, min, max);
                     this.configOptions.put(field, minMaxConfig);
+                }
+                else if (field.getType().isAssignableFrom(Difficulty.class))
+                {
+                    Difficulty defaultValue = (Difficulty) field.get(null);
+                    Difficulty.Config difficultyConfig = new Difficulty.Config(this.getBuilder(), name, description, defaultValue, min, max);
+                    this.configOptions.put(field, difficultyConfig);
                 }
                 else if (field.getType().isAssignableFrom(Blacklist.class))
                 {
