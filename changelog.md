@@ -3,6 +3,9 @@ InsaneLib's Changelog
 ## 1.10.0
 * Port to 1.20
 
+## 1.9.2
+* Added a way to enable/disable features via code (`Feature#disable`, `Feature#enable`)
+
 ## 1.9.1
 * Added Difficulty Config
   * Holds easy normal and hard values
