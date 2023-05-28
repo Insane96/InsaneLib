@@ -52,6 +52,20 @@ public class Feature {
         return this.module.isEnabled();
     }
 
+    /**
+     * Sets the "Enabled" config option to false
+     */
+    public void disable() {
+        this.enabledConfig.set(false);
+    }
+
+    /**
+     * Sets the "Enabled" config option to true
+     */
+    public void enable() {
+        this.enabledConfig.set(true);
+    }
+
     public Module getModule() {
         return module;
     }
@@ -68,7 +82,6 @@ public class Feature {
         return this.module.configBuilder;
     }
 
-    //TODO Get Or just set config option
     HashMap<Field, ConfigOption<?>> configOptions = new HashMap<>();
 
     /**
