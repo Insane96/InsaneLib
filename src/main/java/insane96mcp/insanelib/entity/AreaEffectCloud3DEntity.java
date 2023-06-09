@@ -27,7 +27,7 @@ public class AreaEffectCloud3DEntity extends AreaEffectCloud {
 	}
 
 	public AreaEffectCloud3DEntity(AreaEffectCloud areaEffectCloudEntity) {
-		this(ILEntities.AREA_EFFECT_CLOUD_3D.get(), areaEffectCloudEntity.level);
+		this(ILEntities.AREA_EFFECT_CLOUD_3D.get(), areaEffectCloudEntity.level());
 		this.setPos(areaEffectCloudEntity.getX(), areaEffectCloudEntity.getY(), areaEffectCloudEntity.getZ());
 		CompoundTag nbt = new CompoundTag();
 		areaEffectCloudEntity.saveAsPassenger(nbt);
@@ -45,7 +45,7 @@ public class AreaEffectCloud3DEntity extends AreaEffectCloud {
 	public void tick() {
 		boolean isWaiting = this.isWaiting();
 		float radius = this.getRadius();
-		if (this.level.isClientSide) {
+		if (this.level().isClientSide) {
 			ParticleOptions particleOptions = this.getParticle();
 			if (isWaiting) {
 				if (this.random.nextBoolean()) {
@@ -59,10 +59,10 @@ public class AreaEffectCloud3DEntity extends AreaEffectCloud {
 							int k = j >> 16 & 255;
 							int l = j >> 8 & 255;
 							int i1 = j & 255;
-							this.level.addParticle(particleOptions, this.getX() + (double)x, this.getY(), this.getZ() + (double)z, (double)((float)k / 255.0F), (double)((float)l / 255.0F), (double)((float)i1 / 255.0F));
+							this.level().addParticle(particleOptions, this.getX() + (double)x, this.getY(), this.getZ() + (double)z, (double)((float)k / 255.0F), (double)((float)l / 255.0F), (double)((float)i1 / 255.0F));
 						}
 						else {
-							this.level.addParticle(particleOptions, this.getX() + (double)x, this.getY(), this.getZ() + (double)z, 0.0D, 0.0D, 0.0D);
+							this.level().addParticle(particleOptions, this.getX() + (double)x, this.getY(), this.getZ() + (double)z, 0.0D, 0.0D, 0.0D);
 						}
 					}
 				}
@@ -84,9 +84,9 @@ public class AreaEffectCloud3DEntity extends AreaEffectCloud {
 						int i2 = l1 >> 16 & 255;
 						int j2 = l1 >> 8 & 255;
 						int j1 = l1 & 255;
-						this.level.addParticle(particleOptions, this.getX() + (double)x, this.getY() + (double)y, this.getZ() + (double)z, (float)i2 / 255.0F, (float)j2 / 255.0F, (float)j1 / 255.0F);
+						this.level().addParticle(particleOptions, this.getX() + (double)x, this.getY() + (double)y, this.getZ() + (double)z, (float)i2 / 255.0F, (float)j2 / 255.0F, (float)j1 / 255.0F);
 					} else {
-						this.level.addParticle(particleOptions, this.getX() + (double)x, this.getY() + (double)y, this.getZ() + (double)z, (0.5D - this.random.nextDouble()) * 0.15D, (double)0.01F, (0.5D - this.random.nextDouble()) * 0.15D);
+						this.level().addParticle(particleOptions, this.getX() + (double)x, this.getY() + (double)y, this.getZ() + (double)z, (0.5D - this.random.nextDouble()) * 0.15D, (double)0.01F, (0.5D - this.random.nextDouble()) * 0.15D);
 					}
 				}
 			}
@@ -129,7 +129,7 @@ public class AreaEffectCloud3DEntity extends AreaEffectCloud {
 				if (list.isEmpty()) {
 					this.victims.clear();
 				} else {
-					List<LivingEntity> list1 = this.level.getEntitiesOfClass(LivingEntity.class, this.getBoundingBox());
+					List<LivingEntity> list1 = this.level().getEntitiesOfClass(LivingEntity.class, this.getBoundingBox());
 					if (!list1.isEmpty()) {
 						for(LivingEntity livingentity : list1) {
 							if (!this.victims.containsKey(livingentity) && livingentity.isAffectedByPotions()) {

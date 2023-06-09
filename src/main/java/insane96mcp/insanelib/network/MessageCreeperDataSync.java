@@ -41,7 +41,7 @@ public class MessageCreeperDataSync {
         creeper.addAdditionalSaveData(compound);
 
         Object msg = new MessageCreeperDataSync(creeper.getId(), compound.getShort("Fuse"), compound.getByte("ExplosionRadius"));
-        for (Player player : creeper.level.players()) {
+        for (Player player : creeper.level().players()) {
             NetworkHandler.CHANNEL.sendTo(msg, ((ServerPlayer) player).connection.connection, NetworkDirection.PLAY_TO_CLIENT);
         }
     }

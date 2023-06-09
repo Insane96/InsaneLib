@@ -1,5 +1,8 @@
 InsaneLib's Changelog
 
+## 1.10.0
+* Port to 1.20
+
 ## 1.9.0
 * Port to 1.19.4
 
