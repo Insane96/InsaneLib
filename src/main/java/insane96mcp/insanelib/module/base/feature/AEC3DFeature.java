@@ -48,6 +48,6 @@ public class AEC3DFeature extends Feature {
 		AreaEffectCloud3DEntity areaEffectCloud3D = new AreaEffectCloud3DEntity(areaEffectCloud);
 
 		BlockableEventLoop<? super TickTask> executor = LogicalSidedProvider.WORKQUEUE.get(event.getLevel().isClientSide ? LogicalSide.CLIENT : LogicalSide.SERVER);
-		executor.tell(new TickTask(0, () -> areaEffectCloud3D.level.addFreshEntity(areaEffectCloud3D)));
+		executor.tell(new TickTask(0, () -> areaEffectCloud3D.level().addFreshEntity(areaEffectCloud3D)));
 	}
 }

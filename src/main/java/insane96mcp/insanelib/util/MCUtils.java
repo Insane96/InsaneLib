@@ -188,7 +188,7 @@ public class MCUtils {
 			boolean viable = true;
 			BlockPos p = new BlockPos(pos.getX(), y, pos.getZ());
 			for (int i = 0; i < height; i++) {
-				if (level.getBlockState(p.above(i)).getMaterial().blocksMotion()) {
+				if (level.getBlockState(p.above(i)).blocksMotion()) {
 					viable = false;
 					break;
 				}
@@ -196,7 +196,7 @@ public class MCUtils {
 			if (!viable)
 				continue;
 			fittingYPos = y;
-			if (!level.getBlockState(p.below()).getMaterial().blocksMotion())
+			if (!level.getBlockState(p.below()).blocksMotion())
 				continue;
 			return y;
 		}

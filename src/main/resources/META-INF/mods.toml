@@ -1,5 +1,5 @@
 modLoader="javafml"
-loaderVersion="[42,)"
+loaderVersion="[46,)"
 license="All rights reserved"
 issueTrackerURL="https://github.com/Insane96/InsaneLib/issues"
 
@@ -18,13 +18,13 @@ A Library mod used by Insane's Mods
 [[dependencies.insanelib]]
     modId="forge"
     mandatory=true
-    versionRange="[42,)"
+    versionRange="[46,)"
     ordering="NONE"
     side="BOTH"
     
 [[dependencies.insanelib]]
     modId="minecraft"
     mandatory=true
-    versionRange="[1.19.1,1.20)"
+    versionRange="[1.20,)"
     ordering="NONE"
     side="BOTH"
