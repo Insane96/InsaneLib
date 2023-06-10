@@ -2,6 +2,7 @@ package insane96mcp.insanelib.base;
 
 import insane96mcp.insanelib.base.config.Blacklist;
 import insane96mcp.insanelib.base.config.Config;
+import insane96mcp.insanelib.base.config.Difficulty;
 import insane96mcp.insanelib.base.config.MinMax;
 import insane96mcp.insanelib.util.IdTagMatcher;
 import insane96mcp.insanelib.util.LogHelper;
@@ -51,6 +52,28 @@ public class Feature {
         return this.module.isEnabled();
     }
 
+    /**
+     * Sets the "Enabled" config option to false
+     */
+    public void disable() {
+        if (!this.canBeDisabled) {
+            LogHelper.warn("Could not disable %s feature. canBeDisabled = false.", this.name);
+            return;
+        }
+        this.enabledConfig.set(false);
+    }
+
+    /**
+     * Sets the "Enabled" config option to true
+     */
+    public void enable() {
+        if (!this.canBeDisabled) {
+            LogHelper.warn("Could not enable %s feature. canBeDisabled = false.", this.name);
+            return;
+        }
+        this.enabledConfig.set(true);
+    }
+
     public Module getModule() {
         return module;
     }
@@ -67,7 +90,6 @@ public class Feature {
         return this.module.configBuilder;
     }
 
-    //TODO Get Or just set config option
     HashMap<Field, ConfigOption<?>> configOptions = new HashMap<>();
 
     /**
@@ -126,6 +148,12 @@ public class Feature {
                     MinMax defaultValue = (MinMax) field.get(null);
                     MinMax.Config minMaxConfig = new MinMax.Config(this.getBuilder(), name, description, defaultValue, min, max);
                     this.configOptions.put(field, minMaxConfig);
+                }
+                else if (field.getType().isAssignableFrom(Difficulty.class))
+                {
+                    Difficulty defaultValue = (Difficulty) field.get(null);
+                    Difficulty.Config difficultyConfig = new Difficulty.Config(this.getBuilder(), name, description, defaultValue, min, max);
+                    this.configOptions.put(field, difficultyConfig);
                 }
                 else if (field.getType().isAssignableFrom(Blacklist.class))
                 {
