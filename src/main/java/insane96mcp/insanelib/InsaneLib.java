@@ -4,6 +4,7 @@ import insane96mcp.insanelib.network.NetworkHandler;
 import insane96mcp.insanelib.setup.ClientSetup;
 import insane96mcp.insanelib.setup.Config;
 import insane96mcp.insanelib.setup.ILEntities;
+import insane96mcp.insanelib.setup.ILGlobalLootModifiers;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
@@ -25,6 +26,7 @@ public class InsaneLib
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::preInit);
         final IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
         ILEntities.ENTITIES.register(modEventBus);
+        ILGlobalLootModifiers.REGISTRY.register(modEventBus);
     }
 
     public void preInit(FMLCommonSetupEvent event) {
