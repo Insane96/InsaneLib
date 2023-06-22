@@ -1,5 +1,5 @@
 modLoader="javafml"
-loaderVersion="[46,)"
+loaderVersion="[47,)"
 license="All rights reserved"
 issueTrackerURL="https://github.com/Insane96/InsaneLib/issues"
 
@@ -12,19 +12,19 @@ displayURL="https://www.curseforge.com/minecraft/mc-mods/insanelib"
 #credits=""
 authors="Insane96MCP"
 description='''
-A Library mod used by Insane's Mods
+A Library mod used by Insane's Mods (Progressive Bosses, IguanaTweaks Reborn, Survival Reimagined, and more)
 '''
 
 [[dependencies.insanelib]]
     modId="forge"
     mandatory=true
-    versionRange="[46,)"
+    versionRange="[47,)"
     ordering="NONE"
     side="BOTH"
     
 [[dependencies.insanelib]]
     modId="minecraft"
     mandatory=true
-    versionRange="[1.20,)"
+    versionRange="[1.20.1,)"
     ordering="NONE"
     side="BOTH"
