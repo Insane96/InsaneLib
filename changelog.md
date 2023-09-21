@@ -1,6 +1,6 @@
 # Changelog
 
-## Upcoming
+## 1.11.1
 * Fixed some `IdTagRange` methods missing
 
 ## 1.11.0
