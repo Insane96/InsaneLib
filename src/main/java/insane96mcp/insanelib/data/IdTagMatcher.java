@@ -50,14 +50,27 @@ public class IdTagMatcher implements StringRepresentable {
         this(type, location, null);
     }
 
-    public IdTagMatcher(Type type, String location, String dimension) {
-        this(type, new ResourceLocation(location), new ResourceLocation(dimension));
+    public IdTagMatcher(Type type, String location, @Nullable String dimension) {
+        this(type, new ResourceLocation(location), dimension == null ? null : new ResourceLocation(dimension));
     }
 
     public IdTagMatcher(Type type, String location) {
         this(type, new ResourceLocation(location), null);
     }
 
+    public static IdTagMatcher newId(String location) {
+        return newId(location, null);
+    }
+    public static IdTagMatcher newId(String location, @Nullable String dimension) {
+        return new IdTagMatcher(Type.ID, location, dimension);
+    }
+
+    public static IdTagMatcher newTag(String location) {
+        return newTag(location, null);
+    }
+    public static IdTagMatcher newTag(String location, @Nullable String dimension) {
+        return new IdTagMatcher(Type.TAG, location, dimension);
+    }
     /**
      * Returns null if it can't parse the line
      */

@@ -5,6 +5,7 @@ import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.reflect.TypeToken;
 import net.minecraft.util.GsonHelper;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 
 @JsonAdapter(IdTagRange.Serializer.class)
@@ -21,6 +22,20 @@ public class IdTagRange {
         this.id = idTagMatcher;
         this.min = min;
         this.max = max;
+    }
+
+    public static IdTagRange newId(String location, double min, double max) {
+        return newId(location, null, min, max);
+    }
+    public static IdTagRange newId(String location, @Nullable String dimension, double min, double max) {
+        return new IdTagRange(new IdTagMatcher(IdTagMatcher.Type.ID, location, dimension), min, max);
+    }
+
+    public static IdTagRange newTag(String location, double min, double max) {
+        return newTag(location, null, min, max);
+    }
+    public static IdTagRange newTag(String location, @Nullable String dimension, double min, double max) {
+        return new IdTagRange(new IdTagMatcher(IdTagMatcher.Type.TAG, location, dimension), min, max);
     }
 
     public static final java.lang.reflect.Type LIST_TYPE = new TypeToken<ArrayList<IdTagRange>>(){}.getType();
