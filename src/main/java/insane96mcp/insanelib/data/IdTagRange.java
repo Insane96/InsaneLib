@@ -4,6 +4,8 @@ import com.google.gson.*;
 import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.reflect.TypeToken;
 import net.minecraft.util.GsonHelper;
+import net.minecraft.util.Mth;
+import net.minecraft.util.RandomSource;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -36,6 +38,14 @@ public class IdTagRange {
     }
     public static IdTagRange newTag(String location, @Nullable String dimension, double min, double max) {
         return new IdTagRange(new IdTagMatcher(IdTagMatcher.Type.TAG, location, dimension), min, max);
+    }
+
+    public double getRandomBetween(RandomSource random) {
+        return Mth.nextDouble(random, this.min, this.max);
+    }
+
+    public int getRandomIntBetween(RandomSource random) {
+        return Mth.nextInt(random, (int) this.min, (int) this.max);
     }
 
     public static final java.lang.reflect.Type LIST_TYPE = new TypeToken<ArrayList<IdTagRange>>(){}.getType();

@@ -1,5 +1,8 @@
 # Changelog
 
+## Upcoming
+* Fixed some `IdTagRange` methods missing
+
 ## 1.11.0
 * Added many new Events
   * `PlayerSprintEvent`: can be canceled to prevent the player from sprinting
