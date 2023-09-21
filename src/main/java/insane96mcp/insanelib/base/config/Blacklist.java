@@ -38,7 +38,7 @@ public class Blacklist {
 	public List<String> getStringList() {
 		List<String> list = new ArrayList<>();
 		for (IdTagMatcher idTagMatcher : this.blacklist) {
-			list.add(idTagMatcher.asString());
+			list.add(idTagMatcher.getSerializedName());
 		}
 		return list;
 	}
@@ -131,7 +131,7 @@ public class Blacklist {
 	public List<? extends String> getListAsString() {
 		ArrayList<String> list = new ArrayList<>();
 		for (IdTagMatcher idTagMatcher : this.blacklist) {
-			list.add(idTagMatcher.asString());
+			list.add(idTagMatcher.getSerializedName());
 		}
 		return list;
 	}

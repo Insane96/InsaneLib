@@ -1,6 +1,8 @@
 # Changelog
 
-## 1.10.3
+## 1.11.0
+* Added `IdTagValue` that contains IdTagMatcher and a value
+* Added `IdTagRange` that contains IdTagMatcher and a min and max
 
 ## 1.10.2
 * Added `InjectLootTableModifier` ("type": "insanelib:inject_loot_table")

@@ -3,6 +3,7 @@ package insane96mcp.insanelib.data;
 
 import com.google.gson.*;
 import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.reflect.TypeToken;
 import insane96mcp.insanelib.base.ConfigOption;
 import insane96mcp.insanelib.util.LogHelper;
 import net.minecraft.core.Holder;
@@ -10,6 +11,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.GsonHelper;
+import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
@@ -29,7 +31,7 @@ import java.util.List;
 import java.util.Objects;
 
 @JsonAdapter(IdTagMatcher.Serializer.class)
-public class IdTagMatcher {
+public class IdTagMatcher implements StringRepresentable {
     public Type type;
     public ResourceLocation location;
     @Nullable
@@ -89,14 +91,6 @@ public class IdTagMatcher {
             }
             return new IdTagMatcher(Type.ID, id, dimension);
         }
-    }
-
-    public String asString() {
-        String s = type == Type.TAG ? "#" : "";
-        s += this.location.toString();
-        if (this.dimension != null)
-            s += "," + this.dimension;
-        return s;
     }
 
     public static ArrayList<? extends IdTagMatcher> parseStringList(List<? extends String> list) {
@@ -313,13 +307,22 @@ public class IdTagMatcher {
         return entityTypes;
     }
 
+    @Override
+    public String getSerializedName() {
+        String s = type == Type.TAG ? "#" : "";
+        s += this.location.toString();
+        if (this.dimension != null)
+            s += "," + this.dimension;
+        return s;
+    }
+
     public static class Config extends ConfigOption<IdTagMatcher> {
 
         private final ForgeConfigSpec.ConfigValue<String> idTagMatcherValue;
 
         public Config(ForgeConfigSpec.Builder builder, String name, String description, IdTagMatcher defaultValue) {
             super(builder, name, description);
-            idTagMatcherValue = builder.define(name, defaultValue.asString());
+            idTagMatcherValue = builder.define(name, defaultValue.getSerializedName());
         }
 
         @Override
@@ -329,7 +332,7 @@ public class IdTagMatcher {
 
         @Override
         public void set(Object value) {
-            this.idTagMatcherValue.set(((IdTagMatcher)value).asString());
+            this.idTagMatcherValue.set(((IdTagMatcher)value).getSerializedName());
         }
 
         @Nullable
@@ -343,6 +346,8 @@ public class IdTagMatcher {
         ID,
         TAG
     }
+
+    public static final java.lang.reflect.Type LIST_TYPE = new TypeToken<ArrayList<IdTagMatcher>>(){}.getType();
 
     public static class Serializer implements JsonDeserializer<IdTagMatcher>, JsonSerializer<IdTagMatcher> {
         @Override
