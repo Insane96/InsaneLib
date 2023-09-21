@@ -1,8 +1,17 @@
 # Changelog
 
 ## 1.11.0
+* Added many new Events
+  * `PlayerSprintEvent`: can be canceled to prevent the player from sprinting
+  * `BlockBurntEvent`: triggered when a block burns
+  * `PlayerExhaustionEvent`: can be used to change the amount of exhaustion given to the player
+  * `CakeEatEvent`: triggered when a cake is eaten
+  * `FallingBlockLandEvent`: triggered when a falling block lands
+  * `HurtItemStackEvent`: Can be used to change the amount of damage an `ItemStack` takes
+  * `AddEatEffectEvent`: can be used to cancel applying on eat effects from foods
 * Added `IdTagValue` that contains IdTagMatcher and a value
 * Added `IdTagRange` that contains IdTagMatcher and a min and max
+* Added `TwinIdTagMatcher` that contains IdTagMatcher and a min and max
 
 ## 1.10.2
 * Added `InjectLootTableModifier` ("type": "insanelib:inject_loot_table")
