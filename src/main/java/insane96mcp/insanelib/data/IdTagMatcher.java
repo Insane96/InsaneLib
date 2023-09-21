@@ -1,9 +1,10 @@
-package insane96mcp.insanelib.util;
+package insane96mcp.insanelib.data;
 
 
 import com.google.gson.*;
 import com.google.gson.annotations.JsonAdapter;
 import insane96mcp.insanelib.base.ConfigOption;
+import insane96mcp.insanelib.util.LogHelper;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;

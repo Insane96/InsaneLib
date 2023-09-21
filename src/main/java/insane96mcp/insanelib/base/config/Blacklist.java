@@ -1,8 +1,8 @@
 package insane96mcp.insanelib.base.config;
 
 import insane96mcp.insanelib.base.ConfigOption;
+import insane96mcp.insanelib.data.IdTagMatcher;
 import insane96mcp.insanelib.util.ConfigUtils;
-import insane96mcp.insanelib.util.IdTagMatcher;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;

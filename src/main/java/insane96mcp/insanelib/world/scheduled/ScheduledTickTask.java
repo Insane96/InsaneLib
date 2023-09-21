@@ -1,4 +1,4 @@
-package insane96mcp.insanelib.util.scheduled;
+package insane96mcp.insanelib.world.scheduled;
 
 public abstract class ScheduledTickTask implements Runnable {
 	int tickDelay;

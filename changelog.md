@@ -1,5 +1,7 @@
 # Changelog
 
+## 1.10.3
+
 ## 1.10.2
 * Added `InjectLootTableModifier` ("type": "insanelib:inject_loot_table")
 
