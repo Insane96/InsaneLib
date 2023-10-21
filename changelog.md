@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.12.0
+* Added `JsonFeature` that can write/read and sync jsons
+* Added `matchesBlock(BlockState)` and `matchesItem(ItemStack)`
+
 ## 1.11.1
 * Fixed some `IdTagRange` methods missing
 

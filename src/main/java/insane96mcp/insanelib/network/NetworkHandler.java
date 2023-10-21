@@ -16,5 +16,6 @@ public class NetworkHandler {
 
     public static void init() {
         CHANNEL.registerMessage(1, MessageCreeperDataSync.class, MessageCreeperDataSync::encode, MessageCreeperDataSync::decode, MessageCreeperDataSync::handle);
+        CHANNEL.registerMessage(2, JsonConfigSyncMessage.class, JsonConfigSyncMessage::encode, JsonConfigSyncMessage::decode, JsonConfigSyncMessage::handle);
     }
 }

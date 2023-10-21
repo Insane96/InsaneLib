@@ -19,6 +19,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.fluids.FluidStack;
@@ -136,6 +137,14 @@ public class IdTagMatcher implements StringRepresentable {
         return false;
     }
 
+    public boolean matchesBlock(BlockState state) {
+        return matchesBlock(state.getBlock(), null);
+    }
+
+    public boolean matchesBlock(BlockState state, @Nullable ResourceLocation dimensionId) {
+        return matchesBlock(state.getBlock(), dimensionId);
+    }
+
     public boolean matchesItem(Item item) {
         return matchesItem(item, null);
     }
@@ -154,6 +163,14 @@ public class IdTagMatcher implements StringRepresentable {
                 return this.dimension == null || this.dimension.equals(dimensionId);
         }
         return false;
+    }
+
+    public boolean matchesItem(ItemStack stack) {
+        return matchesItem(stack.getItem(), null);
+    }
+
+    public boolean matchesItem(ItemStack stack, @Nullable ResourceLocation dimensionId) {
+        return matchesItem(stack.getItem(), dimensionId);
     }
 
     public boolean matchesFluid(Fluid fluid) {
@@ -410,16 +427,20 @@ public class IdTagMatcher implements StringRepresentable {
 
         @Override
         public JsonElement serialize(IdTagMatcher src, java.lang.reflect.Type typeOfSrc, JsonSerializationContext context) {
+            if (src.dimension == null) {
+                String ret = src.location.toString();
+                if (src.type == Type.TAG)
+                    ret = "#" + ret;
+                return new JsonPrimitive(ret);
+            }
             JsonObject jsonObject = new JsonObject();
             if (src.type == Type.ID) {
                 jsonObject.addProperty("id", src.location.toString());
             }
-            else if (src.type == Type.TAG) {
+            else {
                 jsonObject.addProperty("tag", src.location.toString());
             }
-            if (src.dimension != null) {
-                jsonObject.addProperty("dimension", src.dimension.toString());
-            }
+            jsonObject.addProperty("dimension", src.dimension.toString());
             return jsonObject;
         }
     }
