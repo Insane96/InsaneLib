@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.12.1
+* Forgot `SyncType` constructor
+
 ## 1.12.0
 * Added `JsonFeature` that can write/read and sync jsons
 * Added `matchesBlock(BlockState)` and `matchesItem(ItemStack)`

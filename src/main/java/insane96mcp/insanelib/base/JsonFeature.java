@@ -74,7 +74,7 @@ public abstract class JsonFeature extends Feature {
     }
 
     /**
-     * Use this instead of Utils.isItemInTag when reloading data due to tags not existing yet at reload
+     * Use this when reloading data due to tags not existing yet at reload
      */
     public static boolean isItemInTag(Item item, ResourceLocation tag, boolean isClientSide) {
         if (isClientSide)
@@ -89,7 +89,7 @@ public abstract class JsonFeature extends Feature {
     }
 
     /**
-     * Use this instead of Utils.isItemInTag when reloading data due to tags not existing yet at reload
+     * Use this when reloading data due to tags not existing yet at reload
      */
     public static boolean isItemInTag(Item item, TagKey<Item> tag, boolean isClientSide) {
         if (isClientSide)
@@ -103,7 +103,7 @@ public abstract class JsonFeature extends Feature {
     }
 
     /**
-     * Use this instead of IdTagMatcher#getAllItems when reloading data due to tags not existing yet at reload
+     * Use this when reloading data due to tags not existing yet at reload
      */
     public static List<Item> getAllItems(IdTagMatcher idTagMatcher, boolean isClientSide) {
         if (idTagMatcher.type == IdTagMatcher.Type.ID || isClientSide)
@@ -119,7 +119,7 @@ public abstract class JsonFeature extends Feature {
     }
 
     /**
-     * Use this instead of Utils.isBlockInTag when reloading data due to tags not existing yet at reload
+     * Use this when reloading data due to tags not existing yet at reload
      */
     public static boolean isBlockInTag(Block block, ResourceLocation tag, boolean isClientSide) {
         if (isClientSide)
@@ -134,7 +134,7 @@ public abstract class JsonFeature extends Feature {
     }
 
     /**
-     * Use this instead of Utils.isBlockInTag when reloading data due to tags not existing yet at reload
+     * Use this when reloading data due to tags not existing yet at reload
      */
     public static boolean isBlockInTag(Block block, TagKey<Block> tag, boolean isClientSide) {
         if (isClientSide)
@@ -148,7 +148,7 @@ public abstract class JsonFeature extends Feature {
     }
 
     /**
-     * Use this instead of IdTagMatcher#getAllBlocks when reloading data due to tags not existing yet at reload
+     * Use this when reloading data due to tags not existing yet at reload
      */
     public static List<Block> getAllBlocks(IdTagMatcher idTagMatcher, boolean isClientSide) {
         if (idTagMatcher.type == IdTagMatcher.Type.ID || isClientSide)
@@ -164,7 +164,7 @@ public abstract class JsonFeature extends Feature {
     }
 
     /**
-     * Use this instead of Utils.isEntityInTag when reloading data due to tags not existing yet at reload
+     * Use this when reloading data due to tags not existing yet at reload
      */
     public static boolean isEntityInTag(Entity entity, ResourceLocation tag, boolean isClientSide) {
         if (isClientSide)
@@ -179,7 +179,7 @@ public abstract class JsonFeature extends Feature {
     }
 
     /**
-     * Use this instead of Utils.isEntityInTag when reloading data due to tags not existing yet at reload
+     * Use this when reloading data due to tags not existing yet at reload
      */
     public static boolean isEntityInTag(Entity entity, TagKey<EntityType<?>> tag, boolean isClientSide) {
         if (isClientSide)
@@ -299,6 +299,10 @@ public abstract class JsonFeature extends Feature {
 
     public static class SyncType {
         public Consumer<String> onSync;
+
+        public SyncType(Consumer<String> onSync) {
+            this.onSync = onSync;
+        }
     }
 
     private static final HashMap<ResourceLocation, SyncType> SYNC_TYPE_REGISTRY = new HashMap<>();
