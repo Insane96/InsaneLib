@@ -1,4 +1,4 @@
-package insane96mcp.insanelib.module.base.feature;
+package insane96mcp.insanelib.module.base;
 
 import insane96mcp.insanelib.ai.ILNearestAttackableTargetGoal;
 import insane96mcp.insanelib.base.Feature;

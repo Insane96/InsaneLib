@@ -1,7 +1,7 @@
 package insane96mcp.insanelib.mixin;
 
 import insane96mcp.insanelib.event.ILEventFactory;
-import insane96mcp.insanelib.module.base.feature.FixFeature;
+import insane96mcp.insanelib.module.base.FixFeature;
 import net.minecraft.world.entity.player.Abilities;
 import net.minecraft.world.entity.player.Player;
 import org.spongepowered.asm.mixin.Final;

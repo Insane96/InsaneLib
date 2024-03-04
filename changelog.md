@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.13.0
+* Added `IEnchantmentTooltip`
+
 ## 1.12.1
 * Forgot `SyncType` constructor
 
