@@ -52,26 +52,8 @@ public class Feature {
         return this.module.isEnabled();
     }
 
-    /**
-     * Sets the "Enabled" config option to false
-     */
-    public void disable() {
-        if (!this.canBeDisabled) {
-            LogHelper.warn("Could not disable %s feature. canBeDisabled = false.", this.name);
-            return;
-        }
-        this.enabledConfig.set(false);
-    }
-
-    /**
-     * Sets the "Enabled" config option to true
-     */
-    public void enable() {
-        if (!this.canBeDisabled) {
-            LogHelper.warn("Could not enable %s feature. canBeDisabled = false.", this.name);
-            return;
-        }
-        this.enabledConfig.set(true);
+    public void setEnabled(boolean enabled) {
+        this.enabledConfig.set(enabled);
     }
 
     public Module getModule() {
@@ -181,34 +163,29 @@ public class Feature {
 
     public final void loadConfig() {
         if (canBeDisabled) {
-            if (!description.equals("")) {
-                enabledConfig = this.module.configBuilder.comment(getDescription()).define("Enable " + getName(), enabledByDefault);
-            }
-            else {
-                enabledConfig = this.module.configBuilder.define("Enable " + getName(), enabledByDefault);
-            }
+            if (!description.isEmpty())
+                this.module.configBuilder.comment(getDescription());
+
+            enabledConfig = this.module.configBuilder.define("Enable " + getName(), enabledByDefault);
         }
-        else {
+        else
             enabledConfig = null;
-        }
         this.pushConfig();
         this.loadConfigOptions();
         this.popConfig();
     }
 
     public void readConfig(final ModConfigEvent event) {
-        if (canBeDisabled) {
+        if (canBeDisabled)
             this.enabled = enabledConfig.get();
-        }
-        else {
+        else
             this.enabled = true;
-        }
 
         readConfigOptions();
     }
 
     private void readConfigOptions() {
-        if (this.configOptions.size() == 0)
+        if (this.configOptions.isEmpty())
             return;
         String curField = "";
         try {
@@ -247,10 +224,10 @@ public class Feature {
     }
 
     public void pushConfig() {
-        if (!description.equals(""))
-            this.module.configBuilder.comment(this.getDescription()).push(this.getName());
-        else
-            this.module.configBuilder.push(this.getName());
+        if (!description.isEmpty())
+            this.module.configBuilder.comment(this.getDescription());
+
+        this.module.configBuilder.push(this.getName());
     }
 
     protected void popConfig() {
@@ -266,7 +243,11 @@ public class Feature {
         }
     }
 
+    public static Feature get(Class<? extends Feature> feature) {
+        return Module.getFeature(feature);
+    }
+
     public static boolean isEnabled(Class<? extends Feature> feature) {
-        return Module.getFeature(feature).isEnabled();
+        return get(feature).isEnabled();
     }
 }

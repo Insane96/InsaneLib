@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.13.1
+* Added `Feature#get` to get a feature from a class
+* Replaced `Feature#enable` and `Feature#disable` with `Feature#setEnabled`
+
 ## 1.13.0
 * Added `IEnchantmentTooltip`
 
