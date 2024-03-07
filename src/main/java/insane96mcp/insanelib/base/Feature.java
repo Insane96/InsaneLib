@@ -53,6 +53,13 @@ public class Feature {
     }
 
     public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+    public void setEnabledConfig(boolean enabled) {
+        if (this.enabledConfig == null) {
+            LogHelper.warn("Could not set enabled %s feature. The config option is null", this.name);
+            return;
+        }
         this.enabledConfig.set(enabled);
     }
 
@@ -165,7 +172,6 @@ public class Feature {
         if (canBeDisabled) {
             if (!description.isEmpty())
                 this.module.configBuilder.comment(getDescription());
-
             enabledConfig = this.module.configBuilder.define("Enable " + getName(), enabledByDefault);
         }
         else
