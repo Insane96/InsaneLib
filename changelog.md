@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.13.2
+* Overridden `IdTagMatcher`, `IdTagRange` and `IdTagValue` `.toString()`
+
 ## 1.13.1
 * Added `Feature#get` to get a feature from a class
 * Replaced `Feature#enable` and `Feature#disable` with `Feature#setEnabled`

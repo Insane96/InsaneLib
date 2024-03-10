@@ -346,6 +346,16 @@ public class IdTagMatcher implements StringRepresentable {
         return s;
     }
 
+    @Override
+    public String toString() {
+        String s = this.location.toString();
+        if (this.type == Type.TAG)
+            s = "#" + s;
+        if (this.dimension != null)
+            s += " in " + this.dimension;
+        return s;
+    }
+
     public static class Config extends ConfigOption<IdTagMatcher> {
 
         private final ForgeConfigSpec.ConfigValue<String> idTagMatcherValue;

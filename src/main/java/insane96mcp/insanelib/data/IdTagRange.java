@@ -48,6 +48,17 @@ public class IdTagRange {
         return Mth.nextInt(random, (int) this.min, (int) this.max);
     }
 
+    @Override
+    public String toString() {
+        String s = this.id.location.toString();
+        if (this.id.type == IdTagMatcher.Type.TAG)
+            s = "#" + s;
+        if (this.id.dimension != null)
+            s += " in " + this.id.dimension;
+        s += ", " + this.min + "~" + this.max;
+        return s;
+    }
+
     public static final java.lang.reflect.Type LIST_TYPE = new TypeToken<ArrayList<IdTagRange>>(){}.getType();
 
     public static class Serializer implements JsonDeserializer<IdTagRange>, JsonSerializer<IdTagRange> {

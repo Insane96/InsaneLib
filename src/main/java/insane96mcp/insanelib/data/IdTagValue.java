@@ -22,6 +22,17 @@ public class IdTagValue {
         this.value = value;
     }
 
+    @Override
+    public String toString() {
+        String s = this.id.location.toString();
+        if (this.id.type == IdTagMatcher.Type.TAG)
+            s = "#" + s;
+        if (this.id.dimension != null)
+            s += " in " + this.id.dimension;
+        s += ", " + this.value;
+        return s;
+    }
+
     public static IdTagValue newId(String location, double value) {
         return newId(location, null, value);
     }
