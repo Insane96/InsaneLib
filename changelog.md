@@ -2,6 +2,7 @@
 
 ## 1.13.2
 * Overridden `IdTagMatcher`, `IdTagRange` and `IdTagValue` `.toString()`
+* Added `InsaneLib.ONE_DECIMAL_FORMATTER`
 
 ## 1.13.1
 * Added `Feature#get` to get a feature from a class
