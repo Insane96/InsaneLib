@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.13.3
+* Removed IEnchantmentTooltip
+
 ## 1.13.2
 * Overridden `IdTagMatcher`, `IdTagRange` and `IdTagValue` `.toString()`
 * Added `InsaneLib.ONE_DECIMAL_FORMATTER`
