@@ -184,8 +184,6 @@ public class Feature {
     public void readConfig(final ModConfigEvent event) {
         if (canBeDisabled)
             this.enabled = enabledConfig.get();
-        else
-            this.enabled = true;
 
         readConfigOptions();
     }
