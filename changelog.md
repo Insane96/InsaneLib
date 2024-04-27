@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.13.4
+* Revert 'Features are no longer enabled on config reload if they can't be disabled'
+
 ## 1.13.3
 * Removed IEnchantmentTooltip
 * Features are no longer enabled on config reload if they can't be disabled
