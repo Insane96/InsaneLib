@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.13.5
+* Added `ClientUtils` from ITR
+
 ## 1.13.4
 * Revert 'Features are no longer enabled on config reload if they can't be disabled'
 
