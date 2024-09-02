@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.14.0
+* Added `SerializableAttributeModifier`
+
 ## 1.13.5
 * Added `ClientUtils` from ITR
 
