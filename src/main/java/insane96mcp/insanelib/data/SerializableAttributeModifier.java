@@ -42,11 +42,16 @@ public record SerializableAttributeModifier(UUID uuid, String name, List<Equipme
                 throw new JsonParseException("uuid %s is not valid".formatted(sUUID));
             }
             String name = GsonHelper.getAsString(jObject, "name");
-            JsonArray jArraySlot = jObject.getAsJsonArray("slots");
             List<EquipmentSlot> slots = new ArrayList<>();
-            for (int i = 0; i < jArraySlot.size(); i++) {
-                EquipmentSlot slot = EquipmentSlot.byName(jArraySlot.get(i).getAsString());
-                slots.add(slot);
+            if (jObject.has("slot")) {
+                slots.add(EquipmentSlot.byName(jObject.get("slot").getAsString()));
+            }
+            else {
+                JsonArray jArraySlot = jObject.getAsJsonArray("slots");
+                for (int i = 0; i < jArraySlot.size(); i++) {
+                    EquipmentSlot slot = EquipmentSlot.byName(jArraySlot.get(i).getAsString());
+                    slots.add(slot);
+                }
             }
             String sAttribute = GsonHelper.getAsString(jObject, "attribute");
             Attribute attribute = ForgeRegistries.ATTRIBUTES.getValue(ResourceLocation.tryParse(sAttribute));
@@ -63,11 +68,16 @@ public record SerializableAttributeModifier(UUID uuid, String name, List<Equipme
             JsonObject jObject = new JsonObject();
             jObject.addProperty("uuid", src.uuid.toString());
             jObject.addProperty("name", src.name);
-            JsonArray jArraySlots = new JsonArray();
-            for (EquipmentSlot equipmentSlot : src.slots) {
-                jArraySlots.add(equipmentSlot.getName());
+            if (src.slots.size() == 1) {
+                jObject.addProperty("slot", src.slots.get(0).getName());
             }
-            jObject.add("slots", jArraySlots);
+            else {
+                JsonArray jArraySlots = new JsonArray();
+                for (EquipmentSlot equipmentSlot : src.slots) {
+                    jArraySlots.add(equipmentSlot.getName());
+                }
+                jObject.add("slots", jArraySlots);
+            }
             jObject.addProperty("attribute", ForgeRegistries.ATTRIBUTES.getKey(src.attribute.get()).toString());
             jObject.addProperty("amount", src.amount);
             jObject.addProperty("operation", Operation.getNameFromOperation(src.operation));
