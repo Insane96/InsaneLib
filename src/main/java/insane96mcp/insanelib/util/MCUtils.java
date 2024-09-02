@@ -58,11 +58,26 @@ public class MCUtils {
 	 * @return true if the modifier was applied
 	 */
 	public static boolean applyModifier(LivingEntity entity, Attribute attribute, UUID uuid, String name, double amount, AttributeModifier.Operation operation, boolean permanent) {
+		return applyModifier(entity, attribute, new AttributeModifier(uuid, name, amount, operation), permanent);
+	}
+
+	/**
+	 * Applies a permanent modifier to the Living Entity. If the attribute is max_health also sets entity's health to his max health
+	 * @return true if the modifier was applied
+	 */
+	public static boolean applyModifier(LivingEntity entity, Attribute attribute, UUID uuid, String name, double amount, AttributeModifier.Operation operation) {
+		return applyModifier(entity, attribute, new AttributeModifier(uuid, name, amount, operation), true);
+	}
+
+	/**
+	 * Applies a modifier to the Living Entity. If the attribute is max_health also sets entity's health to his max health
+	 * @return true if the modifier was applied
+	 */
+	public static boolean applyModifier(LivingEntity entity, Attribute attribute, AttributeModifier modifier, boolean permanent) {
 		AttributeInstance attributeInstance = entity.getAttribute(attribute);
 		if (attributeInstance != null) {
-			if (attributeInstance.getModifier(uuid) != null)
+			if (attributeInstance.hasModifier(modifier))
 				return false;
-			AttributeModifier modifier = new AttributeModifier(uuid, name, amount, operation);
 			if (permanent)
 				attributeInstance.addPermanentModifier(modifier);
 			else
@@ -73,14 +88,6 @@ public class MCUtils {
 			return true;
 		}
 		return false;
-	}
-
-	/**
-	 * Applies a permanent modifier to the Living Entity. If the attribute is max_health also sets entity's health to his max health
-	 * @return true if the modifier was applied
-	 */
-	public static boolean applyModifier(LivingEntity entity, Attribute attribute, UUID uuid, String name, double amount, AttributeModifier.Operation operation) {
-		return applyModifier(entity, attribute, uuid, name, amount, operation, true);
 	}
 
 	/**
