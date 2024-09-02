@@ -28,6 +28,10 @@ public record SerializableAttributeModifier(UUID uuid, String name, List<Equipme
                                             Supplier<Attribute> attribute, double amount,
                                             AttributeModifier.Operation operation) {
 
+    public AttributeModifier getModifier() {
+        return new AttributeModifier(uuid, name, amount, operation);
+    }
+
     public static final Type LIST_TYPE = new TypeToken<ArrayList<SerializableAttributeModifier>>() {}.getType();
     public static final Type LIST_TYPE_SLOT = new TypeToken<ArrayList<EquipmentSlot>>() {}.getType();
     public static class Serializer implements JsonDeserializer<SerializableAttributeModifier>, JsonSerializer<SerializableAttributeModifier> {
@@ -46,7 +50,7 @@ public record SerializableAttributeModifier(UUID uuid, String name, List<Equipme
             if (jObject.has("slot")) {
                 slots.add(EquipmentSlot.byName(jObject.get("slot").getAsString()));
             }
-            else {
+            else if (jObject.has("slots")) {
                 JsonArray jArraySlot = jObject.getAsJsonArray("slots");
                 for (int i = 0; i < jArraySlot.size(); i++) {
                     EquipmentSlot slot = EquipmentSlot.byName(jArraySlot.get(i).getAsString());
@@ -71,7 +75,7 @@ public record SerializableAttributeModifier(UUID uuid, String name, List<Equipme
             if (src.slots.size() == 1) {
                 jObject.addProperty("slot", src.slots.get(0).getName());
             }
-            else {
+            else if (src.slots.size() > 1) {
                 JsonArray jArraySlots = new JsonArray();
                 for (EquipmentSlot equipmentSlot : src.slots) {
                     jArraySlots.add(equipmentSlot.getName());
