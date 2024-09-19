@@ -2,8 +2,8 @@ package insane96mcp.insanelib.module.base;
 
 import insane96mcp.insanelib.base.Feature;
 import insane96mcp.insanelib.base.Label;
+import insane96mcp.insanelib.base.LoadFeature;
 import insane96mcp.insanelib.base.Module;
-import insane96mcp.insanelib.base.config.LoadFeature;
 import insane96mcp.insanelib.setup.ILStrings;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.LivingEntity;

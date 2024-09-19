@@ -1,6 +1,5 @@
 package insane96mcp.insanelib.base;
 
-import insane96mcp.insanelib.base.config.LoadFeature;
 import insane96mcp.insanelib.util.LogHelper;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.ForgeConfigSpec;
@@ -186,6 +185,15 @@ public class Module {
                         @SuppressWarnings("unchecked")
                         Class<? extends Feature> featureClazz = (Class<? extends Feature>) clazz;
                         LogHelper.info("Found (%s) InsaneLib Feature class %s".formatted(modConfigType, type.getClassName()));
+
+                        String[] requiresMods = new String[]{};
+                        if (annotationDataMap.containsKey("requiresMods")) {
+                            requiresMods = (String[]) annotationDataMap.get("requiresMods");
+                            for (int i = 0; i < requiresMods.length; i++) {
+                                if (!ModList.get().isLoaded(requiresMods[i]))
+                                    return;
+                            }
+                        }
 
                         boolean enabledByDefault = true;
                         if (annotationDataMap.containsKey("enabledByDefault")) {
