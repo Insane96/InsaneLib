@@ -1,5 +1,8 @@
 # Changelog
 
+## Upcoming
+* Fixed a log warn when config types did not match
+
 ## 1.14.0
 * Added `SerializableAttributeModifier`
 
