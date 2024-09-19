@@ -1,8 +1,7 @@
 # Changelog
 
-## Upcoming
+## 1.15.0
 * Added a new parameter to features which will prevent them from loading if the mods specified are not present
-* Fixed a log warn when config types did not match
 
 ## 1.14.0
 * Added `SerializableAttributeModifier`

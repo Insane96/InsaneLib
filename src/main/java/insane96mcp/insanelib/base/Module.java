@@ -173,7 +173,7 @@ public class Module {
                         String moduleString = (String) annotationDataMap.get("module");
                         ResourceLocation moduleId = new ResourceLocation(moduleString);
                         Module module = Module.modules.get(moduleId);
-                        if (module.modConfigType != modConfigType)
+                        if (module != null && module.modConfigType != modConfigType)
                             return;
                         if (!Module.modules.containsKey(moduleId)) {
                             LogHelper.warn("No module found with ID %s".formatted(moduleId));
@@ -186,12 +186,13 @@ public class Module {
                         Class<? extends Feature> featureClazz = (Class<? extends Feature>) clazz;
                         LogHelper.info("Found (%s) InsaneLib Feature class %s".formatted(modConfigType, type.getClassName()));
 
-                        String[] requiresMods = new String[]{};
                         if (annotationDataMap.containsKey("requiresMods")) {
-                            requiresMods = (String[]) annotationDataMap.get("requiresMods");
-                            for (int i = 0; i < requiresMods.length; i++) {
-                                if (!ModList.get().isLoaded(requiresMods[i]))
+                            ArrayList<String> requiresMods = (ArrayList<String>) annotationDataMap.get("requiresMods");
+                            for (String requiredModId : requiresMods) {
+                                if (!ModList.get().isLoaded(requiredModId)) {
+                                    LogHelper.info("Feature %s not loaded because %s is not present".formatted(type.getClassName(), requiredModId));
                                     return;
+                                }
                             }
                         }
 
