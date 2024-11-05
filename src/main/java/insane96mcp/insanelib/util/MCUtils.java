@@ -18,6 +18,7 @@ import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.alchemy.PotionUtils;
 import net.minecraft.world.level.Level;
@@ -283,5 +284,20 @@ public class MCUtils {
 
 		//noinspection ConstantConditions
 		return new MobEffectInstance(effect, duration, amplifier);
+	}
+
+	/**
+	 * Returns the Tag in the player persistent data that is kept on death / dimension change
+	 */
+	public static CompoundTag getOrCreatePersistedData(Player player) {
+		CompoundTag tag;
+		if (!player.getPersistentData().contains(Player.PERSISTED_NBT_TAG)) {
+			tag = new CompoundTag();
+			player.getPersistentData().put(Player.PERSISTED_NBT_TAG, tag);
+		}
+		else {
+			tag = player.getPersistentData().getCompound(Player.PERSISTED_NBT_TAG);
+		}
+		return tag;
 	}
 }

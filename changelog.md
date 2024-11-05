@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.15.1
+* Added getOrCreatePersistedData
+
 ## 1.15.0
 * Added a new parameter to features which will prevent them from loading if the mods specified are not present
 
