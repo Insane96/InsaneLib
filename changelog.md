@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.16.0
+* Added Json Helpers
+
 ## 1.15.1
 * Added getOrCreatePersistedData
 
