@@ -7,6 +7,7 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
@@ -19,6 +20,7 @@ import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.alchemy.PotionUtils;
 import net.minecraft.world.level.Level;
@@ -299,5 +301,27 @@ public class MCUtils {
 			tag = player.getPersistentData().getCompound(Player.PERSISTED_NBT_TAG);
 		}
 		return tag;
+	}
+
+	public static float getFoodEffectiveness(FoodProperties foodProperties) {
+		return foodProperties.getNutrition() + getFoodSaturationRestored(foodProperties);
+	}
+
+	public static float getFoodSaturationRestored(FoodProperties foodProperties) {
+		return foodProperties.getNutrition() * foodProperties.getSaturationModifier() * 2;
+	}
+
+	/**
+	 * Returns a "synced" random. It's not really synced, it uses level game time, which is usually synced
+	 */
+	public static RandomSource syncedRandom(Player player) {
+		RandomSource random = player.getRandom();
+		if (player.level().isClientSide)
+			random.setSeed(player.level().getGameTime() + 1);
+		else
+			random.setSeed(player.level().getGameTime());
+		random.setSeed(random.nextLong());
+		random.setSeed(random.nextLong());
+		return random;
 	}
 }

@@ -1,7 +1,8 @@
 # Changelog
 
 ## 1.16.1
-* Added SerializableAttributeModifier constructor without slot
+* Added `SerializableAttributeModifier` constructor without slot
+* Added `MCUtils.getFoodEffectiveness`, `MCUtils.getFoodSaturationRestored`, `MCUtils.syncedRandom`
 
 ## 1.16.0
 * Added Json Helpers
