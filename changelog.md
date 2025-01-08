@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.16.1
+* Added SerializableAttributeModifier constructor without slot
+
 ## 1.16.0
 * Added Json Helpers
 

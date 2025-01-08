@@ -28,6 +28,12 @@ public record SerializableAttributeModifier(UUID uuid, String name, List<Equipme
                                             Supplier<Attribute> attribute, double amount,
                                             AttributeModifier.Operation operation) {
 
+    public SerializableAttributeModifier(UUID uuid, String name,
+                                         Attribute attribute, double amount,
+                                         AttributeModifier.Operation operation) {
+        this(uuid, name, List.of(), () -> attribute, amount, operation);
+    }
+
     public AttributeModifier getModifier() {
         return new AttributeModifier(uuid, name, amount, operation);
     }
