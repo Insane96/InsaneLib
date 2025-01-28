@@ -190,6 +190,10 @@ public class Feature {
         readConfigOptions();
     }
 
+    public void postReadConfig(final ModConfigEvent event) {
+
+    }
+
     private void readConfigOptions() {
         if (this.configOptions.isEmpty())
             return;

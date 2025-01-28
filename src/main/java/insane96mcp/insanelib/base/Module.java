@@ -140,11 +140,12 @@ public class Module {
         else
             this.enabled = true;
         this.features.forEach((clazz, feature) -> feature.readConfig(event));
+        this.features.forEach((clazz, feature) -> feature.postReadConfig(event));
     }
 
     public void pushConfig() {
         if (this.canBeDisabled) {
-            if (this.description.equals("")) {
+            if (this.description.isEmpty()) {
                 this.configBuilder.push(this.getName());
             }
             else {

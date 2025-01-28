@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.17.0
+* Added `Feature#postReadConfig`
+
 ## 1.16.1
 * Added `SerializableAttributeModifier` constructor without slot
 * Added `MCUtils.getFoodEffectiveness`, `MCUtils.getFoodSaturationRestored`, `MCUtils.syncedRandom`
