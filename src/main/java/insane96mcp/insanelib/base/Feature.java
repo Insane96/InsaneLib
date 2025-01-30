@@ -250,6 +250,7 @@ public class Feature {
                 continue;
 
             MinecraftForge.EVENT_BUS.register(this);
+            return;
         }
     }
 
