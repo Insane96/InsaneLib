@@ -113,9 +113,14 @@ jar {
             "MixinConfigs": "insanelib.mixins.json"
         ])
     }
+    finalizedBy('reobfJar')
+    finalizedBy 'reobfJar'
+    archiveClassifier = 'slim'
 }
 
-jar.finalizedBy('reobfJar')
+tasks.named('jarJar') {
+    archiveClassifier = ''
+}
 
 publishing {
     publications {
