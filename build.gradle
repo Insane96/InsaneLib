@@ -113,7 +113,7 @@ jar {
             "MixinConfigs": "insanelib.mixins.json"
         ])
     }
-    finalizedBy('reobfJar')
+
     finalizedBy 'reobfJar'
     archiveClassifier = 'slim'
 }
