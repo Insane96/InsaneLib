@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.18.0
+* Added `PlayerUseItemSpeedModifierEvent`
+
 ## 1.17.0
 * Added `Feature#postReadConfig`
 

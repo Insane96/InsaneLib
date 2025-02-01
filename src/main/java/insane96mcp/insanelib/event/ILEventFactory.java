@@ -61,4 +61,10 @@ public class ILEventFactory {
         MinecraftForge.EVENT_BUS.post(event);
         return event.isCanceled();
     }
+
+    public static float onUseItemModifier(LocalPlayer player, ItemStack useItem) {
+        PlayerUseItemSpeedModifierEvent event = new PlayerUseItemSpeedModifierEvent(player, useItem);
+        MinecraftForge.EVENT_BUS.post(event);
+        return event.getSpeedModifier();
+    }
 }
