@@ -26,14 +26,14 @@ public class MinMax {
      * Returns a random number between min (included) and max (excluded)
      */
     public double getRandBetween(RandomSource random) {
-        return Mth.nextDouble(random, this.min, this.max - 1);
+        return Mth.nextDouble(random, this.min, this.max);
     }
 
     /**
-     * Returns an integer random number between min (included) and max (excluded)
+     * Returns a random integer number between min and max (included)
      */
     public int getIntRandBetween(RandomSource random) {
-        return Mth.nextInt(random, (int) this.min, (int) this.max - 1);
+        return Mth.nextInt(random, (int) this.min, (int) this.max);
     }
 
     public static class Config extends ConfigOption<MinMax> {

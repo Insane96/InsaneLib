@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.18.1
+* Fixed `MinMax` `getRandBetween` and `getIntRandBetween` excluding the maximum
+
 ## 1.18.0
 * Added `PlayerUseItemSpeedModifierEvent`
 
