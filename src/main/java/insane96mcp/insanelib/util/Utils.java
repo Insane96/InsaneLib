@@ -21,4 +21,10 @@ public class Utils {
 		return df.format(decimal);
 	}
 
+	public static String toSpacedSentence(String camelCase) {
+		String[] words = camelCase.split("(?<!^)(?=[A-Z])");
+		String sentence = String.join(" ", words).toLowerCase();
+		return sentence.substring(0, 1).toUpperCase() + sentence.substring(1);
+	}
+
 }

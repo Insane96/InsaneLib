@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.18.2
+* Config options can now omit the `@Label` annotation
+  * name is capitalized from the field name
+  * description is blank by default
+  * If `@Label` is present, name can be omitted and will same as if the annotation was omitted
+
 ## 1.18.1
 * Fixed `MinMax` `getRandBetween` and `getIntRandBetween` excluding the maximum
 

@@ -6,6 +6,7 @@ import insane96mcp.insanelib.base.config.Difficulty;
 import insane96mcp.insanelib.base.config.MinMax;
 import insane96mcp.insanelib.data.IdTagMatcher;
 import insane96mcp.insanelib.util.LogHelper;
+import insane96mcp.insanelib.util.Utils;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -91,9 +92,11 @@ public class Feature {
                 if (!field.isAnnotationPresent(Config.class))
                     continue;
 
-                if (!field.isAnnotationPresent(Label.class)) {
-                    LogHelper.error("%s config option is missing the Label Annotation.".formatted(field.getName()));
-                    continue;
+                String name = Utils.toSpacedSentence(field.getName());
+                String description = "";
+                if (field.isAnnotationPresent(Label.class)) {
+                    name = field.getAnnotation(Label.class).name().isEmpty() ? name : field.getAnnotation(Label.class).name();
+                    description = field.getAnnotation(Label.class).description();
                 }
 
                 if (!Modifier.isStatic(field.getModifiers()))
@@ -101,8 +104,6 @@ public class Feature {
                     throw new UnsupportedOperationException("Failed to load %s field. The field is not static".formatted(field));
                 }
 
-                String name = field.getAnnotation(Label.class).name();
-                String description = field.getAnnotation(Label.class).description();
                 double min = field.getAnnotation(Config.class).min();
                 double max = field.getAnnotation(Config.class).max();
 
