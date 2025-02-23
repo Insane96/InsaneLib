@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.18.3
+* Updated Forge
+
 ## 1.18.2
 * Config options can now omit the `@Label` annotation
   * name is capitalized from the field name
