@@ -6,7 +6,6 @@ import insane96mcp.insanelib.base.config.Difficulty;
 import insane96mcp.insanelib.base.config.MinMax;
 import insane96mcp.insanelib.data.IdTagMatcher;
 import insane96mcp.insanelib.util.LogHelper;
-import insane96mcp.insanelib.util.Utils;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -92,7 +91,7 @@ public class Feature {
                 if (!field.isAnnotationPresent(Config.class))
                     continue;
 
-                String name = Utils.toSpacedSentence(field.getName());
+                String name = fieldNameToConfigOption(field.getName());
                 String description = "";
                 if (field.isAnnotationPresent(Label.class)) {
                     name = field.getAnnotation(Label.class).name().isEmpty() ? name : field.getAnnotation(Label.class).name();
@@ -261,5 +260,26 @@ public class Feature {
 
     public static boolean isEnabled(Class<? extends Feature> feature) {
         return get(feature).isEnabled();
+    }
+
+    public static String fieldNameToConfigOption(String camelCase) {
+        camelCase = camelCase.replace('$', '.');
+        String[] words = camelCase.split("(?<!^)(?=[A-Z])");
+        String sentence = String.join(" ", words).toLowerCase();
+        StringBuilder result = new StringBuilder();
+        boolean capitalizeNext = true; // capitalize the 1st char
+        for (int i = 0; i < sentence.length(); i++) {
+            char current = sentence.charAt(i);
+            if (capitalizeNext && Character.isLetter(current)) {
+                result.append(Character.toUpperCase(current));
+                capitalizeNext = false;
+            }
+            else {
+                result.append(current);
+            }
+            if (current == '.')
+                capitalizeNext = true;
+        }
+        return result.toString();
     }
 }

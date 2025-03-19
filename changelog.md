@@ -1,5 +1,9 @@
 # Changelog
 
+## Upcoming
+* Omitted config names now accept $ as a .
+  * So experience$dropped will be parsed in the config as Experience.Dropped
+
 ## 1.18.3
 * Updated Forge
 
