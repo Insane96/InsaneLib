@@ -6,13 +6,13 @@ import insane96mcp.insanelib.setup.ClientSetup;
 import insane96mcp.insanelib.setup.Config;
 import insane96mcp.insanelib.setup.ILEntities;
 import insane96mcp.insanelib.setup.ILGlobalLootModifiers;
-import net.minecraft.client.Minecraft;
+import net.minecraft.Util;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -22,6 +22,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
+import java.util.Locale;
 
 @Mod(InsaneLib.MOD_ID)
 public class InsaneLib
@@ -30,15 +31,18 @@ public class InsaneLib
     public static final String MOD_ID = "insanelib";
     public static final String RESOURCE_PREFIX = MOD_ID + ":";
 
+    /**
+     * Same as {@link ItemStack#ATTRIBUTE_MODIFIER_FORMAT} but with one decimal place
+     */
     public static DecimalFormat ONE_DECIMAL_FORMATTER;
 
-    public InsaneLib() {
-        ModLoadingContext.get().registerConfig(net.minecraftforge.fml.config.ModConfig.Type.COMMON, Config.COMMON_SPEC);
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(ClientSetup::init);
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(InsaneLib::clientSetup);
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::preInit);
+    public InsaneLib(FMLJavaModLoadingContext context) {
+        context.registerConfig(net.minecraftforge.fml.config.ModConfig.Type.COMMON, Config.COMMON_SPEC);
+        context.getModEventBus().addListener(ClientSetup::init);
+        context.getModEventBus().addListener(InsaneLib::clientSetup);
+        context.getModEventBus().addListener(this::preInit);
         MinecraftForge.EVENT_BUS.register(this);
-        final IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
+        final IEventBus modEventBus = context.getModEventBus();
         ILEntities.ENTITIES.register(modEventBus);
         ILGlobalLootModifiers.REGISTRY.register(modEventBus);
     }
@@ -55,7 +59,8 @@ public class InsaneLib
 
     @SubscribeEvent
     public static void clientSetup(FMLClientSetupEvent event) {
-        DecimalFormatSymbols DECIMAL_FORMAT_SYMBOLS = new DecimalFormatSymbols(Minecraft.getInstance().getLocale());
-        ONE_DECIMAL_FORMATTER = new DecimalFormat("#.#", DECIMAL_FORMAT_SYMBOLS);
+        ONE_DECIMAL_FORMATTER = Util.make(new DecimalFormat("#.#"), (p_41704_) -> {
+            p_41704_.setDecimalFormatSymbols(DecimalFormatSymbols.getInstance(Locale.ROOT));
+        });
     }
 }

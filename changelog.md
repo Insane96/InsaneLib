@@ -2,7 +2,8 @@
 
 ## Upcoming
 * Omitted config names now accept $ as a .
-  * So experience$dropped will be parsed in the config as Experience.Dropped
+  * So experience$dropped will be parsed in the config as "Experience" main config options and "Dropped" sub-config option
+* Fixed ONE_DECIMAL_FORMATTER using machine locale
 
 ## 1.18.3
 * Updated Forge
