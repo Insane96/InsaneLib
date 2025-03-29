@@ -1,7 +1,6 @@
 package insane96mcp.insanelib.module.base;
 
 import insane96mcp.insanelib.base.Feature;
-import insane96mcp.insanelib.base.Label;
 import insane96mcp.insanelib.base.LoadFeature;
 import insane96mcp.insanelib.base.Module;
 import insane96mcp.insanelib.setup.ILStrings;
@@ -16,8 +15,7 @@ import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.event.config.ModConfigEvent;
 
-@LoadFeature(module = "insanelib:base", canBeDisabled = false)
-@Label(name = "Tags", description = "Set and use some tags to set some mobs properties. E.g. cause fire explosion for mobs or get if a mob has been spawned from spawner.")
+@LoadFeature(module = "insanelib:base", description = "Set and use some tags to set some mobs properties. E.g. cause fire explosion for mobs or get if a mob has been spawned from spawner.", canBeDisabled = false)
 public class TagsFeature extends Feature {
 
 	public TagsFeature(Module module, boolean enabledByDefault, boolean canBeDisabled) {

@@ -1,7 +1,7 @@
 package insane96mcp.insanelib.mixin;
 
 import insane96mcp.insanelib.event.ILEventFactory;
-import insane96mcp.insanelib.module.base.FixFeature;
+import insane96mcp.insanelib.module.base.FixesFeature;
 import net.minecraft.world.entity.player.Abilities;
 import net.minecraft.world.entity.player.Player;
 import org.spongepowered.asm.mixin.Final;
@@ -21,7 +21,7 @@ public class PlayerMixin {
     @Inject(at = @At("RETURN"), method = "getFlyingSpeed", cancellable = true)
     private void changeFlyingSpeed(CallbackInfoReturnable<Float> cir) {
         if (!this.abilities.flying || ((Player) (Object) this).isPassenger()) {
-            Optional<Float> flyingSpeed = FixFeature.getFlyingSpeed((Player) (Object) this);
+            Optional<Float> flyingSpeed = FixesFeature.getFlyingSpeed((Player) (Object) this);
             flyingSpeed.ifPresent(cir::setReturnValue);
         }
     }

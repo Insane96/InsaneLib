@@ -1,7 +1,6 @@
 package insane96mcp.insanelib.module.base;
 
 import insane96mcp.insanelib.base.Feature;
-import insane96mcp.insanelib.base.Label;
 import insane96mcp.insanelib.base.LoadFeature;
 import insane96mcp.insanelib.base.Module;
 import insane96mcp.insanelib.base.config.Config;
@@ -17,15 +16,12 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.event.config.ModConfigEvent;
 
-@LoadFeature(module = "insanelib:base")
-@Label(name = "Area Effect Cloud 3D", description = "No more boring 2D Area of Effect Clouds")
-public class AEC3DFeature extends Feature {
+@LoadFeature(module = "insanelib:base", name = "Area Effect Cloud 3D", description = "No more boring flat Area of Effect Clouds")
+public class AreaEffectCloud3DFeature extends Feature {
+	@Config(description = "If true, vanilla Area of Effect Clouds will be replaced with 3D versions of them")
+	public static Boolean replaceVanillaAreaEffectClouds = true;
 
-	@Config
-	@Label(name = "Replace Vanilla Area of Effect Clouds", description = "If true, vanilla Area of Effect Clouds will be replaced with 3D versions of them")
-	public static Boolean replaceVanillaAEC = true;
-
-	public AEC3DFeature(Module module, boolean enabledByDefault, boolean canBeDisabled) {
+	public AreaEffectCloud3DFeature(Module module, boolean enabledByDefault, boolean canBeDisabled) {
 		super(module, enabledByDefault, canBeDisabled);
 	}
 
@@ -37,7 +33,7 @@ public class AEC3DFeature extends Feature {
 	@SubscribeEvent
 	public void onSpawn(EntityJoinLevelEvent event) {
 		if (!this.isEnabled()
-				|| !replaceVanillaAEC
+				|| !replaceVanillaAreaEffectClouds
 				|| !event.getEntity().getType().equals(EntityType.AREA_EFFECT_CLOUD))
 			return;
 

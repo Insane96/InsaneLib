@@ -2,7 +2,6 @@ package insane96mcp.insanelib.module.base;
 
 import insane96mcp.insanelib.ai.ILNearestAttackableTargetGoal;
 import insane96mcp.insanelib.base.Feature;
-import insane96mcp.insanelib.base.Label;
 import insane96mcp.insanelib.base.LoadFeature;
 import insane96mcp.insanelib.base.Module;
 import insane96mcp.insanelib.base.config.Config;
@@ -26,24 +25,22 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
-@LoadFeature(module = "insanelib:base")
-@Label(name = "Fixes", description = "A few fixes")
-public class FixFeature extends Feature {
+@LoadFeature(module = "insanelib:base", description = "Various fixes and improvements")
+public class FixesFeature extends Feature {
 
-	@Config
-	@Label(name = "Fix Follow Range", description = "If true, mobs will have their follow range fixed. https://bugs.mojang.com/browse/MC-145656")
+	@Config(description = "If true, mobs will have their follow range fixed. https://bugs.mojang.com/browse/MC-145656")
 	public static Boolean fixFollowRange = true;
-	@Config
-	@Label(name = "Remove Zombies Bonus Health", description = "Removes the random bonus health given to Leader Zombies. In vanilla it's useless since doesn't work. https://minecraft.fandom.com/wiki/Attribute#Vanilla_modifiers")
-	public static Boolean removeZombiesBonusHealth = true;
-	@Config
-	@Label(name = "Fix Flying Speed", description = "When affected by slowness the player can still jump really far away. When true, jumps length will be calculated based off player's movement speed.")
-	public static Boolean fixFlyingSpeed = true;
-	@Config
-	@Label(name = "Fix Jump Movement Factor Slowdown Only", description = "The fix for Jump Movement Factor is applied only when the player is slowed down. If false, the player will jump really farther when going faster.")
-	public static Boolean slowdownOnly = true;
 
-	public FixFeature(Module module, boolean enabledByDefault, boolean canBeDisabled) {
+	@Config(description = "Removes the random bonus health given to Leader Zombies. In vanilla it's useless since doesn't work. https://minecraft.fandom.com/wiki/Attribute#Vanilla_modifiers")
+	public static Boolean removeZombiesBonusHealth = true;
+
+	@Config(description = "When affected by slowness the player can still jump really far away. When true, jumps length will be calculated based off player's movement speed.")
+	public static Boolean fixJumpMovementFactor = true;
+
+	@Config(description = "The fix for Jump Movement Factor is applied only when the player is slowed down. If false, the player will jump really farther when going faster.")
+	public static Boolean fixJumpMovementFactorSlowdownOnly = true;
+
+	public FixesFeature(Module module, boolean enabledByDefault, boolean canBeDisabled) {
 		super(module, enabledByDefault, canBeDisabled);
 	}
 
@@ -92,8 +89,8 @@ public class FixFeature extends Feature {
 	}
 
 	public static Optional<Float> getFlyingSpeed(Player player) {
-		if (!Feature.isEnabled(FixFeature.class)
-				|| !fixFlyingSpeed)
+		if (!Feature.isEnabled(FixesFeature.class)
+				|| !fixJumpMovementFactor)
 			return Optional.empty();
 
 		float baseFlyingSpeed = 0.02f;
@@ -102,7 +99,7 @@ public class FixFeature extends Feature {
 
 		double playerSpeedRatio = MCUtils.getMovementSpeedRatio(player);
 
-		if (playerSpeedRatio > 1d && slowdownOnly)
+		if (playerSpeedRatio > 1d && fixJumpMovementFactorSlowdownOnly)
 			return Optional.empty();
 
 		return Optional.of((float) (playerSpeedRatio * baseFlyingSpeed));

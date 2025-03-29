@@ -1,9 +1,11 @@
 # Changelog
 
-## Upcoming
-* Omitted config names now accept $ as a .
+## 1.19.0
+* `@Label` is now deprecated, name and descriptions have been added to `@Config` and `@LoadFeature`
+  * `@LoadFeature#name`, if omitted, fill be taken from the class name, with "Feature" removed
+* Omitted config / feature names now accept $ as a .
   * So experience$dropped will be parsed in the config as "Experience" main config options and "Dropped" sub-config option
-* Fixed ONE_DECIMAL_FORMATTER using machine locale
+* Fixed `ONE_DECIMAL_FORMATTER` using machine locale
 
 ## 1.18.3
 * Updated Forge

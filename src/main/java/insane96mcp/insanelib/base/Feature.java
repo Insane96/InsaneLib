@@ -31,10 +31,19 @@ public class Feature {
     private boolean enabled;
 
     public Feature(Module module, boolean enabledByDefault, boolean canBeDisabled) {
-        if (!this.getClass().isAnnotationPresent(Label.class))
-            LogHelper.error("%s is missing the Label Annotation.".formatted(this.getClass().getName()));
-        this.name = this.getClass().getAnnotation(Label.class).name();
-        this.description = this.getClass().getAnnotation(Label.class).description();
+        String tmpName;
+        if (!this.getClass().isAnnotationPresent(Label.class)) {
+            tmpName = this.getClass().getAnnotation(LoadFeature.class).name();
+            if (tmpName.isBlank())
+                tmpName = fieldNameToConfigOption(this.getClass().getSimpleName());
+            tmpName = tmpName.replaceAll("(?i)feature", "").trim();
+            this.description = this.getClass().getAnnotation(LoadFeature.class).description();
+        }
+        else {
+            tmpName = this.getClass().getAnnotation(Label.class).name();
+            this.description = this.getClass().getAnnotation(Label.class).description();
+        }
+        this.name = tmpName;
         this.module = module;
         this.enabledByDefault = enabledByDefault;
         this.canBeDisabled = canBeDisabled;
@@ -91,10 +100,16 @@ public class Feature {
                 if (!field.isAnnotationPresent(Config.class))
                     continue;
 
-                String name = fieldNameToConfigOption(field.getName());
+                String name;
                 String description = "";
-                if (field.isAnnotationPresent(Label.class)) {
-                    name = field.getAnnotation(Label.class).name().isEmpty() ? name : field.getAnnotation(Label.class).name();
+                if (!field.isAnnotationPresent(Label.class)) {
+                    name = field.getAnnotation(Config.class).name();
+                    if (name.isBlank())
+                        name = fieldNameToConfigOption(field.getName());
+                    description = field.getAnnotation(Config.class).description();
+                }
+               else {
+                    name = field.getAnnotation(Label.class).name().isEmpty() ? fieldNameToConfigOption(field.getName()) : field.getAnnotation(Label.class).name();
                     description = field.getAnnotation(Label.class).description();
                 }
 
