@@ -2,9 +2,7 @@ package insane96mcp.insanelib;
 
 import insane96mcp.insanelib.data.JsonFeatureDataReloadListener;
 import insane96mcp.insanelib.network.NetworkHandler;
-import insane96mcp.insanelib.setup.ClientSetup;
 import insane96mcp.insanelib.setup.Config;
-import insane96mcp.insanelib.setup.ILEntities;
 import insane96mcp.insanelib.setup.ILGlobalLootModifiers;
 import net.minecraft.Util;
 import net.minecraft.world.item.ItemStack;
@@ -37,13 +35,11 @@ public class InsaneLib
     public static DecimalFormat ONE_DECIMAL_FORMATTER;
 
     public InsaneLib(FMLJavaModLoadingContext context) {
-        context.registerConfig(net.minecraftforge.fml.config.ModConfig.Type.COMMON, Config.COMMON_SPEC);
-        context.getModEventBus().addListener(ClientSetup::init);
+        context.registerConfig(net.minecraftforge.fml.config.ModConfig.Type.COMMON, Config.COMMON_SPEC, MOD_ID + ".toml");
         context.getModEventBus().addListener(InsaneLib::clientSetup);
         context.getModEventBus().addListener(this::preInit);
         MinecraftForge.EVENT_BUS.register(this);
         final IEventBus modEventBus = context.getModEventBus();
-        ILEntities.ENTITIES.register(modEventBus);
         ILGlobalLootModifiers.REGISTRY.register(modEventBus);
     }
 

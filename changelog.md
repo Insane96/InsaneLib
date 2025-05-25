@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.20.0
+* Area effect cloud has been moved to a standalone mod
+* Mod config name has been changed from "insanelib-common.toml" to "insanelib.toml"
+
 ## 1.19.0
 * `@Label` is now deprecated, name and descriptions have been added to `@Config` and `@LoadFeature`
   * `@LoadFeature#name`, if omitted, fill be taken from the class name, with "Feature" removed
