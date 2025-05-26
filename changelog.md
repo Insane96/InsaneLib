@@ -1,7 +1,11 @@
 # Changelog
 
+## 1.20.1
+* Finalized running server side only
+
 ## 1.20.0
 * Area effect cloud has been moved to a standalone mod
+  * So the mod can now run server side only. Mostly for Mobs Properties Randomness
 * Mod config name has been changed from "insanelib-common.toml" to "insanelib.toml"
 
 ## 1.19.0

@@ -11,6 +11,8 @@ authors="${mod_authors}"
 
 description='''${mod_description}'''
 
+displayTest="IGNORE_SERVER_VERSION"
+
 [[dependencies.${mod_id}]]
 modId="forge"
 mandatory=true
