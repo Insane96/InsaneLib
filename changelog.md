@@ -1,5 +1,30 @@
 # Changelog
 
+## 1.20.2
+* Changed spawn type tag to be any type from `MobSpawnType`
+  * It's now a byte `insanelib:spawn_type`
+  ```java 
+  public enum MobSpawnType {
+    NATURAL,
+    CHUNK_GENERATION,
+    SPAWNER,
+    STRUCTURE,
+    BREEDING,
+    MOB_SUMMONED,
+    JOCKEY,
+    EVENT,
+    CONVERSION,
+    REINFORCEMENT,
+    TRIGGERED,
+    BUCKET,
+    SPAWN_EGG,
+    COMMAND,
+    DISPENSER,
+    PATROL
+  }
+  ```
+* Removed `ILStrings` and moved tags to `TagsFeature`
+
 ## 1.20.1
 * Finalized running server side only
 

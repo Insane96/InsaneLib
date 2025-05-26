@@ -2,6 +2,8 @@ package insane96mcp.insanelib.setup;
 
 import insane96mcp.insanelib.InsaneLib;
 
+@Deprecated(since = "1.20.2", forRemoval = true)
+/// Deprecation: Use {@link insane96mcp.insanelib.module.base.TagsFeature}. This no longer works, it's here to prevent crashes
 public class ILStrings {
 	public static class Tags {
 		public static final String EXPLOSION_CAUSES_FIRE = InsaneLib.RESOURCE_PREFIX + "explosion_causes_fire";
