@@ -12,7 +12,8 @@
         "FireBlockMixin",
         "ItemStackMixin",
         "LivingEntityMixin",
-        "PlayerMixin"
+        "PlayerMixin",
+        "ServerLevelAccessor"
     ],
     "minVersion": "0.8",
     "client": [

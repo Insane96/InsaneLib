@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.20.3
+* Added 'Prevent Time Ticking If No Players Online'
+  * This makes it so the game time won't advance if there are no players online
+    This fixes servers having huge amount of days accumulated even if no players are online
+
 ## 1.20.2
 * Changed spawn type tag to be any type from `MobSpawnType`
   * It's now a byte `insanelib:spawn_type`
