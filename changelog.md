@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.20.4
+* Fixed 'Prevent Time Ticking If No Players Online' not applying on server start
+
 ## 1.20.3
 * Added 'Prevent Time Ticking If No Players Online'
   * This makes it so the game time won't advance if there are no players online
