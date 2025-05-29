@@ -1,5 +1,8 @@
 # Changelog
 
+## Upcoming
+* Removed tick stop when no player online
+
 ## 1.21.1
 * Fixed getList and renamed modDataContains to contains
 
