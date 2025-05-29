@@ -37,8 +37,9 @@ public class Module {
     private static final Map<Class<? extends Feature>, Feature> loadedFeatures = new HashMap<>();
     private final Map<Class<? extends Feature>, Feature> features = new HashMap<>();
 
+    //TODO 1.21.1, pass context
     Module(String modId, String moduleId, String name, ModConfig.Type modConfigType, ForgeConfigSpec.Builder configBuilder) {
-        this.id = new ResourceLocation(modId, moduleId);
+        this.id = ResourceLocation.fromNamespaceAndPath(modId, moduleId);
         this.name = name;
         this.enabled = true;
         this.canBeDisabled = true;
@@ -172,7 +173,7 @@ public class Module {
                     try {
                         Map<String, Object> annotationDataMap = annotationData.annotationData();
                         String moduleString = (String) annotationDataMap.get("module");
-                        ResourceLocation moduleId = new ResourceLocation(moduleString);
+                        ResourceLocation moduleId = ResourceLocation.parse(moduleString);
                         Module module = Module.modules.get(moduleId);
                         if (module != null && module.modConfigType != modConfigType)
                             return;
