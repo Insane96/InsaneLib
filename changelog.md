@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.21.0
+* Added a new NBT Tag utils method to store and retrieve NBT data from entities and stacks
+  * The data is saved in mod's id compound  
+    E.g. `ForgeData:{insanelib: {spawn_type: 12b, experience_multiplier: 1.5}}`   
+    (was `ForgeData:{"insanelib:spawn_type": 12b, "insanelib:experience_multiplier": 1.5}`}`)
+
 ## 1.20.4
 * Fixed 'Prevent Time Ticking If No Players Online' not applying on server start
 

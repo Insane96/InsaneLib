@@ -6,6 +6,7 @@ import insane96mcp.insanelib.base.config.Difficulty;
 import insane96mcp.insanelib.base.config.MinMax;
 import insane96mcp.insanelib.data.IdTagMatcher;
 import insane96mcp.insanelib.util.LogHelper;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -296,5 +297,22 @@ public class Feature {
                 capitalizeNext = true;
         }
         return result.toString();
+    }
+
+    public static String camelCaseToSnake(String camelCase) {
+        camelCase = camelCase.replace('$', '.');
+        StringBuilder result = new StringBuilder();
+        for (int i = 0; i < camelCase.length(); i++) {
+            char current = camelCase.charAt(i);
+            if (Character.isUpperCase(current) && i > 0 && camelCase.charAt(i - 1) != '.') {
+                result.append('_');
+            }
+            result.append(Character.toLowerCase(current));
+        }
+        return result.toString();
+    }
+
+    public ResourceLocation createDataKey(String key) {
+        return ResourceLocation.fromNamespaceAndPath(this.module.getId().getNamespace(), camelCaseToSnake(this.name) + "/" + key);
     }
 }

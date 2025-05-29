@@ -1,10 +1,10 @@
 package insane96mcp.insanelib.module.base;
 
-import insane96mcp.insanelib.InsaneLib;
 import insane96mcp.insanelib.base.Feature;
 import insane96mcp.insanelib.base.LoadFeature;
 import insane96mcp.insanelib.base.Module;
-import net.minecraft.nbt.CompoundTag;
+import insane96mcp.insanelib.util.ModNBTData;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.level.Explosion;
@@ -21,12 +21,15 @@ import net.minecraftforge.fml.event.config.ModConfigEvent;
 		canBeDisabled = false
 )
 public class TagsFeature extends Feature {
-	public static final String SPAWN_TYPE = InsaneLib.RESOURCE_PREFIX + "spawn_type";
-	public static final String EXPLOSION_CAUSES_FIRE = InsaneLib.RESOURCE_PREFIX + "explosion_causes_fire";
-	public static final String EXPERIENCE_MULTIPLIER = InsaneLib.RESOURCE_PREFIX + "xp_multiplier";
+	public static ResourceLocation SPAWN_TYPE;
+	public static ResourceLocation EXPLOSION_CAUSES_FIRE;
+	public static ResourceLocation EXPERIENCE_MULTIPLIER;
 
 	public TagsFeature(Module module, boolean enabledByDefault, boolean canBeDisabled) {
 		super(module, enabledByDefault, canBeDisabled);
+		SPAWN_TYPE = createDataKey("spawn_type");
+		EXPLOSION_CAUSES_FIRE = createDataKey("explosion_causes_fire");
+		EXPERIENCE_MULTIPLIER = createDataKey("xp_multiplier");
 	}
 
 	@Override
@@ -43,23 +46,30 @@ public class TagsFeature extends Feature {
 		if (!(explosion.getExploder() instanceof LivingEntity entity))
 			return;
 
-		CompoundTag compoundNBT = entity.getPersistentData();
-		if (compoundNBT.getBoolean(EXPLOSION_CAUSES_FIRE))
+		if (ModNBTData.get(entity, EXPLOSION_CAUSES_FIRE, Boolean.class))
 			explosion.fire = true;
 	}
 
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public void onSpawn(MobSpawnEvent.FinalizeSpawn event) {
-		event.getEntity().getPersistentData().putByte(SPAWN_TYPE, (byte) event.getSpawnType().ordinal());
-	}
-
-	public static boolean isSpawnType(MobSpawnType spawnType, LivingEntity entity) {
-		return entity.getPersistentData().getByte(SPAWN_TYPE) == spawnType.ordinal();
+		ModNBTData.put(event.getEntity(), SPAWN_TYPE, (byte) event.getSpawnType().ordinal());
 	}
 
 	@SubscribeEvent
 	public void onExperienceDrop(LivingExperienceDropEvent event) {
-		if (event.getEntity().getPersistentData().contains(EXPERIENCE_MULTIPLIER))
-			event.setDroppedExperience((int) (event.getDroppedExperience() * event.getEntity().getPersistentData().getDouble(EXPERIENCE_MULTIPLIER)));
+		if (ModNBTData.modDataContains(event.getEntity(), EXPERIENCE_MULTIPLIER))
+			event.setDroppedExperience((int) (event.getDroppedExperience() * ModNBTData.get(event.getEntity(), EXPERIENCE_MULTIPLIER, Double.class)));
+	}
+
+	public static boolean isSpawnType(MobSpawnType spawnType, LivingEntity entity) {
+		return ModNBTData.get(entity, SPAWN_TYPE, Byte.class) == spawnType.ordinal();
+	}
+
+	public static void setExplosionCausesFire(boolean causesFire, LivingEntity entity) {
+		ModNBTData.put(entity, EXPLOSION_CAUSES_FIRE, causesFire);
+	}
+
+	public static void setExperienceMultiplier(double multiplier, LivingEntity entity) {
+		ModNBTData.put(entity, EXPERIENCE_MULTIPLIER, multiplier);
 	}
 }
