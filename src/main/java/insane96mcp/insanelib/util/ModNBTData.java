@@ -38,7 +38,9 @@ public class ModNBTData {
     }
 
     public static <T> T get(ItemStack stack, ResourceLocation loc, Class<T> type) {
-        return get(stack.getOrCreateTag(), loc, type);
+        if (stack.getTag() == null)
+            return null;
+        return get(stack.getTag(), loc, type);
     }
 
     public static <T> T get(CompoundTag tag, ResourceLocation loc, Class<T> type) {
@@ -93,7 +95,7 @@ public class ModNBTData {
         return key;
     }
 
-    public static CompoundTag getNestedCompounds(String path, CompoundTag modData) {
+    private static CompoundTag getNestedCompounds(String path, CompoundTag modData) {
         if (path.contains("/")) {
             String[] parts = path.split("/");
             for (int i = 0; i < parts.length - 1; i++)
@@ -113,14 +115,22 @@ public class ModNBTData {
     public static ListTag getList(CompoundTag tag, ResourceLocation loc, int type) {
         CompoundTag modData = getNestedCompounds(loc.getPath(), getModData(tag, loc.getNamespace()));
         String key = getNestedKey(loc.getPath());
-        return modData.getList(loc.getPath(), type);
+        return modData.getList(key, type);
     }
 
-    public static boolean modDataContains(Entity entity, ResourceLocation loc) {
-        return getModData(entity.getPersistentData(), loc.getNamespace()).contains(loc.getPath());
+    public static boolean contains(Entity entity, ResourceLocation loc) {
+        return contains(entity.getPersistentData(), loc);
     }
 
-    public static boolean modDataContains(ItemStack stack, ResourceLocation loc) {
-        return getModData(stack.getOrCreateTag(), loc.getNamespace()).contains(loc.getPath());
+    public static boolean contains(ItemStack stack, ResourceLocation loc) {
+        if (stack.getTag() == null)
+            return false;
+        return contains(stack.getTag(), loc);
+    }
+
+    public static boolean contains(CompoundTag tag, ResourceLocation loc) {
+        CompoundTag modData = getNestedCompounds(loc.getPath(), getModData(tag, loc.getNamespace()));
+        String key = getNestedKey(loc.getPath());
+        return modData.contains(key);
     }
 }

@@ -57,7 +57,7 @@ public class TagsFeature extends Feature {
 
 	@SubscribeEvent
 	public void onExperienceDrop(LivingExperienceDropEvent event) {
-		if (ModNBTData.modDataContains(event.getEntity(), EXPERIENCE_MULTIPLIER))
+		if (ModNBTData.contains(event.getEntity(), EXPERIENCE_MULTIPLIER))
 			event.setDroppedExperience((int) (event.getDroppedExperience() * ModNBTData.get(event.getEntity(), EXPERIENCE_MULTIPLIER, Double.class)));
 	}
 

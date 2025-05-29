@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.21.1
+* Fixed getList and renamed modDataContains to contains
+
 ## 1.21.0
 * Added a new NBT Tag utils method to store and retrieve NBT data from entities and stacks
   * The data is saved in mod's id compound and feature compound  
