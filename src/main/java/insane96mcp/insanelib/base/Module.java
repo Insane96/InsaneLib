@@ -1,6 +1,6 @@
 package insane96mcp.insanelib.base;
 
-import insane96mcp.insanelib.util.LogHelper;
+import insane96mcp.insanelib.util.ILLogger;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.fml.ModList;
@@ -178,7 +178,7 @@ public class Module {
                         if (module != null && module.modConfigType != modConfigType)
                             return;
                         if (!Module.modules.containsKey(moduleId)) {
-                            LogHelper.warn("No module found with ID %s".formatted(moduleId));
+                            ILLogger.warn("No module found with ID %s".formatted(moduleId));
                             return;
                         }
 
@@ -186,13 +186,13 @@ public class Module {
                         Class<?> clazz = Class.forName(type.getClassName(), false, classLoader);
                         @SuppressWarnings("unchecked")
                         Class<? extends Feature> featureClazz = (Class<? extends Feature>) clazz;
-                        LogHelper.info("Found (%s) InsaneLib Feature class %s".formatted(modConfigType, type.getClassName()));
+                        ILLogger.info("Found (%s) InsaneLib Feature class %s".formatted(modConfigType, type.getClassName()));
 
                         if (annotationDataMap.containsKey("requiresMods")) {
                             ArrayList<String> requiresMods = (ArrayList<String>) annotationDataMap.get("requiresMods");
                             for (String requiredModId : requiresMods) {
                                 if (!ModList.get().isLoaded(requiredModId)) {
-                                    LogHelper.info("Feature %s not loaded because %s is not present".formatted(type.getClassName(), requiredModId));
+                                    ILLogger.info("Feature %s not loaded because %s is not present".formatted(type.getClassName(), requiredModId));
                                     return;
                                 }
                             }

@@ -5,7 +5,7 @@ import com.google.gson.*;
 import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.reflect.TypeToken;
 import insane96mcp.insanelib.base.ConfigOption;
-import insane96mcp.insanelib.util.LogHelper;
+import insane96mcp.insanelib.util.ILLogger;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
@@ -79,20 +79,20 @@ public class IdTagMatcher implements StringRepresentable {
     public static IdTagMatcher parseLine(String line) {
         String[] split = line.split(",");
         if (split.length < 1 || split.length > 2) {
-            LogHelper.warn("Invalid line \"%s\". Format must be modid:entry_or_tag,modid:dimension", line);
+            ILLogger.warn("Invalid line \"%s\". Format must be modid:entry_or_tag,modid:dimension", line);
             return null;
         }
         ResourceLocation dimension = null;
         if (split.length == 2) {
             dimension = ResourceLocation.tryParse(split[1]);
             if (dimension == null) {
-                LogHelper.warn(String.format("Invalid dimension. Ignoring it. '%s'", line));
+                ILLogger.warn(String.format("Invalid dimension. Ignoring it. '%s'", line));
             }
         }
         if (split[0].startsWith("#")) {
             ResourceLocation tag = ResourceLocation.tryParse(split[0].substring(1));
             if (tag == null) {
-                LogHelper.warn("Tag is not valid. '%s'", line);
+                ILLogger.warn("Tag is not valid. '%s'", line);
                 return null;
             }
             return new IdTagMatcher(Type.TAG, tag, dimension);
@@ -100,7 +100,7 @@ public class IdTagMatcher implements StringRepresentable {
         else {
             ResourceLocation id = ResourceLocation.tryParse(split[0]);
             if (id == null) {
-                LogHelper.warn("Id is not valid. '%s'", line);
+                ILLogger.warn("Id is not valid. '%s'", line);
                 return null;
             }
             return new IdTagMatcher(Type.ID, id, dimension);

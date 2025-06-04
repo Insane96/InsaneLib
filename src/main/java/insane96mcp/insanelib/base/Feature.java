@@ -5,7 +5,7 @@ import insane96mcp.insanelib.base.config.Config;
 import insane96mcp.insanelib.base.config.Difficulty;
 import insane96mcp.insanelib.base.config.MinMax;
 import insane96mcp.insanelib.data.IdTagMatcher;
-import insane96mcp.insanelib.util.LogHelper;
+import insane96mcp.insanelib.util.ILLogger;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.MinecraftForge;
@@ -67,7 +67,7 @@ public class Feature {
     }
     public void setEnabledConfig(boolean enabled) {
         if (this.enabledConfig == null) {
-            LogHelper.warn("Could not set enabled %s feature. The config option is null", this.name);
+            ILLogger.warn("Could not set enabled %s feature. The config option is null", this.name);
             return;
         }
         this.enabledConfig.set(enabled);
@@ -233,7 +233,7 @@ public class Feature {
     public void setConfigOption(String configName, Object value) {
         ConfigOption<?> configOption = getConfigOption(configName);
         if (configOption == null) {
-            LogHelper.warn("Feature#setConfig failed as %s was not found".formatted(configName));
+            ILLogger.warn("Feature#setConfig failed as %s was not found".formatted(configName));
             return;
         }
 
