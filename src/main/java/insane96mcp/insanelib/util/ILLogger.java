@@ -2,16 +2,20 @@ package insane96mcp.insanelib.util;
 
 import insane96mcp.insanelib.InsaneLib;
 
-public class LogHelper {
+public class ILLogger {
     public static void error(String s, Object... args) {
-        InsaneLib.LOGGER.error(String.format(s, args));
+        InsaneLib.LOGGER.error(s, args);
     }
 
     public static void warn(String s, Object... args) {
-        InsaneLib.LOGGER.warn(String.format(s, args));
+        InsaneLib.LOGGER.warn(s, args);
     }
 
     public static void info(String s, Object... args) {
-        InsaneLib.LOGGER.info(String.format(s, args));
+        InsaneLib.LOGGER.info(s, args);
+    }
+
+    public static void debug(String s, Object... args) {
+        InsaneLib.LOGGER.debug(s, args);
     }
 }

@@ -5,8 +5,9 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
 import insane96mcp.insanelib.data.IdTagMatcher;
 import insane96mcp.insanelib.data.JsonFeatureDataReloadListener;
+import insane96mcp.insanelib.data.ObjTag;
 import insane96mcp.insanelib.network.JsonConfigSyncMessage;
-import insane96mcp.insanelib.util.LogHelper;
+import insane96mcp.insanelib.util.ILLogger;
 import insane96mcp.insanelib.util.TagUtils;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
@@ -37,7 +38,7 @@ import java.util.function.Consumer;
  * An extension of {@link Feature} that can handle Json Configs
  */
 public abstract class JsonFeature extends Feature {
-    public final List<JsonConfig<?>> JSON_CONFIGS = new ArrayList<>();
+    private final List<JsonConfig<?>> JSON_CONFIGS = new ArrayList<>();
 
     public JsonFeature(Module module, boolean enabledByDefault, boolean canBeDisabled) {
         super(module, enabledByDefault, canBeDisabled);
@@ -46,13 +47,17 @@ public abstract class JsonFeature extends Feature {
 
     public abstract String getModConfigFolder();
 
+    public void addJsonConfig(JsonConfig<?> jsonConfig) {
+        JSON_CONFIGS.add(jsonConfig);
+    }
+
     public void loadJsonConfigs() {
         if (!this.isEnabled())
             return;
         File jsonConfigFolder = new File(getModConfigFolder() + "/" + this.getModule().getName() + "/" + this.getName());
         if (!jsonConfigFolder.exists()) {
             if (!jsonConfigFolder.mkdirs()) {
-                LogHelper.warn("Failed to create %s json config folder", this.getName());
+                ILLogger.warn("Failed to create %s json config folder", this.getName());
             }
         }
         for (JsonConfig<?> jsonConfig : JSON_CONFIGS) {
@@ -222,30 +227,34 @@ public abstract class JsonFeature extends Feature {
         @Nullable
         ResourceLocation syncType;
 
-        public JsonConfig(String fileName, List<T> list, List<T> defaultList, Type listType, @Nullable BiConsumer<List<T>, Boolean> onLoad, boolean syncToClient, ResourceLocation syncType) {
+        @Nullable
+        Class<?> clazz;
+
+        public JsonConfig(String fileName, List<T> list, List<T> defaultList, Type listType) {
             this.fileName = fileName;
             this.list = list;
             this.defaultList = defaultList;
             this.listType = listType;
-            this.onLoad = onLoad;
-            this.syncToClient = syncToClient;
+        }
+
+        public JsonConfig<T> syncToClient(ResourceLocation syncType) {
+            this.syncToClient = true;
             this.syncType = syncType;
+            return this;
         }
 
-        public JsonConfig(String fileName, List<T> list, List<T> defaultList, Type listType, boolean syncToClient, ResourceLocation syncType) {
-            this(fileName, list, defaultList, listType, null, syncToClient, syncType);
+        public JsonConfig<T> onLoad(BiConsumer<List<T>, Boolean> onLoad) {
+            this.onLoad = onLoad;
+            return this;
         }
 
-        public JsonConfig(String fileName, List<T> list, List<T> defaultList, Type listType, BiConsumer<List<T>, Boolean> onLoad) {
-            this(fileName, list, defaultList, listType, onLoad, false, null);
-        }
-
-        public JsonConfig(String fileName, List<T> list, List<T> defaultList, Type listType) {
-            this(fileName, list, defaultList, listType, false, null);
+        public JsonConfig<T> withRegistryFor(Class<?> innerType) {
+            this.clazz = innerType;
+            return this;
         }
 
         protected void loadAndReadFile(File folder) {
-            Gson gson = new GsonBuilder().setPrettyPrinting().create();
+            Gson gson = getGson();
 
             File file = new File(folder, this.fileName);
             if (!file.exists()) {
@@ -257,7 +266,7 @@ public abstract class JsonFeature extends Feature {
                     Files.write(file.toPath(), json.getBytes());
                 }
                 catch (Exception e) {
-                    LogHelper.error("Failed to create default Json %s: %s", FilenameUtils.removeExtension(file.getName()), e.getMessage());
+                    ILLogger.error("Failed to create default Json %s: %s", FilenameUtils.removeExtension(file.getName()), e.getMessage());
                 }
             }
 
@@ -268,10 +277,10 @@ public abstract class JsonFeature extends Feature {
                 this.list.addAll(listRead);
             }
             catch (JsonSyntaxException e) {
-                LogHelper.error("Parsing error loading Json %s: %s", FilenameUtils.removeExtension(file.getName()), e.getMessage());
+                ILLogger.error("Parsing error loading Json %s: %s", FilenameUtils.removeExtension(file.getName()), e.getMessage());
             }
             catch (Exception e) {
-                LogHelper.error("Failed loading Json %s: %s", FilenameUtils.removeExtension(file.getName()), e.getMessage());
+                ILLogger.error("Failed loading Json %s: %s", FilenameUtils.removeExtension(file.getName()), e.getMessage());
             }
 
             this.onLoad(false);
@@ -286,7 +295,7 @@ public abstract class JsonFeature extends Feature {
             if (!this.syncToClient)
                 return;
 
-            Gson gson = new GsonBuilder().create();
+            Gson gson = getGson();
 
             if (event.getPlayer() == null) {
                 event.getPlayerList().getPlayers().forEach(player -> JsonConfigSyncMessage.sync(this.syncType, gson.toJson(this.list, this.listType), player));
@@ -294,6 +303,13 @@ public abstract class JsonFeature extends Feature {
             else {
                 JsonConfigSyncMessage.sync(this.syncType, gson.toJson(this.list, this.listType), event.getPlayer());
             }
+        }
+
+        private Gson getGson() {
+            GsonBuilder gsonBuilder = new GsonBuilder().setPrettyPrinting();
+            if (this.clazz != null)
+                gsonBuilder.registerTypeAdapterFactory(new ObjTag.AdapterFactory<>(ObjTag.RegistryMappings.getRegistryKey(this.clazz)));
+            return gsonBuilder.create();
         }
     }
 

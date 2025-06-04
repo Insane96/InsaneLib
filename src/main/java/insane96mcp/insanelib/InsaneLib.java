@@ -35,6 +35,7 @@ public class InsaneLib
 {
     public static final Logger LOGGER = LogManager.getLogger();
     public static final String MOD_ID = "insanelib";
+    public static final String CONFIG_FOLDER = "config/" + MOD_ID;
     public static final String RESOURCE_PREFIX = MOD_ID + ":";
 
     /**

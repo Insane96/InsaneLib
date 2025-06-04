@@ -1,7 +1,7 @@
 package insane96mcp.insanelib.data;
 
 import insane96mcp.insanelib.base.JsonFeature;
-import insane96mcp.insanelib.util.LogHelper;
+import insane96mcp.insanelib.util.ILLogger;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimplePreparableReloadListener;
 import net.minecraft.util.profiling.ProfilerFiller;
@@ -27,7 +27,7 @@ public class JsonFeatureDataReloadListener extends SimplePreparableReloadListene
 
     @Override
     protected void apply(@NotNull Void v, @NotNull ResourceManager resourceManager, @NotNull ProfilerFiller profilerFiller) {
-        LogHelper.info("Reloading InsaneLib JsonFeature Json");
+        ILLogger.info("Reloading InsaneLib JsonFeature Json");
 
         for (JsonFeature feature : JSON_CONFIG_FEATURES) {
             feature.loadJsonConfigs();

@@ -255,31 +255,31 @@ public class MCUtils {
 	public static MobEffectInstance parseEffectInstance(String s) {
 		String[] split = s.split(",");
 		if (split.length != 3) {
-			LogHelper.warn("Invalid Mob Effect \"%s\"", s);
+			ILLogger.warn("Invalid Mob Effect \"%s\"", s);
 			return null;
 		}
 
 		ResourceLocation effectRL = ResourceLocation.tryParse(split[0]);
 		if (effectRL == null) {
-			LogHelper.warn("%s mob effect is not valid", split[0]);
+			ILLogger.warn("%s mob effect is not valid", split[0]);
 			return null;
 		}
 		if (!ForgeRegistries.MOB_EFFECTS.containsKey(effectRL)) {
-			LogHelper.warn("%s mob effect seems to not exist", split[0]);
+			ILLogger.warn("%s mob effect seems to not exist", split[0]);
 			return null;
 		}
 		MobEffect effect = ForgeRegistries.MOB_EFFECTS.getValue(effectRL);
 
 		//Duration
 		if (!NumberUtils.isParsable(split[1])) {
-			LogHelper.warn(String.format("Invalid duration \"%s\" for Mob Effect", s));
+			ILLogger.warn(String.format("Invalid duration \"%s\" for Mob Effect", s));
 			return null;
 		}
 		int duration = Integer.parseInt(split[1]);
 
 		//Amplifier
 		if (!NumberUtils.isParsable(split[2])) {
-			LogHelper.warn(String.format("Invalid amplifier \"%s\" for Mob Effect", s));
+			ILLogger.warn(String.format("Invalid amplifier \"%s\" for Mob Effect", s));
 			return null;
 		}
 		int amplifier = Integer.parseInt(split[2]);
