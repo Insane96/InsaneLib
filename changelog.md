@@ -1,6 +1,6 @@
 # Changelog
 
-## Upcoming
+## 1.21.2
 * Ported `IntegratedPack` from Insane Survival Overhaul
 * Stolen `handleMissingMappings` from Mantle
 * Added a new integrated data pack that also stops weather, season and Time Control's time from ticking
