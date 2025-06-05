@@ -1,0 +1,6 @@
+{
+    "pack": {
+        "description": "Prevents weather and time from ticking if there are no players online. Integrated with Serene Seasons and Time Control mods",
+        "pack_format": 15
+    }
+}

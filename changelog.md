@@ -1,7 +1,9 @@
 # Changelog
 
 ## Upcoming
-* Removed tick stop when no player online
+* Ported `IntegratedPack` from Insane Survival Overhaul
+* Stolen `handleMissingMappings` from Mantle
+* Added a new integrated data pack that also stops weather, season and Time Control's time from ticking
 
 ## 1.21.1
 * Fixed getList and renamed modDataContains to contains
