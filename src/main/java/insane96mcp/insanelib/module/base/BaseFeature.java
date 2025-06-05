@@ -9,6 +9,7 @@ import insane96mcp.insanelib.base.config.Config;
 import insane96mcp.insanelib.data.ObjTag;
 import insane96mcp.insanelib.mixin.ServerLevelAccessor;
 import insane96mcp.insanelib.util.ILLogger;
+import insane96mcp.insanelib.util.IntegratedPack;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.entity.player.Player;
