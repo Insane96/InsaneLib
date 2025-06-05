@@ -43,7 +43,7 @@ public class BaseFeature extends JsonFeature {
         IntegratedPack.addServerPack(InsaneLib.MOD_ID, "no_player_time_stop", "InsaneLib's No Player Time Stop", () -> preventTimeTickingIfNoPlayersOnline);
         addJsonConfig(
                 new JsonConfig<>("test_blocks.json", testBlocks, TEST_BLOCKS_DEFAULT, BLOCK_LIST_TYPE)
-                .withRegistryFor(Block.class)
+                        .withRegistryFor(Block.class)
         );
     }
 
@@ -57,11 +57,11 @@ public class BaseFeature extends JsonFeature {
         if (!(event.getSource().getDirectEntity() instanceof Player player))
             return;
         if (player.level().dimension() == Level.OVERWORLD)
-        for (ObjTag<Block> testBlock : testBlocks) {
-            if (testBlock.matches(player.level().getBlockState(event.getEntity().blockPosition().below()).getBlock())) {
-                ILLogger.info("Entity %s hurt when standing on test block", event.getEntity().getName().getString());
+            for (ObjTag<Block> testBlock : testBlocks) {
+                if (testBlock.matches(player.level().getBlockState(event.getEntity().blockPosition().below()).getBlock())) {
+                    ILLogger.info("Entity %s hurt when standing on test block", event.getEntity().getName().getString());
+                }
             }
-        }
     }
 
     @SubscribeEvent
