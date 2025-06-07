@@ -5,7 +5,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
 import insane96mcp.insanelib.data.IdTagMatcher;
 import insane96mcp.insanelib.data.JsonFeatureDataReloadListener;
-import insane96mcp.insanelib.network.JsonConfigSyncMessage;
+import insane96mcp.insanelib.network.message.JsonConfigSyncMessage;
 import insane96mcp.insanelib.util.LogHelper;
 import insane96mcp.insanelib.util.TagUtils;
 import net.minecraft.core.Holder;

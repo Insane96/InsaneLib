@@ -1,6 +1,7 @@
-package insane96mcp.insanelib.network;
+package insane96mcp.insanelib.network.message;
 
 import insane96mcp.insanelib.base.JsonFeature;
+import insane96mcp.insanelib.network.NetworkHandler;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;

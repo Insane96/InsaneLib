@@ -35,7 +35,7 @@ public class InsaneLib
 {
     public static final Logger LOGGER = LogManager.getLogger();
     public static final String MOD_ID = "insanelib";
-    public static final String RESOURCE_PREFIX = MOD_ID + ":";
+    public static final String CONFIG_FOLDER = "config/" + MOD_ID;
 
     /**
      * Same as {@link ItemStack#ATTRIBUTE_MODIFIER_FORMAT} but with one decimal place
@@ -91,5 +91,9 @@ public class InsaneLib
                 }
             }
         }
+    }
+
+    public static ResourceLocation location(String path) {
+        return ResourceLocation.fromNamespaceAndPath(MOD_ID, path);
     }
 }

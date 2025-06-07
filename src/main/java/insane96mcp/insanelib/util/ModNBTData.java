@@ -2,6 +2,7 @@ package insane96mcp.insanelib.util;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
@@ -134,5 +135,37 @@ public class ModNBTData {
         CompoundTag modData = getNestedCompounds(loc.getPath(), getModData(tag, loc.getNamespace()));
         String key = getNestedKey(loc.getPath());
         return modData.contains(key);
+    }
+
+    public static int classToNBTType(Class<?> type) {
+        if (type == Byte.class || type == Boolean.class) return Tag.TAG_BYTE;
+        if (type == Short.class) return Tag.TAG_SHORT;
+        if (type == Integer.class) return Tag.TAG_INT;
+        if (type == Long.class) return Tag.TAG_LONG;
+        if (type == Float.class) return Tag.TAG_FLOAT;
+        if (type == Double.class) return Tag.TAG_DOUBLE;
+        if (type == byte[].class || type == Byte[].class) return Tag.TAG_BYTE_ARRAY;
+        if (type == String.class) return Tag.TAG_STRING;
+        if (type == ListTag.class) return Tag.TAG_LIST;
+        if (type == CompoundTag.class) return Tag.TAG_COMPOUND;
+        if (type == UUID.class || type == int[].class || type == Integer[].class) return Tag.TAG_INT_ARRAY;
+        if (type == long[].class || type == Long[].class) return Tag.TAG_LONG_ARRAY;
+        throw new IllegalArgumentException("Unsupported type: " + type);
+    }
+
+    public static Class<?> nbtTypeToClass(int type) {
+        if (type == Tag.TAG_BYTE) return Byte.class;
+        if (type == Tag.TAG_SHORT) return Short.class;
+        if (type == Tag.TAG_INT) return Integer.class;
+        if (type == Tag.TAG_LONG) return Long.class;
+        if (type == Tag.TAG_FLOAT) return Float.class;
+        if (type == Tag.TAG_DOUBLE) return Double.class;
+        if (type == Tag.TAG_BYTE_ARRAY) return byte[].class;
+        if (type == Tag.TAG_STRING) return String.class;
+        if (type == Tag.TAG_LIST) return ListTag.class;
+        if (type == Tag.TAG_COMPOUND) return CompoundTag.class;
+        if (type == Tag.TAG_INT_ARRAY) return int[].class;
+        if (type == Tag.TAG_LONG_ARRAY) return long[].class;
+        throw new IllegalArgumentException("Unsupported type: " + type);
     }
 }

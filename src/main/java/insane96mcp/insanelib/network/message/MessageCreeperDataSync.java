@@ -1,5 +1,7 @@
-package insane96mcp.insanelib.network;
+package insane96mcp.insanelib.network.message;
 
+import insane96mcp.insanelib.network.ClientNetworkHandler;
+import insane96mcp.insanelib.network.NetworkHandler;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;

@@ -1,7 +1,9 @@
 # Changelog
 
-## Upcoming
-* Missing long type for `ModNBTData`
+## 1.21.3
+* Added `EntityModNBTDataSync` to sync NBT data to players
+* Network is now fully server sided
+* Added missing long type for `ModNBTData`
 
 ## 1.21.2
 * Ported `IntegratedPack` from Insane Survival Overhaul
