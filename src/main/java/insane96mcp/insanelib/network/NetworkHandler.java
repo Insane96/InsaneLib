@@ -13,7 +13,7 @@ public class NetworkHandler {
             InsaneLib.location("network_channel"),
             () -> PROTOCOL_VERSION,
             PROTOCOL_VERSION::equals,
-            v -> PROTOCOL_VERSION.equals(v) || NetworkRegistry.ABSENT.equals(v) || NetworkRegistry.ACCEPTVANILLA.equals(v)
+            NetworkRegistry.acceptMissingOr(PROTOCOL_VERSION)
     );
 
     static int index = 0;
