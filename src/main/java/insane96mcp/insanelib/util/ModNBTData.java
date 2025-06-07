@@ -50,6 +50,7 @@ public class ModNBTData {
         if (type == Byte.class) return type.cast(modData.getByte(key));
         if (type == Short.class) return type.cast(modData.getShort(key));
         if (type == Integer.class) return type.cast(modData.getInt(key));
+        if (type == Long.class) return type.cast(modData.getLong(key));
         if (type == Float.class) return type.cast(modData.getFloat(key));
         if (type == Double.class) return type.cast(modData.getDouble(key));
         if (type == Boolean.class) return type.cast(modData.getBoolean(key));
@@ -76,6 +77,7 @@ public class ModNBTData {
         if (value instanceof Byte b) modData.putByte(key, b);
         else if (value instanceof Short s) modData.putShort(key, s);
         else if (value instanceof Integer i) modData.putInt(key, i);
+        else if (value instanceof Long l) modData.putLong(key, l);
         else if (value instanceof Float f) modData.putFloat(key, f);
         else if (value instanceof Double d) modData.putDouble(key, d);
         else if (value instanceof Boolean bool) modData.putBoolean(key, bool);

@@ -1,5 +1,8 @@
 # Changelog
 
+## Upcoming
+* Missing long type for `ModNBTData`
+
 ## 1.21.2
 * Ported `IntegratedPack` from Insane Survival Overhaul
 * Stolen `handleMissingMappings` from Mantle
