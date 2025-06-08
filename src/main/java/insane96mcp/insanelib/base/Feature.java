@@ -299,20 +299,7 @@ public class Feature {
         return result.toString();
     }
 
-    public static String camelCaseToSnake(String camelCase) {
-        camelCase = camelCase.replace('$', '.');
-        StringBuilder result = new StringBuilder();
-        for (int i = 0; i < camelCase.length(); i++) {
-            char current = camelCase.charAt(i);
-            if (Character.isUpperCase(current) && i > 0 && camelCase.charAt(i - 1) != '.') {
-                result.append('_');
-            }
-            result.append(Character.toLowerCase(current));
-        }
-        return result.toString();
-    }
-
     public ResourceLocation createDataKey(String key) {
-        return ResourceLocation.fromNamespaceAndPath(this.module.getId().getNamespace(), camelCaseToSnake(this.name) + "/" + key);
+        return ResourceLocation.fromNamespaceAndPath(this.module.getId().getNamespace(), this.name.toLowerCase().replace(" ", "_") + "/" + key);
     }
 }

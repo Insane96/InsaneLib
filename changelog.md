@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.21.4
+* Fixed crash with Features with spaces
+
 ## 1.21.3
 * Added `EntityModNBTDataSync` to sync NBT data to players
 * Network is now fully server sided
