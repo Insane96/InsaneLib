@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.21.5
+* Again, crash with invalid characters in feature data key
+
 ## 1.21.4
 * Fixed crash with Features with spaces
 

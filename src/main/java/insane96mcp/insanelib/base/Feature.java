@@ -22,6 +22,7 @@ import java.util.Optional;
 
 public class Feature {
     private final String name;
+    private String dataKeyPath = null;
     private final String description;
     private ForgeConfigSpec.ConfigValue<Boolean> enabledConfig;
     private final Module module;
@@ -299,7 +300,17 @@ public class Feature {
         return result.toString();
     }
 
+    public String getDataKeyPath() {
+        if (this.dataKeyPath != null)
+            return this.dataKeyPath;
+        String replaced = this.name.replace(" ", "_");
+        String sanitized = replaced.replaceAll("[^a-z0-9/._-]", "");
+
+        this.dataKeyPath = sanitized.toLowerCase();
+        return dataKeyPath;
+    }
+
     public ResourceLocation createDataKey(String key) {
-        return ResourceLocation.fromNamespaceAndPath(this.module.getId().getNamespace(), this.name.toLowerCase().replace(" ", "_") + "/" + key);
+        return ResourceLocation.fromNamespaceAndPath(this.module.getId().getNamespace(), this.getDataKeyPath() + "/" + key);
     }
 }
