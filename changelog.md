@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.21.6
+* Fixed Time stop with no player online data pack
+
 ## 1.21.5
 * Again, crash with invalid characters in feature data key
 
