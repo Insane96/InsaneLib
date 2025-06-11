@@ -304,9 +304,8 @@ public class Feature {
         if (this.dataKeyPath != null)
             return this.dataKeyPath;
         String replaced = this.name.replace(" ", "_");
-        String sanitized = replaced.replaceAll("[^a-z0-9/._-]", "");
 
-        this.dataKeyPath = sanitized.toLowerCase();
+        this.dataKeyPath = replaced.toLowerCase().replaceAll("[^a-z0-9/._-]", "");
         return dataKeyPath;
     }
 

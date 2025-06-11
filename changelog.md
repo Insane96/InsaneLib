@@ -1,7 +1,12 @@
 # Changelog
 
+## 1.21.7
+* Fixed yet again Features data tags
+
 ## 1.21.6
 * Fixed Time stop with no player online data pack
+  * Not working
+  * Erroring due to Time Control not installed
 
 ## 1.21.5
 * Again, crash with invalid characters in feature data key
