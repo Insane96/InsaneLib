@@ -1,22 +1,23 @@
 {
-    "required": true,
-    "package": "insane96mcp.insanelib.mixin",
-    "compatibilityLevel": "JAVA_17",
-    "refmap": "mixins.insanelib.refmap.json",
-    "injectors": {
-        "defaultRequire": 1
-    },
-    "mixins": [
-        "CakeBlockMixin",
-        "FallingBlockEntityMixin",
-        "FireBlockMixin",
-        "ItemStackMixin",
-        "LivingEntityMixin",
-        "PlayerMixin",
-        "ServerLevelAccessor"
-    ],
-    "minVersion": "0.8",
-    "client": [
-        "client.LocalPlayerMixin"
-    ]
+	"required": true,
+	"package": "insane96mcp.insanelib.mixin",
+	"compatibilityLevel": "JAVA_17",
+	"refmap": "mixins.insanelib.refmap.json",
+	"injectors": {
+		"defaultRequire": 1
+	},
+	"mixins": [
+		"CakeBlockMixin",
+		"FallingBlockEntityMixin",
+		"FireBlockMixin",
+		"IntArrayTagAccessor",
+		"ItemStackMixin",
+		"LivingEntityMixin",
+		"PlayerMixin",
+		"ServerLevelAccessor"
+	],
+	"minVersion": "0.8",
+	"client": [
+		"client.LocalPlayerMixin"
+	]
 }

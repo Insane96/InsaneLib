@@ -1,6 +1,7 @@
 package insane96mcp.insanelib.util;
 
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.IntArrayTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
@@ -58,6 +59,7 @@ public class ModNBTData {
         if (type == String.class) return type.cast(modData.getString(key));
         if (type == UUID.class) return type.cast(modData.getUUID(key));
         if (type == CompoundTag.class) return type.cast(modData.getCompound(key));
+        if (type == int[].class) return type.cast(modData.getIntArray(key));
         if (type == ListTag.class) throw new IllegalArgumentException("Use getList overload");
 
         throw new IllegalArgumentException("Unsupported type: " + type);
@@ -85,6 +87,7 @@ public class ModNBTData {
         else if (value instanceof String str) modData.putString(key, str);
         else if (value instanceof UUID uuid) modData.putUUID(key, uuid);
         else if (value instanceof CompoundTag compound) modData.put(key, compound);
+        else if (value instanceof int[] intArray) modData.put(key, new IntArrayTag(intArray));
         else if (value instanceof ListTag list) modData.put(key, list);
         else throw new IllegalArgumentException("Unsupported value type: " + value.getClass());
     }

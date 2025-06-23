@@ -1,5 +1,8 @@
 # Changelog
 
+## Upcoming
+* Added int arrays to `ModNBTData`
+
 ## 1.21.7
 * Fixed yet again Features data tags
 
