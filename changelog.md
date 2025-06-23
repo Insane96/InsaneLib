@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.21.9
+* Added missing `ModNBTData#putPersisted` and `containsPersisted`
+
 ## 1.21.8
 * Added int arrays to `ModNBTData`
 * Added `ModNBTData#remove`

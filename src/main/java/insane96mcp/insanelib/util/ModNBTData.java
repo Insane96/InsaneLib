@@ -94,6 +94,10 @@ public class ModNBTData {
         put(entity.getPersistentData(), loc, value);
     }
 
+    public static void putPersisted(Player player, ResourceLocation loc, Object value) {
+        put(MCUtils.getOrCreatePersistedData(player), loc, value);
+    }
+
     public static void put(ItemStack stack, ResourceLocation loc, Object value) {
         put(stack.getOrCreateTag(), loc, value);
     }
@@ -139,6 +143,10 @@ public class ModNBTData {
         return getList(entity.getPersistentData(), loc, type);
     }
 
+    public static ListTag getListPersisted(Player player, ResourceLocation loc, int type) {
+        return getList(MCUtils.getOrCreatePersistedData(player), loc, type);
+    }
+
     public static ListTag getList(ItemStack stack, ResourceLocation loc, int type) {
         return getList(stack.getOrCreateTag(), loc, type);
     }
@@ -151,6 +159,10 @@ public class ModNBTData {
 
     public static boolean contains(Entity entity, ResourceLocation loc) {
         return contains(entity.getPersistentData(), loc);
+    }
+
+    public static boolean contains(Player player, ResourceLocation loc) {
+        return contains(MCUtils.getOrCreatePersistedData(player), loc);
     }
 
     public static boolean contains(ItemStack stack, ResourceLocation loc) {
