@@ -6,27 +6,36 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.UUID;
 
 public class ModNBTData {
+    /**
+     * Returns the compound NBT from the modId of the given player persisted data
+     */
+    public static CompoundTag getPersistedModData(Player player, String modId) {
+        return getModData(MCUtils.getOrCreatePersistedData(player), modId);
+    }
+
+    /**
+     * Returns the compound NBT from the modId of the given player data
+     */
     public static CompoundTag getModData(Entity entity, String modId) {
         return getModData(entity.getPersistentData(), modId);
     }
 
-    public static CompoundTag getModData(Entity entity, ResourceLocation location) {
-        return getModData(entity, location.getNamespace());
-    }
-
+    /**
+     * Returns the compound NBT from the modId of the given stack data
+     */
     public static CompoundTag getModData(ItemStack stack, String modId) {
         return getModData(stack.getOrCreateTag(), modId);
     }
 
-    public static CompoundTag getModData(ItemStack stack, ResourceLocation location) {
-        return getModData(stack, location.getNamespace());
-    }
-
+    /**
+     * Returns the compound NBT from the modId of the given compound
+     */
     public static CompoundTag getModData(CompoundTag compound, String modId) {
         if (compound.contains(modId))
             return compound.getCompound(modId);
@@ -35,16 +44,32 @@ public class ModNBTData {
         return tag;
     }
 
+    /**
+     * Returns the data of the entity from the given location
+     */
     public static <T> T get(Entity entity, ResourceLocation loc, Class<T> type) {
         return get(entity.getPersistentData(), loc, type);
     }
 
+    /**
+     * Returns the data of the entity's persisted data from the given location
+     */
+    public static <T> T getPersisted(Player player, ResourceLocation loc, Class<T> type) {
+        return get(MCUtils.getOrCreatePersistedData(player), loc, type);
+    }
+
+    /**
+     * Returns the data of the stack from the given location
+     */
     public static <T> T get(ItemStack stack, ResourceLocation loc, Class<T> type) {
         if (stack.getTag() == null)
             return null;
         return get(stack.getTag(), loc, type);
     }
 
+    /**
+     * Returns the data of the tag from the given location
+     */
     public static <T> T get(CompoundTag tag, ResourceLocation loc, Class<T> type) {
         CompoundTag modData = getNestedCompounds(loc.getPath(), getModData(tag, loc.getNamespace()));
         String key = getNestedKey(loc.getPath());
@@ -138,6 +163,38 @@ public class ModNBTData {
         CompoundTag modData = getNestedCompounds(loc.getPath(), getModData(tag, loc.getNamespace()));
         String key = getNestedKey(loc.getPath());
         return modData.contains(key);
+    }
+
+    /**
+     * Removes the specified nbt data from the entity data
+     */
+    public static void remove(Entity entity, ResourceLocation loc) {
+        remove(entity.getPersistentData(), loc);
+    }
+
+    /**
+     * Removes the specified nbt data from the player's persisted data
+     */
+    public static void removePersisted(Player player, ResourceLocation loc) {
+        remove(player.getPersistentData(), loc);
+    }
+
+    /**
+     * Removes the specified nbt data from the stack's data
+     */
+    public static void remove(ItemStack stack, ResourceLocation loc) {
+        if (stack.getTag() == null)
+            return;
+        remove(stack.getTag(), loc);
+    }
+
+    /**
+     * Removes the specified nbt data from the compound tag
+     */
+    public static void remove(CompoundTag tag, ResourceLocation loc) {
+        CompoundTag modData = getNestedCompounds(loc.getPath(), getModData(tag, loc.getNamespace()));
+        String key = getNestedKey(loc.getPath());
+        modData.remove(key);
     }
 
     public static int classToNBTType(Class<?> type) {

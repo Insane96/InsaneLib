@@ -1,7 +1,9 @@
 # Changelog
 
-## Upcoming
+## 1.21.8
 * Added int arrays to `ModNBTData`
+* Added `ModNBTData#remove`
+* Added `ModNBTData` methods to save and retrieve player's persisted data
 
 ## 1.21.7
 * Fixed yet again Features data tags
