@@ -1,5 +1,6 @@
 package insane96mcp.insanelib;
 
+import insane96mcp.insanelib.base.FeatureEnabledCondition;
 import insane96mcp.insanelib.data.JsonFeatureDataReloadListener;
 import insane96mcp.insanelib.network.NetworkHandler;
 import insane96mcp.insanelib.setup.Config;
@@ -11,6 +12,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.event.AddPackFindersEvent;
 import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
@@ -20,7 +22,9 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.MissingMappingsEvent;
+import net.minecraftforge.registries.RegisterEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -44,11 +48,12 @@ public class InsaneLib
 
     public InsaneLib(FMLJavaModLoadingContext context) {
         context.registerConfig(net.minecraftforge.fml.config.ModConfig.Type.COMMON, Config.COMMON_SPEC, MOD_ID + ".toml");
-        context.getModEventBus().addListener(InsaneLib::clientSetup);
-        context.getModEventBus().addListener(this::preInit);
-        context.getModEventBus().addListener(this::addPackFinders);
+        IEventBus modEventBus = context.getModEventBus();
+        modEventBus.addListener(InsaneLib::clientSetup);
+        modEventBus.addListener(this::preInit);
+        modEventBus.addListener(this::addPackFinders);
+        modEventBus.addListener(this::registerStuff);
         MinecraftForge.EVENT_BUS.register(this);
-        final IEventBus modEventBus = context.getModEventBus();
         ILGlobalLootModifiers.REGISTRY.register(modEventBus);
     }
 
@@ -90,6 +95,13 @@ public class InsaneLib
                     mapping.remap(value);
                 }
             }
+        }
+    }
+
+    public void registerStuff(RegisterEvent event) {
+        if (event.getRegistryKey().equals(ForgeRegistries.Keys.RECIPE_SERIALIZERS))
+        {
+            CraftingHelper.register(FeatureEnabledCondition.Serializer.INSTANCE);
         }
     }
 
