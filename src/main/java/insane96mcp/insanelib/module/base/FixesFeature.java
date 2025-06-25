@@ -3,7 +3,6 @@ package insane96mcp.insanelib.module.base;
 import insane96mcp.insanelib.ai.ILNearestAttackableTargetGoal;
 import insane96mcp.insanelib.base.Feature;
 import insane96mcp.insanelib.base.LoadFeature;
-import insane96mcp.insanelib.base.Module;
 import insane96mcp.insanelib.base.config.Config;
 import insane96mcp.insanelib.util.MCUtils;
 import net.minecraft.world.entity.Entity;
@@ -19,7 +18,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.event.config.ModConfigEvent;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -39,15 +37,6 @@ public class FixesFeature extends Feature {
 
 	@Config(description = "The fix for Jump Movement Factor is applied only when the player is slowed down. If false, the player will jump really farther when going faster.")
 	public static Boolean fixJumpMovementFactorSlowdownOnly = true;
-
-	public FixesFeature(Module module, boolean enabledByDefault, boolean canBeDisabled) {
-		super(module, enabledByDefault, canBeDisabled);
-	}
-
-	@Override
-	public void readConfig(final ModConfigEvent event) {
-		super.readConfig(event);
-	}
 
 	@SubscribeEvent(priority = EventPriority.LOWEST)
 	public void onSpawn(EntityJoinLevelEvent event) {

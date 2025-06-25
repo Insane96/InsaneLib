@@ -1,5 +1,10 @@
 # Changelog
 
+## Upcoming
+* Features no longer require the 3 parameter constructor. `Feature#init` can be overridden instead if needed
+* Added `Module#getFeature` by name
+* Cleaned up Feature and Module creation
+
 ## 1.21.9
 * Added missing `ModNBTData#putPersisted` and `containsPersisted`
 

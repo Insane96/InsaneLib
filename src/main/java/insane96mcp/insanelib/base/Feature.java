@@ -21,35 +21,61 @@ import java.util.List;
 import java.util.Optional;
 
 public class Feature {
-    private final String name;
+    private String name;
     private String dataKeyPath = null;
-    private final String description;
+    private String description;
     private ForgeConfigSpec.ConfigValue<Boolean> enabledConfig;
-    private final Module module;
+    private Module module;
 
-    private final boolean enabledByDefault;
-    private final boolean canBeDisabled;
+    private boolean enabledByDefault;
+    private boolean canBeDisabled;
 
     private boolean enabled;
 
+    /**
+     * @deprecated No longer needed, override {@link #init(Module, boolean, boolean)} if needed to init stuff on construction
+     */
+    @Deprecated
     public Feature(Module module, boolean enabledByDefault, boolean canBeDisabled) {
-        String tmpName;
-        if (!this.getClass().isAnnotationPresent(Label.class)) {
-            tmpName = this.getClass().getAnnotation(LoadFeature.class).name();
-            if (tmpName.isBlank())
-                tmpName = fieldNameToConfigOption(this.getClass().getSimpleName());
-            tmpName = tmpName.replaceAll("(?i)feature", "").trim();
-            this.description = this.getClass().getAnnotation(LoadFeature.class).description();
-        }
-        else {
-            tmpName = this.getClass().getAnnotation(Label.class).name();
-            this.description = this.getClass().getAnnotation(Label.class).description();
-        }
-        this.name = tmpName;
+        this.init(module, enabledByDefault, canBeDisabled);
+    }
+
+    protected Feature() {}
+
+    public void init(Module module, boolean enabledByDefault, boolean canBeDisabled) {
         this.module = module;
         this.enabledByDefault = enabledByDefault;
         this.canBeDisabled = canBeDisabled;
+        this.name = extractName();
+        this.description = extractDescription();
         this.registerEvents();
+    }
+
+    private String extractName() {
+        if (this.getClass().isAnnotationPresent(LoadFeature.class)) {
+            String name = this.getClass().getAnnotation(LoadFeature.class).name();
+            if (!name.isBlank())
+                return name;
+        }
+
+        if (this.getClass().isAnnotationPresent(Label.class)) {
+            LogHelper.warn("Feature %s uses deprecated @Label annotation. Requires migration to @LoadFeature".formatted(this.getClass().getSimpleName()));
+            return this.getClass().getAnnotation(Label.class).name();
+        }
+
+        return fieldNameToConfigOption(this.getClass().getSimpleName()).replaceAll("(?i)feature", "").trim();
+    }
+
+    private String extractDescription() {
+        if (this.getClass().isAnnotationPresent(LoadFeature.class))
+            return this.getClass().getAnnotation(LoadFeature.class).description();
+
+        if (this.getClass().isAnnotationPresent(Label.class)) {
+            LogHelper.warn("Feature %s uses deprecated @Label annotation. Requires migration to @LoadFeature".formatted(this.getClass().getSimpleName()));
+            return this.getClass().getAnnotation(Label.class).description();
+        }
+
+        return "";
     }
 
     /**
@@ -277,6 +303,12 @@ public class Feature {
 
     public static boolean isEnabled(Class<? extends Feature> feature) {
         return get(feature).isEnabled();
+    }
+
+    public static boolean isEnabled(String featureName) {
+        return Module.getFeature(featureName)
+                .map(Feature::isEnabled)
+                .orElse(false);
     }
 
     public static String fieldNameToConfigOption(String camelCase) {

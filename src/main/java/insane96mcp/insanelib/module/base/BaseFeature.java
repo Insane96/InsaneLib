@@ -21,8 +21,9 @@ public class BaseFeature extends Feature {
     @Config(description = "If true, game time, day time, and weather will not advance if no players are online. This can break anything that relies on game time. Also Serene Season and Time Control mods ticking are stopped. Game time is stopped with a simple flag in-code, whilst day time and weather are stopped with an integrated data pack.")
     public static Boolean preventTimeTickingIfNoPlayersOnline = true;
 
-    public BaseFeature(Module module, boolean enabledByDefault, boolean canBeDisabled) {
-        super(module, enabledByDefault, canBeDisabled);
+    @Override
+    public void init(Module module, boolean enabledByDefault, boolean canBeDisabled) {
+        super.init(module, enabledByDefault, canBeDisabled);
         IntegratedPack.addServerPack(InsaneLib.MOD_ID, "no_player_time_stop", "InsaneLib's No Player Time Stop", () -> preventTimeTickingIfNoPlayersOnline);
     }
 

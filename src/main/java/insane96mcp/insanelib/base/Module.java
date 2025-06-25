@@ -10,10 +10,9 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.forgespi.language.ModFileScanData;
 import org.objectweb.asm.Type;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Map;
+import javax.annotation.Nullable;
+import java.lang.reflect.Constructor;
+import java.util.*;
 
 @SuppressWarnings("unused")
 public class Module {
@@ -164,73 +163,107 @@ public class Module {
     private static final Type LOAD_FEATURE_TYPE = Type.getType(LoadFeature.class);
 
     public static void loadFeatures(ModConfig.Type modConfigType, String modId, ClassLoader classLoader) {
-        ArrayList<Module> moduleToLoad = new ArrayList<>();
+        Set<Module> modulesToLoad = new HashSet<>();
         ModFileScanData modFileScanData = ModList.get().getModFileById(modId).getFile().getScanResult();
         modFileScanData.getAnnotations().stream()
-                .filter(annotationData -> LOAD_FEATURE_TYPE.equals(annotationData.annotationType()))
-                .sorted(Comparator.comparing(d -> d.getClass().getName()))
-                .forEach(annotationData -> {
+                .filter(annotation -> LOAD_FEATURE_TYPE.equals(annotation.annotationType()))
+                .sorted(Comparator.comparing(a -> a.clazz().getClassName()))
+                .forEach(annotation -> {
                     try {
-                        Map<String, Object> annotationDataMap = annotationData.annotationData();
-                        String moduleString = (String) annotationDataMap.get("module");
-                        ResourceLocation moduleId = ResourceLocation.parse(moduleString);
-                        Module module = Module.modules.get(moduleId);
-                        if (module != null && module.modConfigType != modConfigType)
-                            return;
-                        if (!Module.modules.containsKey(moduleId)) {
-                            LogHelper.warn("No module found with ID %s".formatted(moduleId));
-                            return;
-                        }
-
-                        Type type = annotationData.clazz();
-                        Class<?> clazz = Class.forName(type.getClassName(), false, classLoader);
-                        @SuppressWarnings("unchecked")
-                        Class<? extends Feature> featureClazz = (Class<? extends Feature>) clazz;
-                        LogHelper.info("Found (%s) InsaneLib Feature class %s".formatted(modConfigType, type.getClassName()));
-
-                        if (annotationDataMap.containsKey("requiresMods")) {
-                            ArrayList<String> requiresMods = (ArrayList<String>) annotationDataMap.get("requiresMods");
-                            for (String requiredModId : requiresMods) {
-                                if (!ModList.get().isLoaded(requiredModId)) {
-                                    LogHelper.info("Feature %s not loaded because %s is not present".formatted(type.getClassName(), requiredModId));
-                                    return;
-                                }
-                            }
-                        }
-
-                        boolean enabledByDefault = true;
-                        if (annotationDataMap.containsKey("enabledByDefault")) {
-                            enabledByDefault = (Boolean) annotationDataMap.get("enabledByDefault");
-                        }
-
-                        boolean canBeDisabled = true;
-                        if (annotationDataMap.containsKey("canBeDisabled")) {
-                            canBeDisabled = (Boolean) annotationDataMap.get("canBeDisabled");
-                        }
-
-                        Feature feature = (Feature) clazz.getDeclaredConstructor(Module.class, boolean.class, boolean.class).newInstance(module, enabledByDefault, canBeDisabled);
-                        module.features.put(featureClazz, feature);
-                        loadedFeatures.put(featureClazz, feature);
-                        if (!moduleToLoad.contains(module)) {
-                            moduleToLoad.add(module);
-                        }
+                        handleFeatureAnnotation(annotation, modConfigType, classLoader, modulesToLoad);
                     }
                     catch (Exception e) {
-                        throw new RuntimeException("Failed to load Module %s".formatted(annotationData), e);
+                        throw new RuntimeException("Failed to load Module %s".formatted(annotation), e);
                     }
                 });
-        moduleToLoad.forEach(m -> {
+        modulesToLoad.forEach(m -> {
             m.pushConfig();
             m.getFeatures().forEach((clazz, feature) -> feature.loadConfig());
             m.popConfig();
         });
     }
 
+    private static void handleFeatureAnnotation(ModFileScanData.AnnotationData annotationData,
+                                                ModConfig.Type modConfigType,
+                                                ClassLoader classLoader,
+                                                Set<Module> modulesToLoad) throws Exception {
+        Map<String, Object> annotationDataMap = annotationData.annotationData();
+        ResourceLocation moduleId = ResourceLocation.parse((String) annotationDataMap.get("module"));
+
+        Module module = Module.modules.get(moduleId);
+        if (module == null) {
+            LogHelper.warn("No module found with ID %s".formatted(moduleId));
+            return;
+        }
+        if (module.modConfigType != modConfigType)
+            return;
+
+        Type type = annotationData.clazz();
+        Class<?> clazz = Class.forName(type.getClassName(), false, classLoader);
+        @SuppressWarnings("unchecked")
+        Class<? extends Feature> featureClazz = (Class<? extends Feature>) clazz;
+
+        if (!areRequiredModsLoaded(annotationDataMap, type.getClassName()))
+            return;
+
+        boolean enabledByDefault = (Boolean) annotationDataMap.getOrDefault("enabledByDefault", true);
+        boolean canBeDisabled = (Boolean) annotationDataMap.getOrDefault("canBeDisabled", true);
+
+        LogHelper.info("Found (%s) InsaneLib Feature class %s".formatted(modConfigType, type.getClassName()));
+
+        Feature feature = instantiateFeature(clazz, module, enabledByDefault, canBeDisabled);
+        module.getFeatures().put(featureClazz, feature);
+        Module.getAllLoadedFeatures().put(featureClazz, feature);
+        modulesToLoad.add(module);
+    }
+
+    private static boolean areRequiredModsLoaded(Map<String, Object> annotationDataMap, String className) {
+        if (!annotationDataMap.containsKey("requiresMods"))
+            return true;
+
+        List<String> requiredMods = (List<String>) annotationDataMap.get("requiresMods");
+        for (String modId : requiredMods) {
+            if (!ModList.get().isLoaded(modId)) {
+                LogHelper.info("Feature %s not loaded because %s is not present".formatted(className, modId));
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private static Feature instantiateFeature(Class<?> clazz, Module module, boolean enabledByDefault, boolean canBeDisabled) {
+        try {
+            Constructor<?> ctor = clazz.getDeclaredConstructor(Module.class, boolean.class, boolean.class);
+            return (Feature) ctor.newInstance(module, enabledByDefault, canBeDisabled);
+        }
+        catch (NoSuchMethodException e) {
+            try {
+                Feature feature = (Feature) clazz.getDeclaredConstructor().newInstance();
+                feature.init(module, enabledByDefault, canBeDisabled);
+                return feature;
+            }
+            catch (ReflectiveOperationException ex) {
+                throw new RuntimeException("Failed to instantiate Feature (no valid constructor): " + clazz.getName(), ex);
+            }
+        }
+        catch (ReflectiveOperationException e) {
+            throw new RuntimeException("Failed to instantiate Feature with full constructor: " + clazz.getName(), e);
+        }
+    }
+
     public static Map<Class<? extends Feature>, Feature> getAllLoadedFeatures() {
         return loadedFeatures;
     }
 
+    @Nullable
     public static Feature getFeature(Class<? extends Feature> featureClazz) {
         return loadedFeatures.get(featureClazz);
+    }
+
+    public static Optional<Feature> getFeature(String name) {
+        return loadedFeatures.values()
+                .stream()
+                .filter(feature -> feature.getName().equals(name))
+                .findFirst();
     }
 }

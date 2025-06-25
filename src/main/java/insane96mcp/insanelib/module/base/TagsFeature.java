@@ -25,8 +25,9 @@ public class TagsFeature extends Feature {
 	public static ResourceLocation EXPLOSION_CAUSES_FIRE;
 	public static ResourceLocation EXPERIENCE_MULTIPLIER;
 
-	public TagsFeature(Module module, boolean enabledByDefault, boolean canBeDisabled) {
-		super(module, enabledByDefault, canBeDisabled);
+	@Override
+	public void init(Module module, boolean enabledByDefault, boolean canBeDisabled) {
+		super.init(module, enabledByDefault, canBeDisabled);
 		SPAWN_TYPE = createDataKey("spawn_type");
 		EXPLOSION_CAUSES_FIRE = createDataKey("explosion_causes_fire");
 		EXPERIENCE_MULTIPLIER = createDataKey("xp_multiplier");
