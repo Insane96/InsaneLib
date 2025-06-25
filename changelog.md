@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.21.12
+* Fixed backwards compatibility for JsonFeatures
+
 ## 1.21.11
 * `Module#getFeature` is now case-insensitive
 
