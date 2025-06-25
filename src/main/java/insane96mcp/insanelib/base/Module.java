@@ -263,7 +263,7 @@ public class Module {
     public static Optional<Feature> getFeature(String name) {
         return loadedFeatures.values()
                 .stream()
-                .filter(feature -> feature.getName().equals(name))
+                .filter(feature -> feature.getName().equalsIgnoreCase(name))
                 .findFirst();
     }
 }

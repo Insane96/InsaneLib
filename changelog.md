@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.21.11
+* `Module#getFeature` is now case-insensitive
+
 ## 1.21.10
 * Added a new `insanelib:feature_enabled` condition for recipes and advancements
 * Features no longer require the 3 parameter constructor. `Feature#init` can be overridden instead if needed
