@@ -1,6 +1,7 @@
 package insane96mcp.insanelib.base;
 
 import com.google.gson.JsonObject;
+import com.google.gson.JsonSyntaxException;
 import insane96mcp.insanelib.InsaneLib;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
@@ -44,7 +45,10 @@ public class FeatureEnabledCondition implements ICondition {
 		@Override
 		public FeatureEnabledCondition read(JsonObject json)
 		{
-			return new FeatureEnabledCondition(GsonHelper.getAsString(json, "feature"));
+			String feature = GsonHelper.getAsString(json, "feature");
+			if (Module.getFeature(feature).isEmpty())
+				throw new JsonSyntaxException("Unknown feature: " + feature);
+			return new FeatureEnabledCondition(feature);
 		}
 
 		@Override

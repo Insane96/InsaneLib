@@ -1,6 +1,7 @@
 package insane96mcp.insanelib;
 
 import insane96mcp.insanelib.base.FeatureEnabledCondition;
+import insane96mcp.insanelib.base.FeatureEnabledLootCondition;
 import insane96mcp.insanelib.data.JsonFeatureDataReloadListener;
 import insane96mcp.insanelib.network.NetworkHandler;
 import insane96mcp.insanelib.setup.Config;
@@ -8,6 +9,7 @@ import insane96mcp.insanelib.setup.ILGlobalLootModifiers;
 import insane96mcp.insanelib.util.IntegratedPack;
 import net.minecraft.Util;
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
@@ -102,6 +104,9 @@ public class InsaneLib
         if (event.getRegistryKey().equals(ForgeRegistries.Keys.RECIPE_SERIALIZERS))
         {
             CraftingHelper.register(FeatureEnabledCondition.Serializer.INSTANCE);
+        }
+        if (event.getRegistryKey().equals(Registries.LOOT_CONDITION_TYPE)) {
+            event.register(Registries.LOOT_CONDITION_TYPE, InsaneLib.location("feature_enabled"), () -> FeatureEnabledLootCondition.TYPE);
         }
     }
 

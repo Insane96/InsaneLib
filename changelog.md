@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.21.13
+* Added loot condition `insanelib:feature_enabled`
+  * Same as recipe condition
+* Condition now errors if the feature doesn't exist
+
 ## 1.21.12
 * Fixed backwards compatibility for JsonFeatures
 
