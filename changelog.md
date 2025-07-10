@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.21.14
+* Time stop with no player online enhanced
+  * Added support for weather, Serene Seasons and Time Control
+
 ## 1.21.13
 * Added loot condition `insanelib:feature_enabled`
   * Same as recipe condition

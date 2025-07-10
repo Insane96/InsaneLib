@@ -7,19 +7,29 @@ import insane96mcp.insanelib.base.Module;
 import insane96mcp.insanelib.base.config.Config;
 import insane96mcp.insanelib.mixin.ServerLevelAccessor;
 import insane96mcp.insanelib.util.IntegratedPack;
+import net.minecraft.commands.CommandFunction;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.ServerFunctionManager;
+import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.server.ServerStartedEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.ModList;
 
 import javax.annotation.Nullable;
+import java.util.Optional;
 import java.util.function.Predicate;
 
 @LoadFeature(module = "insanelib:base", canBeDisabled = false)
 public class BaseFeature extends Feature {
 
-    @Config(description = "If true, game time, day time, and weather will not advance if no players are online. This can break anything that relies on game time. Also Serene Season and Time Control mods ticking are stopped. Game time is stopped with a simple flag in-code, whilst day time and weather are stopped with an integrated data pack.")
+    @Config(description = "If true, game time and day time, and weather will not advance if no players are online. This can break anything that relies on game time.")
     public static Boolean preventTimeTickingIfNoPlayersOnline = true;
+    @Config(description = "If true, also prevents game time from advancing if no players are online with Time Control installed")
+    public static Boolean timeControlIntegration = true;
+    @Config(description = "If true, also prevents seasons from advancing if no players are online with Serene Seasons installed")
+    public static Boolean sereneSeasonsIntegration = true;
 
     @Override
     public void init(Module module, boolean enabledByDefault, boolean canBeDisabled) {
@@ -35,6 +45,36 @@ public class BaseFeature extends Feature {
     @SubscribeEvent
     public void onPlayerLeave(PlayerEvent.PlayerLoggedInEvent event) {
         setTickTime(event.getEntity().getServer(), true, null);
+    }
+
+    static int tick = 0;
+    public static CommandFunction.CacheableFunction STOP = null;
+    public static CommandFunction.CacheableFunction TC = null;
+    public static CommandFunction.CacheableFunction SEASONS = null;
+
+    @SubscribeEvent
+    public void serverTick(TickEvent.ServerTickEvent event) {
+        if (!preventTimeTickingIfNoPlayersOnline)
+            return;
+        if (++tick <= 20)
+            return;
+        tick = 0;
+        ServerFunctionManager functions = event.getServer().getFunctions();
+        executeFunction(functions, STOP, "insanelib:stop_if_no_player_online");
+        if (ModList.get().isLoaded("timecontrol") && timeControlIntegration)
+            executeFunction(functions, TC, "insanelib:stop_time_if_no_player_online_tc");
+        if (ModList.get().isLoaded("sereneseasons") && sereneSeasonsIntegration)
+            executeFunction(functions, SEASONS, "insanelib:stop_season_if_no_player_online");
+    }
+
+    private void executeFunction(ServerFunctionManager functions, CommandFunction.CacheableFunction function, String id) {
+        if (function == null)
+            function = new CommandFunction.CacheableFunction(ResourceLocation.parse(id));
+        Optional<CommandFunction> func = function.get(functions);
+        if (func.isPresent())
+            functions.execute(func.get(), functions.getGameLoopSender());
+        else
+            InsaneLib.LOGGER.warn("{} function not found", id);
     }
 
     @SubscribeEvent

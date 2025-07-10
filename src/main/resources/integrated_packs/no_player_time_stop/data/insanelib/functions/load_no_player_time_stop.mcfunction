@@ -1,1 +1,0 @@
-schedule function insanelib:check_players_online 1s
