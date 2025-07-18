@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.21.15
+* Prevent time ticking when no player online is now disabled by default
+* Split weather stop when no player online and added infos about disabling game rules
+
 ## 1.21.14
 * Time stop with no player online enhanced
   * Added support for weather, Serene Seasons and Time Control

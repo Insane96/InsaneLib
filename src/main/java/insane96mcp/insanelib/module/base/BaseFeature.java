@@ -24,11 +24,13 @@ import java.util.function.Predicate;
 @LoadFeature(module = "insanelib:base", canBeDisabled = false)
 public class BaseFeature extends Feature {
 
-    @Config(description = "If true, game time and day time, and weather will not advance if no players are online. This can break anything that relies on game time.")
-    public static Boolean preventTimeTickingIfNoPlayersOnline = true;
-    @Config(description = "If true, also prevents game time from advancing if no players are online with Time Control installed")
+    @Config(description = "If true, game time and day time, will not advance if no players are online. This can break anything that relies on game time.")
+    public static Boolean preventTimeTickingIfNoPlayersOnline = false;
+    @Config(description = "If true, also prevents weather from advancing if no players are online. This needs to be disabled in order to allow to set the gamerule again.")
+    public static Boolean alsoWeather = true;
+    @Config(description = "If true, also prevents game time from advancing if no players are online with Time Control installed. This needs to be disabled in order to allow to set the gamerule again.")
     public static Boolean timeControlIntegration = true;
-    @Config(description = "If true, also prevents seasons from advancing if no players are online with Serene Seasons installed")
+    @Config(description = "If true, also prevents seasons from advancing if no players are online with Serene Seasons installed. This needs to be disabled in order to allow to set the gamerule again.")
     public static Boolean sereneSeasonsIntegration = true;
 
     @Override
@@ -60,7 +62,8 @@ public class BaseFeature extends Feature {
             return;
         tick = 0;
         ServerFunctionManager functions = event.getServer().getFunctions();
-        executeFunction(functions, STOP, "insanelib:stop_if_no_player_online");
+        if (alsoWeather)
+            executeFunction(functions, STOP, "insanelib:stop_weather_if_no_player_online");
         if (ModList.get().isLoaded("timecontrol") && timeControlIntegration)
             executeFunction(functions, TC, "insanelib:stop_time_if_no_player_online_tc");
         if (ModList.get().isLoaded("sereneseasons") && sereneSeasonsIntegration)
