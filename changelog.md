@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.21.16
+* Scheduled tasks are now cleared when leaving the world
+
 ## 1.21.15
 * Prevent time ticking when no player online is now disabled by default
 * Split weather stop when no player online and added infos about disabling game rules
