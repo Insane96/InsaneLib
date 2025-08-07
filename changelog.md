@@ -2,6 +2,7 @@
 
 ## Upcoming
 * Fixed Integrated Client Pack not loading
+* Fixed log errors when Time Control and/or Serene Seasons are not present
 
 ## 1.21.16
 * Scheduled tasks are now cleared when leaving the world

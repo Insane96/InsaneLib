@@ -37,6 +37,8 @@ public class BaseFeature extends Feature {
     public void init(Module module, boolean enabledByDefault, boolean canBeDisabled) {
         super.init(module, enabledByDefault, canBeDisabled);
         IntegratedPack.addServerPack(InsaneLib.MOD_ID, "no_player_time_stop", "InsaneLib's No Player Time Stop", () -> preventTimeTickingIfNoPlayersOnline);
+        IntegratedPack.addServerPack(InsaneLib.MOD_ID, "no_player_time_stop_tc", "InsaneLib's No Player Time Stop Time Control", () -> preventTimeTickingIfNoPlayersOnline && ModList.get().isLoaded("timecontrol"));
+        IntegratedPack.addServerPack(InsaneLib.MOD_ID, "no_player_time_stop_season", "InsaneLib's No Player Time Stop Serene Seasons", () -> preventTimeTickingIfNoPlayersOnline && ModList.get().isLoaded("sereneseasons"));
     }
 
     @SubscribeEvent
