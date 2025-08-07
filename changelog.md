@@ -1,5 +1,8 @@
 # Changelog
 
+## Upcoming
+* Fixed Integrated Client Pack not loading
+
 ## 1.21.16
 * Scheduled tasks are now cleared when leaving the world
 

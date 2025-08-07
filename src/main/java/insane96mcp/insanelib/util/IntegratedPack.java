@@ -87,7 +87,7 @@ public class IntegratedPack implements Comparable<IntegratedPack> {
     }
 
     public static void addClientPack(String modId, String path, String description, BooleanSupplier enabled) {
-        addServerPack(0, modId, path, description, enabled);
+        addClientPack(0, modId, path, description, enabled);
     }
 
     public static void addClientPack(int priority, String modId, String path, String description, BooleanSupplier enabled) {
