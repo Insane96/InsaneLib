@@ -1,6 +1,6 @@
 # Changelog
 
-## Upcoming
+## 1.21.17
 * Fixed Integrated Client Pack not loading
 * Fixed log errors when Time Control and/or Serene Seasons are not present
 
