@@ -21,11 +21,9 @@ import javax.annotation.Nullable;
 import java.util.Optional;
 import java.util.function.Predicate;
 
-@LoadFeature(module = "insanelib:base", canBeDisabled = false)
-public class BaseFeature extends Feature {
+@LoadFeature(module = "insanelib:base", enabledByDefault = false, description = "If true, game time and day time, will not advance if no players are online. This can break anything that relies on game time")
+public class TimeStopNoPlayerOnline extends Feature {
 
-    @Config(description = "If true, game time and day time, will not advance if no players are online. This can break anything that relies on game time.")
-    public static Boolean preventTimeTickingIfNoPlayersOnline = false;
     @Config(description = "If true, also prevents weather from advancing if no players are online. This needs to be disabled in order to allow to set the gamerule again.")
     public static Boolean alsoWeather = true;
     @Config(description = "If true, also prevents game time from advancing if no players are online with Time Control installed. This needs to be disabled in order to allow to set the gamerule again.")
@@ -36,9 +34,9 @@ public class BaseFeature extends Feature {
     @Override
     public void init(Module module, boolean enabledByDefault, boolean canBeDisabled) {
         super.init(module, enabledByDefault, canBeDisabled);
-        IntegratedPack.addServerPack(InsaneLib.MOD_ID, "no_player_time_stop", "InsaneLib's No Player Time Stop", () -> preventTimeTickingIfNoPlayersOnline);
-        IntegratedPack.addServerPack(InsaneLib.MOD_ID, "no_player_time_stop_tc", "InsaneLib's No Player Time Stop Time Control", () -> preventTimeTickingIfNoPlayersOnline && ModList.get().isLoaded("timecontrol"));
-        IntegratedPack.addServerPack(InsaneLib.MOD_ID, "no_player_time_stop_season", "InsaneLib's No Player Time Stop Serene Seasons", () -> preventTimeTickingIfNoPlayersOnline && ModList.get().isLoaded("sereneseasons"));
+        IntegratedPack.addServerPack(InsaneLib.MOD_ID, "no_player_time_stop", "InsaneLib's No Player Time Stop", this::isEnabled);
+        IntegratedPack.addServerPack(InsaneLib.MOD_ID, "no_player_time_stop_tc", "InsaneLib's No Player Time Stop Time Control", () -> this.isEnabled() && ModList.get().isLoaded("timecontrol"));
+        IntegratedPack.addServerPack(InsaneLib.MOD_ID, "no_player_time_stop_season", "InsaneLib's No Player Time Stop Serene Seasons", () -> this.isEnabled() && ModList.get().isLoaded("sereneseasons"));
     }
 
     @SubscribeEvent
@@ -58,7 +56,7 @@ public class BaseFeature extends Feature {
 
     @SubscribeEvent
     public void serverTick(TickEvent.ServerTickEvent event) {
-        if (!preventTimeTickingIfNoPlayersOnline)
+        if (!this.isEnabled())
             return;
         if (++tick <= 20)
             return;
@@ -88,7 +86,7 @@ public class BaseFeature extends Feature {
     }
 
     public void setTickTime(@Nullable MinecraftServer server, boolean tickTime, @Nullable Predicate<MinecraftServer> extraConditions) {
-        if (!preventTimeTickingIfNoPlayersOnline
+        if (!this.isEnabled()
                 || server == null
                 || (extraConditions != null && extraConditions.test(server)))
             return;

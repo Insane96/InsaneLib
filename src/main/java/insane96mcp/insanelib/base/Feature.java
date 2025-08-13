@@ -68,7 +68,8 @@ public class Feature {
 
     private String extractDescription() {
         if (this.getClass().isAnnotationPresent(LoadFeature.class))
-            return this.getClass().getAnnotation(LoadFeature.class).description();
+			//noinspection DataFlowIssue
+			return this.getClass().getAnnotation(LoadFeature.class).description();
 
         if (this.getClass().isAnnotationPresent(Label.class)) {
             LogHelper.warn("Feature %s uses deprecated @Label annotation. Requires migration to @LoadFeature".formatted(this.getClass().getSimpleName()));
@@ -212,8 +213,8 @@ public class Feature {
     }
 
     public final void loadConfig() {
-        if (canBeDisabled) {
-            if (!description.isEmpty())
+        if (this.canBeDisabled) {
+            if (!this.description.isEmpty())
                 this.module.configBuilder.comment(getDescription());
             enabledConfig = this.module.configBuilder.define("Enable " + getName(), enabledByDefault);
         }
