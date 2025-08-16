@@ -39,10 +39,15 @@ import java.util.function.Consumer;
 public abstract class JsonFeature extends Feature {
     public final List<JsonConfig<?>> JSON_CONFIGS = new ArrayList<>();
 
-    @Deprecated
+	/**
+	 * @deprecated No longer needed, override {@link #init(Module, boolean, boolean)} if needed to init stuff on feature creation
+	 */
+    @Deprecated(forRemoval = true)
     public JsonFeature(Module module, boolean enabledByDefault, boolean canBeDisabled) {
         super(module, enabledByDefault, canBeDisabled);
     }
+
+	public JsonFeature() {}
 
     @Override
     public void init(Module module, boolean enabledByDefault, boolean canBeDisabled) {

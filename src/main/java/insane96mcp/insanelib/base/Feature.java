@@ -33,9 +33,9 @@ public class Feature {
     private boolean enabled;
 
     /**
-     * @deprecated No longer needed, override {@link #init(Module, boolean, boolean)} if needed to init stuff on construction
+     * @deprecated No longer needed, override {@link #init(Module, boolean, boolean)} if needed to init stuff on feature creation
      */
-    @Deprecated
+	@Deprecated(forRemoval = true)
     public Feature(Module module, boolean enabledByDefault, boolean canBeDisabled) {
         this.init(module, enabledByDefault, canBeDisabled);
     }

@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.21.19
+* Added empty constructor to JsonFeature
+
 ## 1.21.18
 * Enhanced config options for 'Time stop no player online'
 
