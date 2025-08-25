@@ -1,7 +1,13 @@
 # Changelog
 
-## 1.21.18
+## 1.21.20
 * Fixed client integrated packs not loading with correct type
+
+## 1.21.19
+* Added empty constructor to JsonFeature
+
+## 1.21.18
+* Enhanced config options for 'Time stop no player online'
 
 ## 1.21.17
 * Fixed Integrated Client Pack not loading

@@ -52,11 +52,11 @@ public class IdTagMatcher implements StringRepresentable {
     }
 
     public IdTagMatcher(Type type, String location, @Nullable String dimension) {
-        this(type, new ResourceLocation(location), dimension == null ? null : new ResourceLocation(dimension));
+        this(type, ResourceLocation.parse(location), dimension == null ? null : ResourceLocation.parse(dimension));
     }
 
     public IdTagMatcher(Type type, String location) {
-        this(type, new ResourceLocation(location), null);
+        this(type, ResourceLocation.parse(location), null);
     }
 
     public static IdTagMatcher newId(String location) {
