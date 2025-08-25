@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.21.18
+* Fixed client integrated packs not loading with correct type
+
 ## 1.21.17
 * Fixed Integrated Client Pack not loading
 * Fixed log errors when Time Control and/or Serene Seasons are not present

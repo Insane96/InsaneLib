@@ -102,7 +102,7 @@ public class IntegratedPack implements Comparable<IntegratedPack> {
 
             Path resourcePath = ModList.get().getModFileById(integratedPack.modId).getFile().findResource("integrated_packs/" + integratedPack.getPath());
             var pack = Pack.readMetaAndCreate(integratedPack.modId + ":" + integratedPack.getPath(), integratedPack.getDescription(), integratedPack.shouldBeEnabled() && integratedPack.getPackType() != PackType.CLIENT_RESOURCES,
-                    (path) -> new PathPackResources(path, resourcePath, false), PackType.SERVER_DATA, Pack.Position.TOP, PackSource.DEFAULT);
+                    (path) -> new PathPackResources(path, resourcePath, false), integratedPack.packType, Pack.Position.TOP, PackSource.DEFAULT);
             event.addRepositorySource((packConsumer) -> packConsumer.accept(pack));
         }
     }
