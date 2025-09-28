@@ -93,6 +93,15 @@ public class MCUtils {
 		return false;
 	}
 
+    /**
+     * Removes a modifier from the Living Entity if the entity has the attribute
+     */
+    public static void removeModifier(LivingEntity entity, Attribute attribute, UUID uuid) {
+        AttributeInstance attributeInstance = entity.getAttribute(attribute);
+        if (attributeInstance != null)
+            attributeInstance.removeModifier(uuid);
+    }
+
 	/**
 	 * Sets the value of an attribute
 	 * @return true if the override was successful

@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.21.21
+* Added MCUtils.removeModifier
+
 ## 1.21.20
 * Fixed client integrated packs not loading with correct type
 
