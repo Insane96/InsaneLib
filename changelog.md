@@ -2,6 +2,7 @@
 
 ## 1.21.21
 * Added MCUtils.removeModifier
+* Applying max health modifiers with MCUtils.applyModifier no longer fully heals the entity
 
 ## 1.21.20
 * Fixed client integrated packs not loading with correct type
