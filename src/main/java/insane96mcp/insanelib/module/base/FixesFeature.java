@@ -19,7 +19,6 @@ import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
@@ -29,7 +28,7 @@ public class FixesFeature extends Feature {
 	@Config(description = "If true, mobs will have their follow range fixed. https://bugs.mojang.com/browse/MC-145656")
 	public static Boolean fixFollowRange = true;
 
-	@Config(description = "Removes the random bonus health given to Leader Zombies. In vanilla it's useless since doesn't work. https://minecraft.fandom.com/wiki/Attribute#Vanilla_modifiers")
+	@Config(description = "Removes the random bonus health given to Leader Zombies. In vanilla it's useless since doesn't work. https://minecraft.wiki/Attribute#Vanilla_modifiers")
 	public static Boolean removeZombiesBonusHealth = true;
 
 	@Config(description = "When affected by slowness the player can still jump really far away. When true, jumps length will be calculated based off player's movement speed.")
@@ -56,7 +55,8 @@ public class FixesFeature extends Feature {
 		@SuppressWarnings("ConstantConditions") Set<AttributeModifier> modifiers = zombie.getAttribute(Attributes.MAX_HEALTH).getModifiers();
 		for (AttributeModifier attributeModifier : modifiers)
 			if (attributeModifier.getName().equals("Leader zombie bonus"))
-				Objects.requireNonNull(zombie.getAttribute(Attributes.MAX_HEALTH)).removeModifier(attributeModifier.getId());
+                //noinspection DataFlowIssue
+                zombie.getAttribute(Attributes.MAX_HEALTH).removeModifier(attributeModifier.getId());
 	}
 
 	private void fixFollowRange(Entity entity) {
