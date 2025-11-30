@@ -43,6 +43,23 @@ import java.util.Arrays;
 @Mixin(FallingBlockEntity.class)
 public abstract class FallingBlockEntityMixin extends Entity implements BetterFallingBlockAccessor {
     @Unique
+    private static final double GRAVITY_ACCELERATION = 0.04D;
+    @Unique
+    private static final double HORIZONTAL_DRAG = 0.7D;
+    @Unique
+    private static final double VERTICAL_BOUNCE = -0.5D;
+    @Unique
+    private static final double AIR_RESISTANCE = 0.98D;
+    @Unique
+    private static final int MAX_TIME_OUTSIDE_WORLD = 100;
+    @Unique
+    private static final int ABSOLUTE_MAX_TIME = 600;
+    @Unique
+    private static final int MAX_STACK_HEIGHT = 3;
+    @Unique
+    private static final double CONCRETE_POWDER_VELOCITY_THRESHOLD = 1.0D;
+
+    @Unique
     private Entity insanelib$source;
     @Unique
     public Direction insanelib$directionFalling;
@@ -82,72 +99,123 @@ public abstract class FallingBlockEntityMixin extends Entity implements BetterFa
         if (!Feature.isEnabled(BetterFallingBlocks.class))
             return;
         ci.cancel();
-        //Fixes duping exploit through dimensions
-        if (this.isRemoved() && BetterFallingBlocks.fixDupeExploit)
+
+        if (this.insanelib$shouldDiscardEntity())
             return;
+
+        this.insanelib$applyPhysics();
+        this.insanelib$handleServerSideLogic();
+    }
+
+    @Unique
+    private boolean insanelib$shouldDiscardEntity() {
+        //Fixes duping exploit through dimensions
+        if (BetterFallingBlocks.fixDupeExploit && this.isRemoved())
+            return true;
+
         if (this.blockState.isAir()) {
             this.discard();
+            return true;
+        }
+        return false;
+    }
+
+    @Unique
+    private void insanelib$applyPhysics() {
+        ++this.time;
+        if (!this.isNoGravity()) {
+            this.setDeltaMovement(this.getDeltaMovement().add(0.0D, -GRAVITY_ACCELERATION, 0.0D));
+        }
+        this.move(MoverType.SELF, this.getDeltaMovement());
+        this.setDeltaMovement(this.getDeltaMovement().scale(AIR_RESISTANCE));
+    }
+
+    @Unique
+    private void insanelib$handleServerSideLogic() {
+        if (this.level().isClientSide)
+            return;
+
+        BlockPos blockPos = this.blockPosition();
+        boolean isConcretePowder = this.blockState.getBlock() instanceof ConcretePowderBlock;
+        boolean canBeHydrated = this.insanelib$checkConcreteHydration(blockPos, isConcretePowder);
+
+        if (!this.onGround() && !canBeHydrated) {
+            this.insanelib$handleFallingState(blockPos);
         } else {
-            Block block = this.blockState.getBlock();
-            ++this.time;
-            if (!this.isNoGravity()) {
-                this.setDeltaMovement(this.getDeltaMovement().add(0.0D, -0.04D, 0.0D));
-            }
+            this.insanelib$handleLandedState(blockPos, isConcretePowder, canBeHydrated);
+        }
+    }
 
-            this.move(MoverType.SELF, this.getDeltaMovement());
-            //Fixes duping exploit through dimensions
-            if (this.isRemoved())
-                return;
-            if (!this.level().isClientSide) {
-                BlockPos blockPos = this.blockPosition();
-                boolean isConcretePowder = this.blockState.getBlock() instanceof ConcretePowderBlock;
-                boolean canBeHydrated = isConcretePowder && this.blockState.canBeHydrated(this.level(), blockPos, this.level().getFluidState(blockPos), blockPos);
-                double d0 = this.getDeltaMovement().lengthSqr();
-                if (isConcretePowder && d0 > 1.0D) {
-                    BlockHitResult blockhitresult = this.level().clip(new ClipContext(new Vec3(this.xo, this.yo, this.zo), this.position(), ClipContext.Block.COLLIDER, ClipContext.Fluid.SOURCE_ONLY, this));
-                    if (blockhitresult.getType() != HitResult.Type.MISS && this.blockState.canBeHydrated(this.level(), blockPos, this.level().getFluidState(blockhitresult.getBlockPos()), blockhitresult.getBlockPos())) {
-                        blockPos = blockhitresult.getBlockPos();
-                        canBeHydrated = true;
-                    }
-                }
+    @Unique
+    private boolean insanelib$checkConcreteHydration(BlockPos blockPos, boolean isConcretePowder) {
+        if (!isConcretePowder)
+            return false;
 
-                if (!this.onGround() && !canBeHydrated) {
-                    if (!this.level().isClientSide && (this.time > 100 && (blockPos.getY() <= this.level().getMinBuildHeight() || blockPos.getY() > this.level().getMaxBuildHeight()) || this.time > 600)) {
-                        if (this.dropItem && this.level().getGameRules().getBoolean(GameRules.RULE_DOENTITYDROPS)) {
-                            this.spawnAtLocation(block);
-                        }
+        boolean canBeHydrated = this.blockState.canBeHydrated(this.level(), blockPos, this.level().getFluidState(blockPos), blockPos);
+        double velocitySquared = this.getDeltaMovement().lengthSqr();
 
-                        this.discard();
-                    }
-                }
-                else {
-                    BlockState blockstate = this.level().getBlockState(blockPos);
-                    BlockState blockStateBelow = this.level().getBlockState(blockPos.below());
-                    this.setDeltaMovement(this.getDeltaMovement().multiply(0.7D, -0.5D, 0.7D));
-                    if (!blockstate.is(Blocks.MOVING_PISTON)) {
-                        if (!this.cancelDrop) {
-                            boolean canBeReplaced = blockstate.canBeReplaced(new DirectionalPlaceContext(this.level(), blockPos, Direction.DOWN, ItemStack.EMPTY, Direction.UP));
-                            boolean canBreak = blockstate.getDestroySpeed(this.level(), blockPos) == 0f && BetterFallingBlocks.breakInstabreakBlocks;
-                            boolean canBreakBelow = blockStateBelow.getDestroySpeed(this.level(), blockPos.below()) == 0f && BetterFallingBlocks.breakInstabreakBlocks;
-                            boolean isFreeBelow = (FallingBlock.isFree(blockStateBelow) || canBreakBelow) && (!isConcretePowder || !canBeHydrated);
-                            if (isFreeBelow) {
-                                BlockPos posOn = this.getOnPos();
-                                this.move(MoverType.SELF, new Vec3((this.blockPosition().getX() - posOn.getX()) * this.getBbWidth() * 0.5f, 0d, (this.blockPosition().getZ() - posOn.getZ()) * this.getBbWidth() * 0.5d));
-                            }
-                            else if (canBeReplaced || canBreak)
-                                this.insanelib$place(blockstate, block, blockPos, canBreak);
-                            else
-                                this.insanelib$tryStackAboveOrMove(blockPos);
-                        }
-                        else {
-                            this.discard();
-                            this.callOnBrokenAfterFall(block, blockPos);
-                        }
-                    }
+        if (velocitySquared > CONCRETE_POWDER_VELOCITY_THRESHOLD) {
+            BlockHitResult hitResult = this.level().clip(new ClipContext(
+                new Vec3(this.xo, this.yo, this.zo), this.position(),
+                ClipContext.Block.COLLIDER, ClipContext.Fluid.SOURCE_ONLY, this
+            ));
+
+            if (hitResult.getType() != HitResult.Type.MISS) {
+                BlockPos hitPos = hitResult.getBlockPos();
+                if (this.blockState.canBeHydrated(this.level(), blockPos, this.level().getFluidState(hitPos), hitPos)) {
+                    return true;
                 }
             }
+        }
+        return canBeHydrated;
+    }
 
-            this.setDeltaMovement(this.getDeltaMovement().scale(0.98D));
+    @Unique
+    private void insanelib$handleFallingState(BlockPos blockPos) {
+        Block block = this.blockState.getBlock();
+        boolean isOutsideWorld = blockPos.getY() <= this.level().getMinBuildHeight() || blockPos.getY() > this.level().getMaxBuildHeight();
+
+        if ((this.time > MAX_TIME_OUTSIDE_WORLD && isOutsideWorld) || this.time > ABSOLUTE_MAX_TIME) {
+            if (this.dropItem && this.level().getGameRules().getBoolean(GameRules.RULE_DOENTITYDROPS)) {
+                this.spawnAtLocation(block);
+            }
+            this.discard();
+        }
+    }
+
+    @Unique
+    private void insanelib$handleLandedState(BlockPos blockPos, boolean isConcretePowder, boolean canBeHydrated) {
+        Block block = this.blockState.getBlock();
+        BlockState blockstate = this.level().getBlockState(blockPos);
+        BlockState blockStateBelow = this.level().getBlockState(blockPos.below());
+
+        this.setDeltaMovement(this.getDeltaMovement().multiply(HORIZONTAL_DRAG, VERTICAL_BOUNCE, HORIZONTAL_DRAG));
+
+        if (blockstate.is(Blocks.MOVING_PISTON))
+            return;
+
+        if (this.cancelDrop) {
+            this.discard();
+            this.callOnBrokenAfterFall(block, blockPos);
+            return;
+        }
+
+        boolean canBeReplaced = blockstate.canBeReplaced(new DirectionalPlaceContext(this.level(), blockPos, Direction.DOWN, ItemStack.EMPTY, Direction.UP));
+        boolean canBreak = blockstate.getDestroySpeed(this.level(), blockPos) == 0f && BetterFallingBlocks.breakInstabreakBlocks;
+        boolean canBreakBelow = blockStateBelow.getDestroySpeed(this.level(), blockPos.below()) == 0f && BetterFallingBlocks.breakInstabreakBlocks;
+        boolean isFreeBelow = (FallingBlock.isFree(blockStateBelow) || canBreakBelow) && (!isConcretePowder || !canBeHydrated);
+
+        if (isFreeBelow) {
+            BlockPos posOn = this.getOnPos();
+            this.move(MoverType.SELF, new Vec3(
+                (this.blockPosition().getX() - posOn.getX()) * this.getBbWidth() * 0.5f,
+                0d,
+                (this.blockPosition().getZ() - posOn.getZ()) * this.getBbWidth() * 0.5d
+            ));
+        } else if (canBeReplaced || canBreak) {
+            this.insanelib$place(blockstate, block, blockPos, canBreak);
+        } else {
+            this.insanelib$tryStackAboveOrMove(blockPos);
         }
     }
 
@@ -159,7 +227,7 @@ public abstract class FallingBlockEntityMixin extends Entity implements BetterFa
             if (this.insanelib$tryPlace(blockPos))
                 break;
             blockPos.set(blockPos.above());
-            if (blockPos.getY() - pos.getY() > 3) {
+            if (blockPos.getY() - pos.getY() > MAX_STACK_HEIGHT) {
                 maxStackReached = true;
                 break;
             }
