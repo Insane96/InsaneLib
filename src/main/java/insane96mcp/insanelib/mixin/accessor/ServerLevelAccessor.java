@@ -1,4 +1,4 @@
-package insane96mcp.insanelib.mixin;
+package insane96mcp.insanelib.mixin.accessor;
 
 import net.minecraft.server.level.ServerLevel;
 import org.spongepowered.asm.mixin.Mixin;

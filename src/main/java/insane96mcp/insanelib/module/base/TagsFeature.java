@@ -13,7 +13,6 @@ import net.minecraftforge.event.entity.living.MobSpawnEvent;
 import net.minecraftforge.event.level.ExplosionEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.event.config.ModConfigEvent;
 
 @LoadFeature(
 		module = "insanelib:base",
@@ -31,11 +30,6 @@ public class TagsFeature extends Feature {
 		SPAWN_TYPE = createDataKey("spawn_type");
 		EXPLOSION_CAUSES_FIRE = createDataKey("explosion_causes_fire");
 		EXPERIENCE_MULTIPLIER = createDataKey("xp_multiplier");
-	}
-
-	@Override
-	public void readConfig(final ModConfigEvent event) {
-		super.readConfig(event);
 	}
 
 	@SubscribeEvent(priority = EventPriority.HIGHEST)

@@ -1,4 +1,4 @@
-package insane96mcp.insanelib.mixin;
+package insane96mcp.insanelib.mixin.accessor;
 
 import net.minecraft.nbt.IntArrayTag;
 import org.spongepowered.asm.mixin.Mixin;

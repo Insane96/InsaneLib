@@ -5,7 +5,7 @@ import insane96mcp.insanelib.base.Feature;
 import insane96mcp.insanelib.base.LoadFeature;
 import insane96mcp.insanelib.base.Module;
 import insane96mcp.insanelib.base.config.Config;
-import insane96mcp.insanelib.mixin.ServerLevelAccessor;
+import insane96mcp.insanelib.mixin.accessor.ServerLevelAccessor;
 import insane96mcp.insanelib.util.IntegratedPack;
 import net.minecraft.commands.CommandFunction;
 import net.minecraft.resources.ResourceLocation;
