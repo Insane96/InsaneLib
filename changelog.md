@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.22.0
+* Moved `ISOFallingBlockEntity` from Insane's Survival Overhaul to here
+  * It's not a new entity, it's a feature that alters vanilla Falling Blocks
+
 ## 1.21.21
 * Added MCUtils.removeModifier
 * Applying max health modifiers with MCUtils.applyModifier no longer fully heals the entity

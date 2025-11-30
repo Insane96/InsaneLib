@@ -237,7 +237,7 @@ public abstract class FallingBlockEntityMixin extends Entity implements BetterFa
             Direction dir = this.insanelib$selectRandomHorizontalDirection();
             this.insanelib$directionFalling = dir;
             this.insanelib$movedFrom = dir.getOpposite();
-            this.setPos(this.position().relative(dir, 1d).relative(Direction.UP, 1));
+            this.setPos(this.position().relative(dir, 1d));
         }
     }
 
