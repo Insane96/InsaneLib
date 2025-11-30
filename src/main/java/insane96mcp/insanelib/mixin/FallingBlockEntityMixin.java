@@ -206,13 +206,14 @@ public abstract class FallingBlockEntityMixin extends Entity implements BetterFa
         boolean shouldHydrate = isConcretePowder && canBeHydrated;
         boolean isFreeBelow = (FallingBlock.isFree(blockStateBelow) || canBreakBelow) && !shouldHydrate;
 
-        if (isFreeBelow && this.getDeltaMovement().length() == 0) {
-            BlockPos posOn = this.getOnPos();
-            this.move(MoverType.SELF, new Vec3(
-                Vec3.atCenterOf(this.blockPosition()).x - this.position().x,
-                0d,
-                Vec3.atCenterOf(this.blockPosition()).z - this.position().z
-            ));
+        if (isFreeBelow) {
+            if (this.getDeltaMovement().length() == 0) {
+                this.move(MoverType.SELF, new Vec3(
+                        Vec3.atCenterOf(this.blockPosition()).x - this.position().x,
+                        0d,
+                        Vec3.atCenterOf(this.blockPosition()).z - this.position().z
+                ));
+            }
         } else if (canReplaceAtPos || canBreakAtPos) {
             this.insanelib$place(blockstate, block, blockPos, canBreakAtPos);
         } else {
