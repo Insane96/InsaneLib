@@ -200,10 +200,11 @@ public abstract class FallingBlockEntityMixin extends Entity implements BetterFa
             return;
         }
 
-        boolean canBeReplaced = blockstate.canBeReplaced(new DirectionalPlaceContext(this.level(), blockPos, Direction.DOWN, ItemStack.EMPTY, Direction.UP));
-        boolean canBreak = blockstate.getDestroySpeed(this.level(), blockPos) == 0f && BetterFallingBlocks.breakInstabreakBlocks;
+        boolean canReplaceAtPos = blockstate.canBeReplaced(new DirectionalPlaceContext(this.level(), blockPos, Direction.DOWN, ItemStack.EMPTY, Direction.UP));
+        boolean canBreakAtPos = blockstate.getDestroySpeed(this.level(), blockPos) == 0f && BetterFallingBlocks.breakInstabreakBlocks;
         boolean canBreakBelow = blockStateBelow.getDestroySpeed(this.level(), blockPos.below()) == 0f && BetterFallingBlocks.breakInstabreakBlocks;
-        boolean isFreeBelow = (FallingBlock.isFree(blockStateBelow) || canBreakBelow) && (!isConcretePowder || !canBeHydrated);
+        boolean shouldHydrate = isConcretePowder && canBeHydrated;
+        boolean isFreeBelow = (FallingBlock.isFree(blockStateBelow) || canBreakBelow) && !shouldHydrate;
 
         if (isFreeBelow) {
             BlockPos posOn = this.getOnPos();
@@ -212,8 +213,8 @@ public abstract class FallingBlockEntityMixin extends Entity implements BetterFa
                 0d,
                 (this.blockPosition().getZ() - posOn.getZ()) * this.getBbWidth() * 0.5d
             ));
-        } else if (canBeReplaced || canBreak) {
-            this.insanelib$place(blockstate, block, blockPos, canBreak);
+        } else if (canReplaceAtPos || canBreakAtPos) {
+            this.insanelib$place(blockstate, block, blockPos, canBreakAtPos);
         } else {
             this.insanelib$tryStackAboveOrMove(blockPos);
         }
@@ -233,12 +234,7 @@ public abstract class FallingBlockEntityMixin extends Entity implements BetterFa
             }
         }
         if (maxStackReached) {
-            Direction dir;
-            if (this.insanelib$directionFalling != null)
-                dir = this.random.nextBoolean() ? this.insanelib$directionFalling.getClockWise() : this.insanelib$directionFalling.getCounterClockWise();
-            else
-                dir = Arrays.stream(Direction.values()).filter((direction) -> direction.getAxis().isHorizontal() && direction != this.insanelib$movedFrom).skip(this.random.nextInt(4)).findFirst().get();
-            //blockPos.set(pos.relative(dir));
+            Direction dir = this.insanelib$selectRandomHorizontalDirection();
             this.insanelib$directionFalling = dir;
             this.insanelib$movedFrom = dir.getOpposite();
             this.setPos(this.position().relative(dir, 1d).relative(Direction.UP, 1));
@@ -249,73 +245,143 @@ public abstract class FallingBlockEntityMixin extends Entity implements BetterFa
     public boolean insanelib$tryPlace(BlockPos blockPos) {
         BlockState stateAt = this.level().getBlockState(blockPos);
         BlockState stateOn = this.level().getBlockState(blockPos.below());
-        boolean canBeReplaced = stateAt.canBeReplaced(new DirectionalPlaceContext(this.level(), blockPos, Direction.DOWN, ItemStack.EMPTY, Direction.UP));
-        boolean canBreak = stateAt.getDestroySpeed(this.level(), blockPos) == 0f && BetterFallingBlocks.breakInstabreakBlocks;
-        boolean canSurvive = this.blockState.canSurvive(this.level(), blockPos);
+
+        boolean canPlaceHere = this.insanelib$canPlaceBlock(blockPos, stateAt);
+        if (!canPlaceHere) {
+            return false;
+        }
+
         boolean isFree = FallingBlock.isFree(this.level().getBlockState(blockPos.below()));
-        if ((canBeReplaced || canBreak) && /*isHarderThanInside && */canSurvive) {
-            if (isFree && this.blockState.canSurvive(this.level(), blockPos.below())) {
-                BlockPos posOn = this.getOnPos();
-                this.move(MoverType.SELF, new Vec3((this.blockPosition().getX() - posOn.getX()) * 0.5d, 0d, (this.blockPosition().getZ() - posOn.getZ()) * 0.5d));
-            }
-            else if (canBreak)
-                this.insanelib$place(stateOn, this.blockState.getBlock(), blockPos, true);
-            else return false;
+        if (isFree && this.blockState.canSurvive(this.level(), blockPos.below())) {
+            BlockPos posOn = this.getOnPos();
+            this.move(MoverType.SELF, new Vec3((this.blockPosition().getX() - posOn.getX()) * 0.5d, 0d, (this.blockPosition().getZ() - posOn.getZ()) * 0.5d));
             return true;
         }
+
+        boolean canBreak = stateAt.getDestroySpeed(this.level(), blockPos) == 0f && BetterFallingBlocks.breakInstabreakBlocks;
+        if (canBreak) {
+            this.insanelib$place(stateOn, this.blockState.getBlock(), blockPos, true);
+            return true;
+        }
+
         return false;
     }
 
     @Unique
+    private boolean insanelib$canPlaceBlock(BlockPos blockPos, BlockState stateAt) {
+        boolean canBeReplaced = stateAt.canBeReplaced(new DirectionalPlaceContext(this.level(), blockPos, Direction.DOWN, ItemStack.EMPTY, Direction.UP));
+        boolean canBreak = stateAt.getDestroySpeed(this.level(), blockPos) == 0f && BetterFallingBlocks.breakInstabreakBlocks;
+        boolean canSurvive = this.blockState.canSurvive(this.level(), blockPos);
+        return (canBeReplaced || canBreak) && canSurvive;
+    }
+
+    @Unique
     public void insanelib$place(BlockState stateOn, Block block, BlockPos pos, boolean breakBlock) {
-        if (this.blockState.hasProperty(BlockStateProperties.WATERLOGGED) && this.level().getFluidState(pos).getType() == Fluids.WATER) {
+        if (breakBlock) {
+            this.insanelib$breakBlockAndDropLoot(pos);
+        }
+
+        this.insanelib$applyWaterlogging(pos);
+
+        if (this.insanelib$placeBlockState(pos)) {
+            this.insanelib$handleSuccessfulPlacement(stateOn, block, pos);
+        } else {
+            this.insanelib$handleFailedPlacement(block, pos);
+        }
+    }
+
+    @Unique
+    private void insanelib$breakBlockAndDropLoot(BlockPos pos) {
+        ServerLevel serverLevel = (ServerLevel)this.level();
+        BlockState stateToBreak = serverLevel.getBlockState(pos);
+        BlockEntity blockEntity = stateToBreak.hasBlockEntity() ? serverLevel.getBlockEntity(pos) : null;
+
+        LootParams.Builder lootParamsBuilder = new LootParams.Builder(serverLevel)
+                .withParameter(LootContextParams.ORIGIN, Vec3.atCenterOf(pos))
+                .withParameter(LootContextParams.TOOL, ItemStack.EMPTY)
+                .withOptionalParameter(LootContextParams.BLOCK_ENTITY, blockEntity)
+                .withOptionalParameter(LootContextParams.THIS_ENTITY, this);
+
+        stateToBreak.spawnAfterBreak(serverLevel, pos, ItemStack.EMPTY, false);
+        stateToBreak.getDrops(lootParamsBuilder).forEach(stack ->
+                serverLevel.addFreshEntity(new ItemEntity(serverLevel, pos.getCenter().x, pos.getCenter().y + 0.6f, pos.getCenter().z, stack))
+        );
+        serverLevel.destroyBlock(pos, false);
+    }
+
+    @Unique
+    private void insanelib$applyWaterlogging(BlockPos pos) {
+        if (this.blockState.hasProperty(BlockStateProperties.WATERLOGGED)
+                && this.level().getFluidState(pos).getType() == Fluids.WATER) {
             this.blockState = this.blockState.setValue(BlockStateProperties.WATERLOGGED, Boolean.TRUE);
         }
+    }
 
-        if (breakBlock) {
-            BlockState stateToBreak = this.level().getBlockState(pos);
-            ServerLevel serverlevel = (ServerLevel)this.level();
-            BlockEntity blockEntity = stateToBreak.hasBlockEntity() ? serverlevel.getBlockEntity(pos) : null;
-            LootParams.Builder lootparams$builder = (new LootParams.Builder((ServerLevel) this.level())).withParameter(LootContextParams.ORIGIN, Vec3.atCenterOf(pos)).withParameter(LootContextParams.TOOL, ItemStack.EMPTY).withOptionalParameter(LootContextParams.BLOCK_ENTITY, blockEntity).withOptionalParameter(LootContextParams.THIS_ENTITY, this);
+    @Unique
+    private boolean insanelib$placeBlockState(BlockPos pos) {
+        return this.level().setBlockAndUpdate(pos, this.blockState);
+    }
 
-            stateToBreak.spawnAfterBreak(serverlevel, pos, ItemStack.EMPTY, false);
-            stateToBreak.getDrops(lootparams$builder).forEach(stack ->
-                    serverlevel.addFreshEntity(new ItemEntity(serverlevel, pos.getCenter().x, pos.getCenter().y + 0.6f, pos.getCenter().z, stack))
-            );
-            this.level().destroyBlock(pos, false);
+    @Unique
+    private void insanelib$handleSuccessfulPlacement(BlockState stateOn, Block block, BlockPos pos) {
+        ServerLevel serverLevel = (ServerLevel)this.level();
+        Block.updateFromNeighbourShapes(this.blockState, this.level(), pos);
+        serverLevel.getChunkSource().chunkMap.broadcast(this, new ClientboundBlockUpdatePacket(pos, this.level().getBlockState(pos)));
+        this.discard();
+
+        if (block instanceof Fallable fallable) {
+            fallable.onLand(this.level(), pos, this.blockState, stateOn, (FallingBlockEntity) (Object) this);
         }
-        if (this.level().setBlockAndUpdate(pos, this.blockState)) {
-            Block.updateFromNeighbourShapes(this.blockState, this.level(), pos);
-            ((ServerLevel)this.level()).getChunkSource().chunkMap.broadcast(this, new ClientboundBlockUpdatePacket(pos, this.level().getBlockState(pos)));
-            this.discard();
-            if (block instanceof Fallable) {
-                ((Fallable)block).onLand(this.level(), pos, this.blockState, stateOn, (FallingBlockEntity) (Object) this);
-            }
 
-            if (this.blockData != null && this.blockState.hasBlockEntity()) {
-                BlockEntity blockentity = this.level().getBlockEntity(pos);
-                if (blockentity != null) {
-                    CompoundTag compoundtag = blockentity.saveWithoutMetadata();
+        this.insanelib$restoreBlockEntityData(pos);
+    }
 
-                    for(String s : this.blockData.getAllKeys()) {
-                        compoundtag.put(s, this.blockData.get(s).copy());
-                    }
-
-                    try {
-                        blockentity.load(compoundtag);
-                    }
-                    catch (Exception exception) {
-                        LogHelper.error("Failed to load block entity from falling block", exception);
-                    }
-
-                    blockentity.setChanged();
-                }
-            }
+    @Unique
+    private void insanelib$restoreBlockEntityData(BlockPos pos) {
+        if (this.blockData == null || !this.blockState.hasBlockEntity()) {
+            return;
         }
-        else if (this.dropItem && this.level().getGameRules().getBoolean(GameRules.RULE_DOENTITYDROPS)) {
+
+        BlockEntity blockEntity = this.level().getBlockEntity(pos);
+        if (blockEntity == null) {
+            return;
+        }
+
+        CompoundTag compoundTag = blockEntity.saveWithoutMetadata();
+        for (String key : this.blockData.getAllKeys()) {
+            compoundTag.put(key, this.blockData.get(key).copy());
+        }
+
+        try {
+            blockEntity.load(compoundTag);
+        } catch (Exception exception) {
+            LogHelper.error("Failed to load block entity from falling block", exception);
+        }
+
+        blockEntity.setChanged();
+    }
+
+    @Unique
+    private void insanelib$handleFailedPlacement(Block block, BlockPos pos) {
+        if (this.dropItem && this.level().getGameRules().getBoolean(GameRules.RULE_DOENTITYDROPS)) {
             this.discard();
             this.callOnBrokenAfterFall(block, pos);
             this.spawnAtLocation(block);
         }
+    }
+
+    @Unique
+    private Direction insanelib$selectRandomHorizontalDirection() {
+        if (this.insanelib$directionFalling != null) {
+            return this.random.nextBoolean()
+                    ? this.insanelib$directionFalling.getClockWise()
+                    : this.insanelib$directionFalling.getCounterClockWise();
+        }
+
+        Direction[] horizontalDirections = Arrays.stream(Direction.values())
+                .filter(dir -> dir.getAxis().isHorizontal() && dir != this.insanelib$movedFrom)
+                .toArray(Direction[]::new);
+
+        return horizontalDirections[this.random.nextInt(horizontalDirections.length)];
     }
 }
