@@ -384,4 +384,12 @@ public abstract class FallingBlockEntityMixin extends Entity implements BetterFa
 
         return horizontalDirections[this.random.nextInt(horizontalDirections.length)];
     }
+
+    public Entity insanelib$getSource() {
+        return this.insanelib$source;
+    }
+
+    public void insanelib$setSource(Entity entity) {
+        this.insanelib$source = entity;
+    }
 }
