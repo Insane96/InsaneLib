@@ -25,15 +25,16 @@ public abstract class EntityMixin {
     @Inject(method = "spawnAtLocation(Lnet/minecraft/world/level/ItemLike;)Lnet/minecraft/world/entity/item/ItemEntity;", at = @At("HEAD"), cancellable = true)
     public void insanelib$dummySpawnAtLocation(ItemLike itemLike, CallbackInfoReturnable<ItemEntity> cir) {
         if (!Feature.isEnabled(BetterFallingBlocks.class)
-                || !(FallingBlockEntity.class.isAssignableFrom(this.getClass()))
-                || !(itemLike instanceof Block)) return;
+                || !(((Object) this) instanceof FallingBlockEntity fallingBlockEntity)
+                || !(itemLike instanceof Block))
+            return;
 
         cir.setReturnValue(null);
 
         if (self().level().isClientSide)
             return;
 
-        LootParams.Builder lootParams$Builder = (new LootParams.Builder((ServerLevel) self().level())).withParameter(LootContextParams.ORIGIN, Vec3.atCenterOf(self().blockPosition())).withParameter(LootContextParams.TOOL, ItemStack.EMPTY).withOptionalParameter(LootContextParams.THIS_ENTITY, selfAccessor().insanelib$getSource());
+        LootParams.Builder lootParams$Builder = (new LootParams.Builder((ServerLevel) self().level())).withParameter(LootContextParams.ORIGIN, Vec3.atCenterOf(self().blockPosition())).withParameter(LootContextParams.TOOL, ItemStack.EMPTY).withOptionalParameter(LootContextParams.THIS_ENTITY, ((BetterFallingBlockAccessor)fallingBlockEntity).insanelib$getSource());
 
         List<ItemStack> drops = self().getBlockState().getDrops(lootParams$Builder);
 
@@ -51,9 +52,5 @@ public abstract class EntityMixin {
 
     private FallingBlockEntity self() {
         return (FallingBlockEntity) (Object) this;
-    }
-
-    private BetterFallingBlockAccessor selfAccessor() {
-        return (BetterFallingBlockAccessor) this;
     }
 }
