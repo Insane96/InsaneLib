@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.23.0
+* Added `/insanelib` command to change player's play time
+
 ## 1.22.1
 * Fix follow range now only affects vanilla entities by default
   * Use entity type tag `insanelib:fix_follow_range` to add other mobs
