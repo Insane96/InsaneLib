@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.23.2
+* Fixed falling blocks getting stuck on non-full blocks
+
 ## 1.23.1
 * Various fixes for Better Falling Block
   * Disabling insta-break blocks now works

@@ -65,6 +65,11 @@ public abstract class FallingBlockEntityMixin extends Entity implements BetterFa
     public Direction insanelib$directionFalling;
     @Unique
     public Direction insanelib$movedFrom;
+    /**
+     * If true, the falling block has been moved up to try and stack
+     */
+    @Unique
+    public boolean insanelib$tryingToStack;
 
     @Shadow
     private BlockState blockState;
@@ -240,14 +245,16 @@ public abstract class FallingBlockEntityMixin extends Entity implements BetterFa
                 break;
             }
         }
-        if (maxStackReached) {
+        if (maxStackReached || insanelib$tryingToStack) {
             Direction dir = this.insanelib$selectRandomHorizontalDirection();
             this.insanelib$directionFalling = dir;
             this.insanelib$movedFrom = dir.getOpposite();
             this.setPos(this.position().relative(dir, 1d));
+            insanelib$tryingToStack = false;
         }
         else {
             this.setPos(this.getX(), (blockPos.getY() - this.getBlockY()) + this.getY(), this.getZ());
+            insanelib$tryingToStack = true;
         }
     }
 
@@ -260,10 +267,8 @@ public abstract class FallingBlockEntityMixin extends Entity implements BetterFa
 
         // Check if block below is free - if so, center the entity horizontally
         BlockState stateBelow = this.level().getBlockState(blockPos.below());
-        if (FallingBlock.isFree(stateBelow) && this.blockState.canSurvive(this.level(), blockPos.below())) {
+        if (FallingBlock.isFree(stateBelow) && this.blockState.canSurvive(this.level(), blockPos.below()))
             this.insanelib$centerHorizontally();
-            return true;
-        }
 
         return true;
     }
