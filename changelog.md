@@ -1,6 +1,6 @@
 # Changelog
 
-## Upcoming
+## 1.23.1
 * Various fixes for Better Falling Block
   * Disabling insta-break blocks now works
   * Falling blocks in another non-insta-break block will move to the side instead of getting stuck
