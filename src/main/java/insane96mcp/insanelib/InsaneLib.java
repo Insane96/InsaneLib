@@ -1,13 +1,17 @@
 package insane96mcp.insanelib;
 
+import com.mojang.brigadier.CommandDispatcher;
 import insane96mcp.insanelib.base.FeatureEnabledCondition;
 import insane96mcp.insanelib.base.FeatureEnabledLootCondition;
+import insane96mcp.insanelib.command.ILCommand;
 import insane96mcp.insanelib.data.JsonFeatureDataReloadListener;
 import insane96mcp.insanelib.network.NetworkHandler;
 import insane96mcp.insanelib.setup.Config;
 import insane96mcp.insanelib.setup.ILGlobalLootModifiers;
 import insane96mcp.insanelib.util.IntegratedPack;
 import net.minecraft.Util;
+import net.minecraft.commands.CommandBuildContext;
+import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
@@ -17,6 +21,7 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.event.AddPackFindersEvent;
 import net.minecraftforge.event.AddReloadListenerEvent;
+import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -41,7 +46,6 @@ public class InsaneLib
 {
     public static final Logger LOGGER = LogManager.getLogger();
     public static final String MOD_ID = "insanelib";
-    public static final String CONFIG_FOLDER = "config/" + MOD_ID;
 
     /**
      * Same as {@link ItemStack#ATTRIBUTE_MODIFIER_FORMAT} but with one decimal place
@@ -67,6 +71,13 @@ public class InsaneLib
     public void onAddReloadListener(AddReloadListenerEvent event) {
         JsonFeatureDataReloadListener.reloadContext = event.getConditionContext();
         event.addListener(JsonFeatureDataReloadListener.INSTANCE);
+    }
+
+    @SubscribeEvent
+    public void onRegisterCommands(RegisterCommandsEvent event) {
+        CommandDispatcher<CommandSourceStack> dispatcher = event.getDispatcher();
+        CommandBuildContext context = event.getBuildContext();
+        ILCommand.register(dispatcher, context);
     }
 
     @SubscribeEvent

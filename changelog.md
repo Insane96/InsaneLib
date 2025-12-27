@@ -5,6 +5,13 @@
   * Disabling insta-break blocks now works
   * Falling blocks in another non-insta-break block will move to the side instead of getting stuck
 
+## 1.23.0
+* Added `/insanelib` command to change player's play time
+
+## 1.22.1
+* Fix follow range now only affects vanilla entities by default
+  * Use entity type tag `insanelib:fix_follow_range` to add other mobs
+
 ## 1.22.0
 * Moved `ISOFallingBlockEntity` from Insane's Survival Overhaul to here
   * It's not a new entity, it's a feature that alters vanilla Falling Blocks

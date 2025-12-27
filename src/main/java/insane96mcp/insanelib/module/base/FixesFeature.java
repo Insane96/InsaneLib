@@ -1,11 +1,14 @@
 package insane96mcp.insanelib.module.base;
 
-import insane96mcp.insanelib.ai.ILNearestAttackableTargetGoal;
+import insane96mcp.insanelib.InsaneLib;
 import insane96mcp.insanelib.base.Feature;
 import insane96mcp.insanelib.base.LoadFeature;
 import insane96mcp.insanelib.base.config.Config;
 import insane96mcp.insanelib.util.MCUtils;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
@@ -24,8 +27,9 @@ import java.util.Set;
 
 @LoadFeature(module = "insanelib:base", description = "Various fixes and improvements")
 public class FixesFeature extends Feature {
+	public static TagKey<EntityType<?>> FIX_FOLLOW_RANGE = TagKey.create(Registries.ENTITY_TYPE, InsaneLib.location("fix_follow_range"));
 
-	@Config(description = "If true, mobs will have their follow range fixed. https://bugs.mojang.com/browse/MC-145656")
+	@Config(description = "If true, mobs will have their follow range fixed. https://bugs.mojang.com/browse/MC-145656. Only affects entities in `insanelib:fix_follow_range` entity type tag (all vanilla mobs by default) and entities that use the NearestAttackableTargetGoal goal.")
 	public static Boolean fixFollowRange = true;
 
 	@Config(description = "Removes the random bonus health given to Leader Zombies. In vanilla it's useless since doesn't work. https://minecraft.wiki/Attribute#Vanilla_modifiers")
@@ -61,21 +65,20 @@ public class FixesFeature extends Feature {
 
 	private void fixFollowRange(Entity entity) {
 		if (!fixFollowRange
-				|| !(entity instanceof Mob mobEntity))
+				|| !(entity instanceof Mob mobEntity)
+				|| !mobEntity.getType().is(FIX_FOLLOW_RANGE))
 			 return;
 
 		AttributeInstance followRangeAttribute = mobEntity.getAttribute(Attributes.FOLLOW_RANGE);
-		if (followRangeAttribute != null) {
-			for (WrappedGoal pGoal : mobEntity.targetSelector.availableGoals) {
-				if (pGoal.getGoal() instanceof NearestAttackableTargetGoal<? extends LivingEntity> nearestAttackableTargetGoal) {
-					nearestAttackableTargetGoal.targetConditions.range(mobEntity.getAttributeValue(Attributes.FOLLOW_RANGE));
-				}
-				else if (pGoal.getGoal() instanceof ILNearestAttackableTargetGoal<? extends LivingEntity> nearestAttackableTarget) {
-					nearestAttackableTarget.targetEntitySelector.range(mobEntity.getAttributeValue(Attributes.FOLLOW_RANGE));
-				}
-			}
-		}
-	}
+        if (followRangeAttribute == null)
+            return;
+
+        for (WrappedGoal pGoal : mobEntity.targetSelector.availableGoals) {
+            if (pGoal.getGoal() instanceof NearestAttackableTargetGoal<? extends LivingEntity> nearestAttackableTargetGoal) {
+                nearestAttackableTargetGoal.targetConditions.range(mobEntity.getAttributeValue(Attributes.FOLLOW_RANGE));
+            }
+        }
+    }
 
 	public static Optional<Float> getFlyingSpeed(Player player) {
 		if (!Feature.isEnabled(FixesFeature.class)

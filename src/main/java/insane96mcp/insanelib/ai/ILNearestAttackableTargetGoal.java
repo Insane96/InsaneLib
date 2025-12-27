@@ -53,6 +53,7 @@ public class ILNearestAttackableTargetGoal<T extends LivingEntity> extends Targe
 	}
 
 	protected void findTarget() {
+		this.targetEntitySelector.range(this.getFollowDistance());
 		if (this.targetClass != Player.class && this.targetClass != ServerPlayer.class) {
 			this.nearestTarget = this.mob.level().getNearestEntity(this.targetClass, this.targetEntitySelector, this.mob, this.mob.getX(), this.mob.getEyeY(), this.mob.getZ(), this.getTargetSearchArea(this.getFollowDistance()));
 		}
