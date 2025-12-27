@@ -1,7 +1,7 @@
 package insane96mcp.insanelib.mixin;
 
 import insane96mcp.insanelib.base.Feature;
-import insane96mcp.insanelib.module.base.betterfallingblocks.BetterFallingBlockAccessor;
+import insane96mcp.insanelib.module.base.betterfallingblocks.BetterFallingBlockExtensor;
 import insane96mcp.insanelib.module.base.betterfallingblocks.BetterFallingBlocks;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
@@ -34,7 +34,7 @@ public abstract class EntityMixin {
         if (self().level().isClientSide)
             return;
 
-        LootParams.Builder lootParams$Builder = (new LootParams.Builder((ServerLevel) self().level())).withParameter(LootContextParams.ORIGIN, Vec3.atCenterOf(self().blockPosition())).withParameter(LootContextParams.TOOL, ItemStack.EMPTY).withOptionalParameter(LootContextParams.THIS_ENTITY, ((BetterFallingBlockAccessor)fallingBlockEntity).insanelib$getSource());
+        LootParams.Builder lootParams$Builder = (new LootParams.Builder((ServerLevel) self().level())).withParameter(LootContextParams.ORIGIN, Vec3.atCenterOf(self().blockPosition())).withParameter(LootContextParams.TOOL, ItemStack.EMPTY).withOptionalParameter(LootContextParams.THIS_ENTITY, ((BetterFallingBlockExtensor)fallingBlockEntity).insanelib$getSource());
 
         List<ItemStack> drops = self().getBlockState().getDrops(lootParams$Builder);
 

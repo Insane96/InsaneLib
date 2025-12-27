@@ -11,7 +11,7 @@ import insane96mcp.insanelib.base.config.Config;
 		canBeDisabled = false
 )
 public class BetterFallingBlocks extends Feature {
-    @Config(description = "If true, falling blocks will break blocks that are instabreakable and place instead of dropping.")
+    @Config(description = "If true, falling blocks will break blocks that are instabreakable and place instead of dropping. If the falling block ends in a non-insta-break block, it will move to the side instead.")
     public static Boolean breakInstabreakBlocks = true;
     @Config(description = "Fix dupe exploit through dimensions.")
     public static Boolean fixDupeExploit = true;

@@ -1,5 +1,10 @@
 # Changelog
 
+## Upcoming
+* Various fixes for Better Falling Block
+  * Disabling insta-break blocks now works
+  * Falling blocks in another non-insta-break block will move to the side instead of getting stuck
+
 ## 1.22.0
 * Moved `ISOFallingBlockEntity` from Insane's Survival Overhaul to here
   * It's not a new entity, it's a feature that alters vanilla Falling Blocks

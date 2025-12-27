@@ -2,7 +2,7 @@ package insane96mcp.insanelib.mixin;
 
 import insane96mcp.insanelib.base.Feature;
 import insane96mcp.insanelib.event.ILEventFactory;
-import insane96mcp.insanelib.module.base.betterfallingblocks.BetterFallingBlockAccessor;
+import insane96mcp.insanelib.module.base.betterfallingblocks.BetterFallingBlockExtensor;
 import insane96mcp.insanelib.module.base.betterfallingblocks.BetterFallingBlocks;
 import insane96mcp.insanelib.util.LogHelper;
 import net.minecraft.core.BlockPos;
@@ -41,7 +41,7 @@ import javax.annotation.Nullable;
 import java.util.Arrays;
 
 @Mixin(FallingBlockEntity.class)
-public abstract class FallingBlockEntityMixin extends Entity implements BetterFallingBlockAccessor {
+public abstract class FallingBlockEntityMixin extends Entity implements BetterFallingBlockExtensor {
     @Unique
     private static final double GRAVITY_ACCELERATION = 0.04D;
     @Unique
@@ -139,11 +139,10 @@ public abstract class FallingBlockEntityMixin extends Entity implements BetterFa
         boolean isConcretePowder = this.blockState.getBlock() instanceof ConcretePowderBlock;
         boolean canBeHydrated = this.insanelib$checkConcreteHydration(blockPos, isConcretePowder);
 
-        if (!this.onGround() && !canBeHydrated) {
-            this.insanelib$handleFallingState(blockPos);
-        } else {
-            this.insanelib$handleLandedState(blockPos, isConcretePowder, canBeHydrated);
-        }
+        if (!this.onGround() && !canBeHydrated)
+            this.insanelib$handleFalling(blockPos);
+        else
+            this.insanelib$handleLanded(blockPos, isConcretePowder, canBeHydrated);
     }
 
     @Unique
@@ -171,7 +170,7 @@ public abstract class FallingBlockEntityMixin extends Entity implements BetterFa
     }
 
     @Unique
-    private void insanelib$handleFallingState(BlockPos blockPos) {
+    private void insanelib$handleFalling(BlockPos blockPos) {
         Block block = this.blockState.getBlock();
         boolean isOutsideWorld = blockPos.getY() <= this.level().getMinBuildHeight() || blockPos.getY() > this.level().getMaxBuildHeight();
 
@@ -184,14 +183,14 @@ public abstract class FallingBlockEntityMixin extends Entity implements BetterFa
     }
 
     @Unique
-    private void insanelib$handleLandedState(BlockPos blockPos, boolean isConcretePowder, boolean canBeHydrated) {
+    private void insanelib$handleLanded(BlockPos blockPos, boolean isConcretePowder, boolean canBeHydrated) {
         Block block = this.blockState.getBlock();
-        BlockState blockstate = this.level().getBlockState(blockPos);
+        BlockState stateAt = this.level().getBlockState(blockPos);
         BlockState blockStateBelow = this.level().getBlockState(blockPos.below());
 
         this.setDeltaMovement(this.getDeltaMovement().multiply(HORIZONTAL_DRAG, VERTICAL_BOUNCE, HORIZONTAL_DRAG));
 
-        if (blockstate.is(Blocks.MOVING_PISTON))
+        if (stateAt.is(Blocks.MOVING_PISTON))
             return;
 
         if (this.cancelDrop) {
@@ -200,9 +199,12 @@ public abstract class FallingBlockEntityMixin extends Entity implements BetterFa
             return;
         }
 
-        boolean canReplaceAtPos = blockstate.canBeReplaced(new DirectionalPlaceContext(this.level(), blockPos, Direction.DOWN, ItemStack.EMPTY, Direction.UP));
-        boolean canBreakAtPos = blockstate.getDestroySpeed(this.level(), blockPos) == 0f && BetterFallingBlocks.breakInstabreakBlocks;
-        boolean canBreakBelow = blockStateBelow.getDestroySpeed(this.level(), blockPos.below()) == 0f && BetterFallingBlocks.breakInstabreakBlocks;
+        boolean canReplaceAtPos = stateAt.canBeReplaced(new DirectionalPlaceContext(this.level(), blockPos, Direction.DOWN, ItemStack.EMPTY, Direction.UP));
+        boolean breakInstaBreak = BetterFallingBlocks.breakInstabreakBlocks;
+        boolean isInstaBreak = stateAt.getDestroySpeed(this.level(), blockPos) == 0f;
+        boolean isInstaBreakBelow = blockStateBelow.getDestroySpeed(this.level(), blockPos.below()) == 0f;
+        boolean canBreakAtPos = isInstaBreak && breakInstaBreak;
+        boolean canBreakBelow = isInstaBreakBelow && breakInstaBreak;
         boolean shouldHydrate = isConcretePowder && canBeHydrated;
         boolean isFreeBelow = (FallingBlock.isFree(blockStateBelow) || canBreakBelow) && !shouldHydrate;
 
@@ -215,8 +217,12 @@ public abstract class FallingBlockEntityMixin extends Entity implements BetterFa
                 ));
             }
         } else if (canReplaceAtPos || canBreakAtPos) {
-            this.insanelib$place(blockstate, block, blockPos, canBreakAtPos);
-        } else {
+            this.insanelib$place(stateAt, block, blockPos, canBreakAtPos);
+        }
+        else if (!breakInstaBreak && isInstaBreak) {
+            this.insanelib$handleFailedPlacement(block, blockPos);
+        }
+        else {
             this.insanelib$tryStackAboveOrMove(blockPos);
         }
     }
@@ -226,7 +232,7 @@ public abstract class FallingBlockEntityMixin extends Entity implements BetterFa
         BlockPos.MutableBlockPos blockPos = new BlockPos.MutableBlockPos(pos.getX(), pos.getY(), pos.getZ());
         boolean maxStackReached = false;
         while (true) {
-            if (this.insanelib$tryPlace(blockPos))
+            if (this.insanelib$canPlace(blockPos))
                 break;
             blockPos.set(blockPos.above());
             if (blockPos.getY() - pos.getY() > MAX_STACK_HEIGHT) {
@@ -240,32 +246,34 @@ public abstract class FallingBlockEntityMixin extends Entity implements BetterFa
             this.insanelib$movedFrom = dir.getOpposite();
             this.setPos(this.position().relative(dir, 1d));
         }
+        else {
+            this.setPos(this.getX(), (blockPos.getY() - this.getBlockY()) + this.getY(), this.getZ());
+        }
     }
 
     @Unique
-    public boolean insanelib$tryPlace(BlockPos blockPos) {
+    public boolean insanelib$canPlace(BlockPos blockPos) {
         BlockState stateAt = this.level().getBlockState(blockPos);
-        BlockState stateOn = this.level().getBlockState(blockPos.below());
 
-        boolean canPlaceHere = this.insanelib$canPlaceBlock(blockPos, stateAt);
-        if (!canPlaceHere) {
+        if (!this.insanelib$canPlaceBlock(blockPos, stateAt))
             return false;
-        }
 
-        boolean isFree = FallingBlock.isFree(this.level().getBlockState(blockPos.below()));
-        if (isFree && this.blockState.canSurvive(this.level(), blockPos.below())) {
-            BlockPos posOn = this.getOnPos();
-            this.move(MoverType.SELF, new Vec3((this.blockPosition().getX() - posOn.getX()) * 0.5d, 0d, (this.blockPosition().getZ() - posOn.getZ()) * 0.5d));
+        // Check if block below is free - if so, center the entity horizontally
+        BlockState stateBelow = this.level().getBlockState(blockPos.below());
+        if (FallingBlock.isFree(stateBelow) && this.blockState.canSurvive(this.level(), blockPos.below())) {
+            this.insanelib$centerHorizontally();
             return true;
         }
 
-        boolean canBreak = stateAt.getDestroySpeed(this.level(), blockPos) == 0f && BetterFallingBlocks.breakInstabreakBlocks;
-        if (canBreak) {
-            this.insanelib$place(stateOn, this.blockState.getBlock(), blockPos, true);
-            return true;
-        }
+        return true;
+    }
 
-        return false;
+    @Unique
+    private void insanelib$centerHorizontally() {
+        BlockPos posOn = this.getOnPos();
+        double deltaX = (this.blockPosition().getX() - posOn.getX()) * 0.5d;
+        double deltaZ = (this.blockPosition().getZ() - posOn.getZ()) * 0.5d;
+        this.move(MoverType.SELF, new Vec3(deltaX, 0d, deltaZ));
     }
 
     @Unique
