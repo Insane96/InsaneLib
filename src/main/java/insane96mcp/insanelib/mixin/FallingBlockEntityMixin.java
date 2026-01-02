@@ -101,7 +101,8 @@ public abstract class FallingBlockEntityMixin extends Entity implements BetterFa
 
     @Inject(method = "tick", at = @At("HEAD"), cancellable = true)
     private void insanelib$replaceTick(CallbackInfo ci) {
-        if (!Feature.isEnabled(BetterFallingBlocks.class))
+        if (!Feature.isEnabled(BetterFallingBlocks.class)
+                || this.blockState.is(BetterFallingBlocks.BLACKLISTED_BLOCKS))
             return;
         ci.cancel();
 

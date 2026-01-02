@@ -1,9 +1,12 @@
 package insane96mcp.insanelib.module.base.betterfallingblocks;
 
+import insane96mcp.insanelib.InsaneLib;
 import insane96mcp.insanelib.base.Feature;
 import insane96mcp.insanelib.base.LoadFeature;
-import insane96mcp.insanelib.base.Module;
 import insane96mcp.insanelib.base.config.Config;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.level.block.Block;
 
 @LoadFeature(
 		module = "insanelib:base",
@@ -11,13 +14,10 @@ import insane96mcp.insanelib.base.config.Config;
 		canBeDisabled = false
 )
 public class BetterFallingBlocks extends Feature {
+	public static final TagKey<Block> BLACKLISTED_BLOCKS = TagKey.create(Registries.BLOCK, InsaneLib.location("blacklisted_better_falling_blocks"));
+
     @Config(description = "If true, falling blocks will break blocks that are instabreakable and place instead of dropping. If the falling block ends in a non-insta-break block, it will move to the side instead.")
     public static Boolean breakInstabreakBlocks = true;
     @Config(description = "Fix dupe exploit through dimensions.")
     public static Boolean fixDupeExploit = true;
-
-	@Override
-	public void init(Module module, boolean enabledByDefault, boolean canBeDisabled) {
-		super.init(module, enabledByDefault, canBeDisabled);
-	}
 }

@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.23.3
+* Added `insanelib:blacklisted_better_falling_blocks` to disable certain blocks from using the feature
+  * Defaults to the dragon egg so you can pick it up
+
 ## 1.23.2
 * Fixed falling blocks getting stuck on non-full blocks
 
