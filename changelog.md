@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.23.4.0
+* Added `insanelib:tags.sky_light` and `insanelib:tags.block_light` NBT so commands can know the light level an entity is standing in
+
 ## 1.23.3
 * Added `insanelib:blacklisted_better_falling_blocks` to disable certain blocks from using the feature
   * Defaults to the dragon egg so you can pick it up

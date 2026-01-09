@@ -8,6 +8,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.level.Explosion;
+import net.minecraft.world.level.LightLayer;
+import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.living.LivingExperienceDropEvent;
 import net.minecraftforge.event.entity.living.MobSpawnEvent;
 import net.minecraftforge.event.level.ExplosionEvent;
@@ -16,13 +18,15 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 @LoadFeature(
 		module = "insanelib:base",
-		description = "Set and use some tags to set some mobs properties. E.g. cause fire explosion for mobs or know if a mob has been spawned from spawner.",
+		description = "Set and use some tags to get and set some mobs properties. E.g. cause fire explosion for mobs or know if a mob has been spawned from spawner.",
 		canBeDisabled = false
 )
 public class TagsFeature extends Feature {
 	public static ResourceLocation SPAWN_TYPE;
 	public static ResourceLocation EXPLOSION_CAUSES_FIRE;
 	public static ResourceLocation EXPERIENCE_MULTIPLIER;
+	public static ResourceLocation SKY_LIGHT;
+	public static ResourceLocation BLOCK_LIGHT;
 
 	@Override
 	public void init(Module module, boolean enabledByDefault, boolean canBeDisabled) {
@@ -30,6 +34,8 @@ public class TagsFeature extends Feature {
 		SPAWN_TYPE = createDataKey("spawn_type");
 		EXPLOSION_CAUSES_FIRE = createDataKey("explosion_causes_fire");
 		EXPERIENCE_MULTIPLIER = createDataKey("xp_multiplier");
+		SKY_LIGHT = createDataKey("sky_light");
+		BLOCK_LIGHT = createDataKey("block_light");
 	}
 
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
@@ -54,6 +60,16 @@ public class TagsFeature extends Feature {
 	public void onExperienceDrop(LivingExperienceDropEvent event) {
 		if (ModNBTData.contains(event.getEntity(), EXPERIENCE_MULTIPLIER))
 			event.setDroppedExperience((int) (event.getDroppedExperience() * ModNBTData.get(event.getEntity(), EXPERIENCE_MULTIPLIER, Double.class)));
+	}
+
+	@SubscribeEvent
+	public void onLivingTick(LivingEvent.LivingTickEvent event) {
+		if (event.getEntity().level().isClientSide
+				|| (event.getEntity().level().getServer().getTickCount() + event.getEntity().getId()) % 2 == 0)
+			return;
+
+		ModNBTData.put(event.getEntity(), SKY_LIGHT, event.getEntity().level().getBrightness(LightLayer.SKY, event.getEntity().blockPosition()));
+		ModNBTData.put(event.getEntity(), BLOCK_LIGHT, event.getEntity().level().getBrightness(LightLayer.BLOCK, event.getEntity().blockPosition()));
 	}
 
 	public static boolean isSpawnType(MobSpawnType spawnType, LivingEntity entity) {
