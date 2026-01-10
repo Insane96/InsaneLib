@@ -255,7 +255,12 @@ public abstract class FallingBlockEntityMixin extends Entity implements BetterFa
         }
         else {
             this.setPos(this.getX(), (blockPos.getY() - this.getBlockY()) + this.getY(), this.getZ());
-            insanelib$tryingToStack = true;
+            boolean breakInstaBreak = BetterFallingBlocks.breakInstabreakBlocks;
+            BlockState stateAt = this.level().getBlockState(this.blockPosition());
+            boolean isInstaBreak = stateAt.getDestroySpeed(this.level(), blockPos) == 0f;
+            boolean canBreakAtPos = isInstaBreak && breakInstaBreak;
+            this.insanelib$place(stateAt, this.blockState.getBlock(), blockPos, canBreakAtPos);
+            //insanelib$tryingToStack = true;
         }
     }
 

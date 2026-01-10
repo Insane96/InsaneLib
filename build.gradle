@@ -80,6 +80,10 @@ mixin {
 dependencies {
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
 
+    runtimeOnly fg.deobf("curse.maven:cloth-config-348521:5729105")
+    runtimeOnly fg.deobf("curse.maven:kiwi-303657:7289940")
+    runtimeOnly fg.deobf("curse.maven:passablefoliage-379887:4869702")
+
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
     compileOnly(annotationProcessor("io.github.llamalad7:mixinextras-common:0.4.1"))
     implementation(jarJar("io.github.llamalad7:mixinextras-forge:0.4.1")) {

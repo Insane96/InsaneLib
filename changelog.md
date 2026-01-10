@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.23.4.1
+* Fixed falling blocks not stacking when pass through (e.g. Leaves with Passable Foliage)
+
 ## 1.23.4.0
 * Added `insanelib:tags.sky_light` and `insanelib:tags.block_light` NBT so commands can know the light level an entity is standing in
 
