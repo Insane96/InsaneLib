@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.23.4.2
+* Pointed dripstones are no longer affected by Better Falling Blocks
+
 ## 1.23.4.1
 * Fixed falling blocks not stacking when pass through (e.g. Leaves with Passable Foliage)
 
