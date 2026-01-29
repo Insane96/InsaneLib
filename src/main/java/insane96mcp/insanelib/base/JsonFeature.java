@@ -47,7 +47,9 @@ public abstract class JsonFeature extends Feature {
         super(module, enabledByDefault, canBeDisabled);
     }
 
-	public JsonFeature() {}
+	public JsonFeature() {
+        super();
+    }
 
     @Override
     public void init(Module module, boolean enabledByDefault, boolean canBeDisabled) {
