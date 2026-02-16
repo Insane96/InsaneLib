@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.23.4.3
+* Scaffolding is no longer affected by Better Falling Blocks
+
 ## 1.23.4.2
 * Pointed dripstones are no longer affected by Better Falling Blocks
 
