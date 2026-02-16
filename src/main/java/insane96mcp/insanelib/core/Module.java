@@ -217,6 +217,7 @@ public class Module {
         if (!annotationDataMap.containsKey("requiresMods"))
             return true;
 
+        @SuppressWarnings("unchecked")
         List<String> requiredMods = (List<String>) annotationDataMap.get("requiresMods");
         for (String modId : requiredMods) {
             if (!ModList.get().isLoaded(modId)) {
