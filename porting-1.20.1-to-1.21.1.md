@@ -45,7 +45,88 @@ The `IdTagMatcher` system must be replaced by the new generic, type-safe `ObjTag
 - With `ObjTag<T>`, this can be simplified to a single generic `isBlackOrWhiteListed(T obj)` method, since `ObjTag<T>.matches()` handles all registry types.
 
 #### `ConfigOption.java` — consider simplification
-- The abstract `ConfigOption<T>` with many inner classes (`DoubleOption`, `IntOption`, `StringListOption`, `EnumOption`, `GenericOption`) works but is tightly coupled to Forge's `ForgeConfigSpec`. Review if NeoForge's config API has changed enough to warrant a refactor.
+- The abstract `ConfigOption<T>` with many inner classes (`DoubleOption`, `IntOption`, `StringListOption`, `EnumOption`, `GenericOption`) works but is tightly coupled to Forge's `ModConfigSpec`. Review if NeoForge's config API has changed enough to warrant a refactor.
+
+---
+
+## 0.1 Porting Progress
+
+### DONE — Core / Entry Point
+
+#### `InsaneLib.java` — PORTED
+- Removed all NeoForge template/example code (example blocks, items, creative tabs)
+- Renamed `MODID` → `MOD_ID`
+- Removed `commonSetup`, `addCreative`, `onServerStarting` template methods
+- Removed `NeoForge.EVENT_BUS.register(this)` (no longer needed, no `@SubscribeEvent` methods)
+- Config registration now uses `ILConfig.COMMON_SPEC` with custom file name (`insanelib.toml`)
+- Added `location(String path)` helper for `ResourceLocation` creation
+- Added `lang(String path)` helper for language key construction
+- Constructor simplified to just config registration
+
+#### `ILConfig.java` — NEW (replaces `setup/Config.java`)
+- Uses `ModConfigSpec.Builder` (NeoForge) instead of `ForgeConfigSpec.Builder` (Forge)
+- Static init block creates `COMMON_SPEC` and `CommonConfig`
+- `CommonConfig` calls `Module.loadFeatures()` during construction
+- `Modules.init()` call is currently commented out (no modules defined yet)
+- Removed `@Mod.EventBusSubscriber` annotation (class has no event methods)
+
+#### `InsaneLibClient.java` — UPDATED
+- References updated from `MODID` to `MOD_ID`
+
+### DONE — Feature/Module Framework
+
+#### `Feature.java` — PORTED (moved to `insane96mcp.insanelib.core`)
+- Package changed: `insane96mcp.insanelib.base` → `insane96mcp.insanelib.core`
+- All Forge imports replaced with NeoForge equivalents (`ModConfigSpec`, `NeoForge.EVENT_BUS`, etc.)
+- Removed all `@Label` annotation fallback code (deprecated annotation removed)
+- `LogHelper` calls replaced with direct `InsaneLib.LOGGER` calls
+- `Blacklist` config option commented out (pending ObjTag migration)
+- `IdTagMatcher` config option commented out (pending ObjTag migration)
+- Added `getName()` accessor to `ConfigOption` (was accessing `name` field directly before)
+- Event registration uses `NeoForge.EVENT_BUS.register(this)` instead of `MinecraftForge.EVENT_BUS`
+
+#### `Module.java` — PORTED (moved to `insane96mcp.insanelib.core`)
+- Package changed: `insane96mcp.insanelib.base` → `insane96mcp.insanelib.core`
+- All Forge imports replaced with NeoForge equivalents
+- **Constructor now takes `IEventBus modEventBus`** parameter instead of using `FMLJavaModLoadingContext.get()` (resolves the 1.20.1 TODO)
+- Builder pattern updated: all `create()` methods now require `IEventBus` parameter
+- `LogHelper` calls replaced with `InsaneLib.LOGGER` direct calls (using SLF4J `{}` placeholders)
+- Uses `net.neoforged.neoforgespi.language.ModFileScanData` instead of Forge's version
+
+#### `LoadFeature.java` — PORTED (moved to `insane96mcp.insanelib.core`)
+- Package changed: `insane96mcp.insanelib.base` → `insane96mcp.insanelib.core`
+- No other changes
+
+### DONE — Config System
+
+#### `ConfigOption.java` — PORTED (moved to `insane96mcp.insanelib.core.config`)
+- Package changed: `insane96mcp.insanelib.base` → `insane96mcp.insanelib.core.config`
+- All `ForgeConfigSpec` references replaced with `ModConfigSpec`
+- Added `getName()` public accessor method
+- `java.lang.Double` simplified to just `Double` in `DoubleOption`
+
+#### `ConfigUtils.java` — PORTED (moved to `insane96mcp.insanelib.core.config`)
+- Package changed: `insane96mcp.insanelib.util` → `insane96mcp.insanelib.core.config`
+- No other changes
+
+#### `Difficulty.java` — PORTED (moved to `insane96mcp.insanelib.core.config`)
+- All `ForgeConfigSpec` references replaced with `ModConfigSpec`
+- Fixed imports (removed old `insane96mcp.insanelib.base` and `insane96mcp.insanelib.util` imports)
+
+#### `MinMax.java` — PORTED (moved to `insane96mcp.insanelib.core.config`)
+- All `ForgeConfigSpec` references replaced with `ModConfigSpec`
+- Fixed imports (removed old `insane96mcp.insanelib.base` and `insane96mcp.insanelib.util` imports)
+
+#### `Config.java` annotation — PORTED (moved to `insane96mcp.insanelib.core.config`)
+- Already in `core.config`, no changes needed beyond the package move
+
+### REMOVED (not porting)
+- **`Label.java`** — deprecated annotation, not needed in 1.21.1
+
+### NOT YET PORTED
+- `Blacklist.java` — blocked on ObjTag migration
+- `JsonFeature.java` — blocked on ObjTag migration
+- All other components (events, mixins, network, data, modules, utilities, etc.)
 
 ---
 
@@ -444,7 +525,7 @@ Simple exception for JSON validation errors.
 
 ### `Config.java` (setup)
 Static config initialization:
-- Creates `ForgeConfigSpec.Builder`
+- Creates `ModConfigSpec.Builder`
 - Instantiates `CommonConfig` which triggers `Modules.init()` and `Module.loadFeatures()`
 
 ### `ILGlobalLootModifiers.java`
