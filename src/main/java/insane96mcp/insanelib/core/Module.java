@@ -11,7 +11,6 @@ import net.neoforged.neoforgespi.language.ModFileScanData;
 import org.objectweb.asm.Type;
 
 import javax.annotation.Nullable;
-import java.lang.reflect.Constructor;
 import java.util.*;
 
 public class Module {
@@ -115,7 +114,7 @@ public class Module {
 
     public void loadConfig() {
         if (this.canBeDisabled) {
-            if (!this.description.equals("")) {
+            if (!this.description.isEmpty()) {
                 this.enabledConfig = this.configBuilder.comment(this.description).define("Enable %s".formatted(this.name), this.enabled);
             }
             else {
@@ -230,21 +229,12 @@ public class Module {
 
     private static Feature instantiateFeature(Class<?> clazz, Module module, boolean enabledByDefault, boolean canBeDisabled) {
         try {
-            Constructor<?> ctor = clazz.getDeclaredConstructor(Module.class, boolean.class, boolean.class);
-            return (Feature) ctor.newInstance(module, enabledByDefault, canBeDisabled);
-        }
-        catch (NoSuchMethodException e) {
-            try {
-                Feature feature = (Feature) clazz.getDeclaredConstructor().newInstance();
-                feature.init(module, enabledByDefault, canBeDisabled);
-                return feature;
-            }
-            catch (ReflectiveOperationException ex) {
-                throw new RuntimeException("Failed to instantiate Feature (no valid constructor): " + clazz.getName(), ex);
-            }
+            Feature feature = (Feature) clazz.getDeclaredConstructor().newInstance();
+            feature.init(module, enabledByDefault, canBeDisabled);
+            return feature;
         }
         catch (ReflectiveOperationException e) {
-            throw new RuntimeException("Failed to instantiate Feature with full constructor: " + clazz.getName(), e);
+            throw new RuntimeException("Failed to instantiate Feature: " + clazz.getName(), e);
         }
     }
 
