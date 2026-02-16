@@ -43,21 +43,15 @@ public class Feature {
     }
 
     private String extractName() {
-        if (this.getClass().isAnnotationPresent(LoadFeature.class)) {
-            String name = this.getClass().getAnnotation(LoadFeature.class).name();
-            if (!name.isBlank())
-                return name;
-        }
+        String name = this.getClass().getAnnotation(LoadFeature.class).name();
+        if (!name.isBlank())
+            return name;
 
         return fieldNameToConfigOption(this.getClass().getSimpleName()).replaceAll("(?i)feature", "").trim();
     }
 
     private String extractDescription() {
-        if (this.getClass().isAnnotationPresent(LoadFeature.class))
-            //noinspection DataFlowIssue
-            return this.getClass().getAnnotation(LoadFeature.class).description();
-
-        return "";
+        return this.getClass().getAnnotation(LoadFeature.class).description();
     }
 
     /**
