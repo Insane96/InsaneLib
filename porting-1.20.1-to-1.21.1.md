@@ -182,8 +182,8 @@ The `IdTagMatcher` system must be replaced by the new generic, type-safe `ObjTag
 - [ ] `FloatMinMaxValidator.java` — Float range validation
 - [ ] `DoubleMinMaxValidator.java` — Double range validation
 - [ ] `JsonValidationException.java` — JSON validation exception
-- [ ] `IWeightedRandom.java` — Weighted random interface
-- [ ] `WeightedRandom.java` — Weighted random utility
+- [x] `IWeightedRandom.java` — Weighted random interface
+- [x] `WeightedRandom.java` — Weighted random utility
 
 ---
 
