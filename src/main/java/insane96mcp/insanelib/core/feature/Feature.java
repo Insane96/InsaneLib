@@ -3,7 +3,7 @@ package insane96mcp.insanelib.core.feature;
 import insane96mcp.insanelib.InsaneLib;
 import insane96mcp.insanelib.core.feature.config.Config;
 import insane96mcp.insanelib.core.feature.config.ConfigOption;
-import insane96mcp.insanelib.core.feature.config.Difficulty;
+import insane96mcp.insanelib.core.feature.config.DifficultyBasedValue;
 import insane96mcp.insanelib.core.feature.config.MinMax;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -15,9 +15,7 @@ import javax.annotation.Nullable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 public class Feature {
     private String name;
@@ -30,6 +28,33 @@ public class Feature {
     private boolean canBeDisabled;
 
     private boolean enabled;
+
+    private static final Map<Class<?>, ConfigOption.ConfigOptionFactory> CONFIG_OPTION_FACTORIES = new LinkedHashMap<>();
+
+    static {
+        registerConfigType(Double.class, (builder, name, annotation, defaultValue) ->
+                new ConfigOption.DoubleOption(builder, name, annotation.description(), (double) defaultValue, annotation.min(), annotation.max()));
+        registerConfigType(Integer.class, (builder, name, annotation, defaultValue) -> {
+            double min = annotation.min() == -Double.MAX_VALUE ? Integer.MIN_VALUE : annotation.min();
+            double max = annotation.max() == Double.MAX_VALUE ? Integer.MAX_VALUE : annotation.max();
+            return new ConfigOption.IntOption(builder, name, annotation.description(), (int) defaultValue, (int) min, (int) max);
+        });
+        registerConfigType(Boolean.class, (builder, name, annotation, defaultValue) ->
+                new ConfigOption.BoolOption(builder, name, annotation.description(), (boolean) defaultValue));
+        registerConfigType(String.class, (builder, name, annotation, defaultValue) ->
+                new ConfigOption.StringOption(builder, name, annotation.description(), (String) defaultValue));
+        //noinspection unchecked
+        registerConfigType(List.class, (builder, name, annotation, defaultValue) ->
+                new ConfigOption.StringListOption(builder, name, annotation.description(), (List<String>) defaultValue));
+        registerConfigType(MinMax.class, (builder, name, annotation, defaultValue) ->
+                new MinMax.Config(builder, name, annotation.description(), (MinMax) defaultValue, annotation.min(), annotation.max()));
+        registerConfigType(DifficultyBasedValue.class, (builder, name, annotation, defaultValue) ->
+                new DifficultyBasedValue.Config(builder, name, annotation.description(), (DifficultyBasedValue) defaultValue, annotation.min(), annotation.max()));
+    }
+
+    public static void registerConfigType(Class<?> type, ConfigOption.ConfigOptionFactory factory) {
+        CONFIG_OPTION_FACTORIES.put(type, factory);
+    }
 
     protected Feature() {}
 
@@ -94,91 +119,53 @@ public class Feature {
 
     HashMap<Field, ConfigOption<?>> configOptions = new HashMap<>();
 
-    /**
-     * Override to add custom config options
-     */
     public void loadConfigOptions() {
         try {
-            for (Field field : this.getClass().getDeclaredFields())
-            {
+            for (Field field : this.getClass().getDeclaredFields()) {
                 if (!field.isAnnotationPresent(Config.class))
                     continue;
 
-                String name;
-                String description = "";
-                name = field.getAnnotation(Config.class).name();
-                if (name.isBlank())
-                    name = fieldNameToConfigOption(field.getName());
-                description = field.getAnnotation(Config.class).description();
-
                 if (!Modifier.isStatic(field.getModifiers()))
-                {
                     throw new UnsupportedOperationException("Failed to load %s field. The field is not static".formatted(field));
-                }
 
-                double min = field.getAnnotation(Config.class).min();
-                double max = field.getAnnotation(Config.class).max();
+                Config annotation = field.getAnnotation(Config.class);
+                String name = annotation.name().isBlank() ? fieldNameToConfigOption(field.getName()) : annotation.name();
+                Object defaultValue = field.get(null);
 
-                if (field.getType().isAssignableFrom(Double.class))
-                {
-                    double defaultValue = (double) field.get(null);
-                    ConfigOption.DoubleOption doubleOption = new ConfigOption.DoubleOption(this.getBuilder(), name, description, defaultValue, min, max);
-                    this.configOptions.put(field, doubleOption);
-                }
-                else if (field.getType().isAssignableFrom(Integer.class))
-                {
-                    int defaultValue = (int) field.get(null);
-                    if (min == Double.MIN_VALUE) min = Integer.MIN_VALUE;
-                    if (max == Double.MAX_VALUE) max = Integer.MAX_VALUE;
-                    ConfigOption.IntOption intOption = new ConfigOption.IntOption(this.getBuilder(), name, description, defaultValue, (int) min, (int) max);
-                    this.configOptions.put(field, intOption);
-                }
-                else if (field.getType().isAssignableFrom(List.class))
-                {
-                    List<String> defaultValue = (List<String>) field.get(null);
-                    ConfigOption.StringListOption listOption = new ConfigOption.StringListOption(this.getBuilder(), name, description, defaultValue);
-                    this.configOptions.put(field, listOption);
-                }
-                else if (field.getType().isEnum())
-                {
-                    Enum defaultValue = (Enum) field.get(null);
-                    ConfigOption.EnumOption enumOption = new ConfigOption.EnumOption(this.getBuilder(), name, description, defaultValue);
-                    this.configOptions.put(field, enumOption);
-                }
-                else if (field.getType().isAssignableFrom(MinMax.class))
-                {
-                    MinMax defaultValue = (MinMax) field.get(null);
-                    MinMax.Config minMaxConfig = new MinMax.Config(this.getBuilder(), name, description, defaultValue, min, max);
-                    this.configOptions.put(field, minMaxConfig);
-                }
-                else if (field.getType().isAssignableFrom(Difficulty.class))
-                {
-                    Difficulty defaultValue = (Difficulty) field.get(null);
-                    Difficulty.Config difficultyConfig = new Difficulty.Config(this.getBuilder(), name, description, defaultValue, min, max);
-                    this.configOptions.put(field, difficultyConfig);
-                }
-                /*else if (field.getType().isAssignableFrom(Blacklist.class))
-                {
-                    Blacklist defaultValue = (Blacklist) field.get(null);
-                    Blacklist.Config blacklistConfig = new Blacklist.Config(this.getBuilder(), name, description, defaultValue);
-                    this.configOptions.put(field, blacklistConfig);
-                }*/
-                /*else if (field.getType().isAssignableFrom(IdTagMatcher.class))
-                {
-                    IdTagMatcher defaultValue = (IdTagMatcher) field.get(null);
-                    IdTagMatcher.Config idTagMatcherConfig = new IdTagMatcher.Config(this.getBuilder(), name, description, defaultValue);
-                    this.configOptions.put(field, idTagMatcherConfig);
-                }*/
-                else {
-                    Object defaultValue = field.get(null);
-                    ConfigOption.GenericOption genericOption = new ConfigOption.GenericOption(this.getBuilder(), name, description, defaultValue);
-                    this.configOptions.put(field, genericOption);
+                ConfigOption.ConfigOptionFactory factory = findFactory(field.getType());
+                if (factory != null) {
+                    this.configOptions.put(field, factory.create(this.getBuilder(), name, annotation, defaultValue));
+                } else {
+                    this.configOptions.put(field, new ConfigOption.GenericOption(this.getBuilder(), name, annotation.description(), defaultValue));
                 }
             }
         }
         catch (Exception e) {
             throw new RuntimeException("Failed to load Feature '%s'".formatted(this.name), e);
         }
+    }
+
+    @Nullable
+    private static ConfigOption.ConfigOptionFactory findFactory(Class<?> type) {
+        // Exact match first
+        ConfigOption.ConfigOptionFactory factory = CONFIG_OPTION_FACTORIES.get(type);
+        if (factory != null)
+            return factory;
+
+        // Check assignability (for subclasses like custom MinMax extensions)
+        for (Map.Entry<Class<?>, ConfigOption.ConfigOptionFactory> entry : CONFIG_OPTION_FACTORIES.entrySet()) {
+            if (entry.getKey().isAssignableFrom(type))
+                return entry.getValue();
+        }
+
+        // Enum special case
+        if (type.isEnum()) {
+            //noinspection unchecked,rawtypes
+            return (builder, name, annotation, defaultValue) ->
+                    new ConfigOption.EnumOption(builder, name, annotation.description(), (Enum) defaultValue);
+        }
+
+        return null;
     }
 
     public final void loadConfig() {

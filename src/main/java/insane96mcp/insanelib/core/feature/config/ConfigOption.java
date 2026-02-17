@@ -213,4 +213,9 @@ public abstract class ConfigOption<T> {
             return valueConfig.getPath();
         }
     }
+
+    @FunctionalInterface
+    public interface ConfigOptionFactory {
+        ConfigOption<?> create(ModConfigSpec.Builder builder, String name, Config annotation, Object defaultValue);
+    }
 }

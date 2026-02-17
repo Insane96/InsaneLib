@@ -4,6 +4,8 @@ import insane96mcp.insanelib.core.ModNBTData;
 import insane96mcp.insanelib.core.feature.Feature;
 import insane96mcp.insanelib.core.feature.LoadFeature;
 import insane96mcp.insanelib.core.feature.Module;
+import insane96mcp.insanelib.core.feature.config.Config;
+import insane96mcp.insanelib.core.feature.config.DifficultyBasedValue;
 import insane96mcp.insanelib.mixin.accessor.ExplosionAccessor;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
@@ -21,16 +23,17 @@ import net.neoforged.neoforge.event.tick.EntityTickEvent;
 		canBeDisabled = false
 )
 public class TagsFeature extends Feature {
-	public static ResourceLocation SPAWN_TYPE;
 	public static ResourceLocation EXPLOSION_CAUSES_FIRE;
 	public static ResourceLocation EXPERIENCE_MULTIPLIER;
 	public static ResourceLocation SKY_LIGHT;
 	public static ResourceLocation BLOCK_LIGHT;
 
+	@Config
+	public static DifficultyBasedValue difficultyBasedValue = new DifficultyBasedValue(1, 2, 3);
+
 	@Override
 	public void init(Module module, boolean enabledByDefault, boolean canBeDisabled) {
 		super.init(module, enabledByDefault, canBeDisabled);
-		SPAWN_TYPE = createDataKey("spawn_type");
 		EXPLOSION_CAUSES_FIRE = createDataKey("explosion_causes_fire");
 		EXPERIENCE_MULTIPLIER = createDataKey("xp_multiplier");
 		SKY_LIGHT = createDataKey("sky_light");
