@@ -6,6 +6,7 @@ import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import insane96mcp.insanelib.InsaneLib;
+import insane96mcp.insanelib.core.feature.config.ConfigOption;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
@@ -19,6 +20,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.material.Fluid;
+import net.neoforged.neoforge.common.ModConfigSpec;
 
 import javax.annotation.Nullable;
 import java.lang.reflect.Type;
@@ -46,16 +48,21 @@ public class ObjTag<T> {
     @Nullable
     private TagKey<T> tag;
     private final Registry<T> registry;
+    private final ResourceKey<Registry<T>> registryKey;
     //TODO Add dimension
 
+    @SuppressWarnings("unchecked")
     private ObjTag(T obj, Registry<T> registry) {
         this.obj = obj;
         this.registry = registry;
+        this.registryKey = (ResourceKey<Registry<T>>) registry.key();
     }
 
+    @SuppressWarnings("unchecked")
     private ObjTag(TagKey<T> tag, Registry<T> registry) {
         this.tag = tag;
         this.registry = registry;
+        this.registryKey = (ResourceKey<Registry<T>>) registry.key();
     }
 
     /**
@@ -104,6 +111,20 @@ public class ObjTag<T> {
         if (reg == null)
             throw new IllegalArgumentException("Unknown registry %s".formatted(registry.location()));
         return tagOf(TagKey.create(registry, id), reg);
+    }
+
+    /**
+     * Returns the registry key this ObjTag resolves against.
+     */
+    public ResourceKey<Registry<T>> getRegistryKey() {
+        return this.registryKey;
+    }
+
+    /**
+     * Returns the string representation of this ObjTag ({@code "namespace:id"} or {@code "#namespace:id"}).
+     */
+    public String toSerializedString() {
+        return serialize().getAsString();
     }
 
     /**
@@ -185,6 +206,38 @@ public class ObjTag<T> {
             jArray.add(tObjTag.serialize());
         }
         return jArray;
+    }
+
+    /**
+     * Config option that stores an ObjTag as a string value in the mod config.
+     */
+    public static class COption<T> extends ConfigOption<ObjTag<T>> {
+        private final ModConfigSpec.ConfigValue<String> valueConfig;
+        private final ResourceKey<Registry<T>> registryKey;
+
+        public COption(ModConfigSpec.Builder builder, String name, String description, ObjTag<T> defaultValue) {
+            super(builder, name, description);
+            this.registryKey = defaultValue.getRegistryKey();
+            this.valueConfig = builder.define(name, defaultValue.toSerializedString());
+        }
+
+        @Override
+        public ObjTag<T> get() {
+            return ObjTag.of(this.valueConfig.get(), this.registryKey);
+        }
+
+        @Override
+        public void set(Object value) {
+            @SuppressWarnings("unchecked")
+            ObjTag<T> objTag = (ObjTag<T>) value;
+            this.valueConfig.set(objTag.toSerializedString());
+        }
+
+        @javax.annotation.Nullable
+        @Override
+        public java.util.List<String> getConfigPath() {
+            return valueConfig.getPath();
+        }
     }
 
     /**

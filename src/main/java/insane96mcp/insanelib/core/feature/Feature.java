@@ -1,10 +1,8 @@
 package insane96mcp.insanelib.core.feature;
 
 import insane96mcp.insanelib.InsaneLib;
-import insane96mcp.insanelib.core.feature.config.Config;
-import insane96mcp.insanelib.core.feature.config.ConfigOption;
-import insane96mcp.insanelib.core.feature.config.DifficultyBasedConfig;
-import insane96mcp.insanelib.core.feature.config.MinMaxConfig;
+import insane96mcp.insanelib.core.feature.config.*;
+import insane96mcp.insanelib.data.ObjTag;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.event.config.ModConfigEvent;
@@ -50,6 +48,12 @@ public class Feature {
                 new MinMaxConfig.COption(builder, name, annotation.description(), (MinMaxConfig) defaultValue, annotation.min(), annotation.max()));
         registerConfigType(DifficultyBasedConfig.class, (builder, name, annotation, defaultValue) ->
                 new DifficultyBasedConfig.COption(builder, name, annotation.description(), (DifficultyBasedConfig) defaultValue, annotation.min(), annotation.max()));
+        //noinspection unchecked,rawtypes
+        registerConfigType(Blacklist.class, (builder, name, annotation, defaultValue) ->
+                new Blacklist.COption(builder, name, annotation.description(), (Blacklist) defaultValue));
+        //noinspection unchecked,rawtypes
+        registerConfigType(ObjTag.class, (builder, name, annotation, defaultValue) ->
+                new ObjTag.COption(builder, name, annotation.description(), (ObjTag) defaultValue));
     }
 
     public static void registerConfigType(Class<?> type, ConfigOption.ConfigOptionFactory factory) {
