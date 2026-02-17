@@ -10,6 +10,7 @@ import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.food.FoodProperties;
 
 public class MCUtils {
 	/**
@@ -130,7 +131,7 @@ public class MCUtils {
 		return true;
 	}*/
 
-/*	public static boolean isAdvancementDone(ServerPlayer player, ResourceLocation advancementRL) {
+	/*public static boolean isAdvancementDone(ServerPlayer player, ResourceLocation advancementRL) {
 		Advancement advancement = player.server.getAdvancements().getAdvancement(advancementRL);
 		if (advancement == null)
 			return false;
@@ -203,20 +204,6 @@ public class MCUtils {
 			return y;
 		}
 		return fittingYPos;
-	}*/
-
-/*	public static int getEnchantmentLevel(ResourceLocation enchantmentId, ItemStack stack) {
-		if (stack.isEmpty())
-			return 0;
-		ListTag listTag = stack.getEnchantmentTags();
-		for (int i = 0; i < listTag.size(); ++i) {
-			CompoundTag compoundTag = listTag.getCompound(i);
-			ResourceLocation itemEnchantment = ResourceLocation.tryParse(compoundTag.getString("id"));
-			if (itemEnchantment != null && itemEnchantment.equals(enchantmentId)) {
-				return Mth.clamp(compoundTag.getInt("lvl"), 0, 255);
-			}
-		}
-		return 0;
 	}*/
 
 	/**
@@ -294,13 +281,9 @@ public class MCUtils {
 		return tag;
 	}
 
-	/*public static float getFoodEffectiveness(FoodProperties foodProperties) {
-		return foodProperties.getNutrition() + getFoodSaturationRestored(foodProperties);
+	public static float getFoodEffectiveness(FoodProperties foodProperties) {
+		return foodProperties.nutrition() + foodProperties.saturation();
 	}
-
-	public static float getFoodSaturationRestored(FoodProperties foodProperties) {
-		return foodProperties.getNutrition() * foodProperties.getSaturationModifier() * 2;
-	}*/
 
 	/**
 	 * Returns a "synced" random. It's not really synced, it uses level game time, which is usually synced
