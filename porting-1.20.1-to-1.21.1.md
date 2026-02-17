@@ -167,9 +167,9 @@ The `IdTagMatcher` system must be replaced by the new generic, type-safe `ObjTag
 
 ## 13. Utilities
 
-- [ ] `LogHelper.java` — Logging wrapper (→ rename to `ILLogger`)
-- [ ] `MCUtils.java` — Large utility class
-- [ ] `MathHelper.java` — Math utilities
+- [x] ~~`LogHelper.java`~~ — Removed, just using `InsaneLib.LOGGER`
+- [x] `MCUtils.java` — Large utility class, some methods are commented out, will re-implement if needed
+- [x] `MathHelper.java` — Math utilities
 - [ ] `ModNBTData.java` — Entity/player/item NBT storage
 - [ ] `TagUtils.java` — Tag checking utilities
 - [ ] `ClientUtils.java` — Client rendering helpers
