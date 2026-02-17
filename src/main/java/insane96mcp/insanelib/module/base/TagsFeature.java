@@ -7,19 +7,17 @@ import insane96mcp.insanelib.core.feature.Module;
 import insane96mcp.insanelib.mixin.accessor.ExplosionAccessor;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.LightLayer;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.neoforge.event.entity.living.FinalizeSpawnEvent;
 import net.neoforged.neoforge.event.entity.living.LivingExperienceDropEvent;
 import net.neoforged.neoforge.event.level.ExplosionEvent;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
 
 @LoadFeature(
 		module = "insanelib:base",
-		description = "Set and use some tags to get and set some mobs properties. E.g. cause fire explosion for mobs or know if a mob has been spawned from spawner.",
+		description = "Set and use some tags to get and set some mobs properties. E.g. cause fire explosion for mobs, or get current light level.",
 		canBeDisabled = false
 )
 public class TagsFeature extends Feature {
@@ -52,11 +50,6 @@ public class TagsFeature extends Feature {
 			((ExplosionAccessor)explosion).setFire(true);
 	}
 
-	@SubscribeEvent(priority = EventPriority.HIGHEST)
-	public void onSpawn(FinalizeSpawnEvent event) {
-		ModNBTData.put(event.getEntity(), SPAWN_TYPE, (byte) event.getSpawnType().ordinal());
-	}
-
 	@SubscribeEvent
 	public void onExperienceDrop(LivingExperienceDropEvent event) {
 		if (ModNBTData.contains(event.getEntity(), EXPERIENCE_MULTIPLIER))
@@ -72,10 +65,6 @@ public class TagsFeature extends Feature {
 
 		ModNBTData.put(event.getEntity(), SKY_LIGHT, event.getEntity().level().getBrightness(LightLayer.SKY, event.getEntity().blockPosition()));
 		ModNBTData.put(event.getEntity(), BLOCK_LIGHT, event.getEntity().level().getBrightness(LightLayer.BLOCK, event.getEntity().blockPosition()));
-	}
-
-	public static boolean isSpawnType(MobSpawnType spawnType, LivingEntity entity) {
-		return ModNBTData.get(entity, SPAWN_TYPE, Byte.class) == spawnType.ordinal();
 	}
 
 	public static void setExplosionCausesFire(boolean causesFire, LivingEntity entity) {

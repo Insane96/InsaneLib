@@ -15,6 +15,7 @@ public class InsaneLib {
     public static final Logger LOGGER = LogUtils.getLogger();
 
     public InsaneLib(IEventBus modEventBus, ModContainer modContainer) {
+        ILConfig.init(modEventBus);
         modContainer.registerConfig(ModConfig.Type.COMMON, ILConfig.COMMON_SPEC, MOD_ID + ".toml");
     }
 
