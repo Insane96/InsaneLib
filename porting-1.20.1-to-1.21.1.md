@@ -147,7 +147,7 @@ The `IdTagMatcher` system must be replaced by the new generic, type-safe `ObjTag
 
 ## 10. AI
 
-- [ ] `ILNearestAttackableTargetGoal.java` — Extended target goal
+- [x] `ILNearestAttackableTargetGoal.java` — Extended target goal
 
 ---
 
@@ -159,7 +159,7 @@ The `IdTagMatcher` system must be replaced by the new generic, type-safe `ObjTag
 
 ## 12. World
 
-- [ ] `ILMobEffect.java` — MobEffect with cure prevention
+- [x] `ILMobEffect.java` — MobEffect with cure prevention
 - [ ] `ScheduledTasks.java` — Server tick task scheduler
 - [ ] `ScheduledTickTask.java` — Abstract delayed task
 
