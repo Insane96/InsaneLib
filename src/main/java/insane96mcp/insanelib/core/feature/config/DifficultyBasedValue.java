@@ -6,10 +6,10 @@ import net.neoforged.neoforge.common.ModConfigSpec;
 import javax.annotation.Nullable;
 import java.util.List;
 
-public class Difficulty {
+public class DifficultyBasedValue {
     public double easy, normal, hard;
 
-    public Difficulty(double easy, double normal, double hard) {
+    public DifficultyBasedValue(double easy, double normal, double hard) {
         this.easy = easy;
         this.normal = normal;
         this.hard = hard;
@@ -23,13 +23,13 @@ public class Difficulty {
         };
     }
 
-    public static class Config extends ConfigOption<Difficulty> {
+    public static class Config extends ConfigOption<DifficultyBasedValue> {
 
         private final ModConfigSpec.DoubleValue easyConfig;
         private final ModConfigSpec.DoubleValue normalConfig;
         private final ModConfigSpec.DoubleValue hardConfig;
 
-        public Config(ModConfigSpec.Builder builder, String name, String description, Difficulty defaultValue, double rangeMin, double rangeMax) {
+        public Config(ModConfigSpec.Builder builder, String name, String description, DifficultyBasedValue defaultValue, double rangeMin, double rangeMax) {
             super(builder, name, description);
             List<String> split = ConfigUtils.split(name);
             builder.push(split);
@@ -40,16 +40,16 @@ public class Difficulty {
         }
 
         @Override
-        public Difficulty get() {
-            return new Difficulty(easyConfig.get(), normalConfig.get(), hardConfig.get());
+        public DifficultyBasedValue get() {
+            return new DifficultyBasedValue(easyConfig.get(), normalConfig.get(), hardConfig.get());
         }
 
         @Override
         public void set(Object value) {
-            Difficulty difficulty = (Difficulty) value;
-            this.easyConfig.set(difficulty.easy);
-            this.normalConfig.set(difficulty.normal);
-            this.hardConfig.set(difficulty.hard);
+            DifficultyBasedValue difficultyBasedValue = (DifficultyBasedValue) value;
+            this.easyConfig.set(difficultyBasedValue.easy);
+            this.normalConfig.set(difficultyBasedValue.normal);
+            this.hardConfig.set(difficultyBasedValue.hard);
         }
 
         @Nullable
