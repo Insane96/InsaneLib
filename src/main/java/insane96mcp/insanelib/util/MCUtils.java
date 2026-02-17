@@ -1,7 +1,13 @@
 package insane96mcp.insanelib.util;
 
+import net.minecraft.core.Holder;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.Attribute;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 
@@ -20,72 +26,60 @@ public class MCUtils {
 	}
 
 	/**
-	 * Different version of ItemStack#addAttributeModifiers that doesn't override the item's base modifiers
-	 */
-	/*public static void addAttributeModifierToItemStack(ItemStack itemStack, Attribute attribute, AttributeModifier modifier, EquipmentSlot modifierSlot) {
-		if (itemStack.hasTag() && !itemStack.getTag().contains("AttributeModifiers", 9)) {
-			for (Map.Entry<Attribute, AttributeModifier> entry : itemStack.getAttributeModifiers(modifierSlot).entries()) {
-				itemStack.addAttributeModifier(entry.getKey(), entry.getValue(), modifierSlot);
-			}
-		}
-		itemStack.addAttributeModifier(attribute, modifier, modifierSlot);
-	}*/
-
-	/**
 	 * Applies a modifier to the Living Entity. If the attribute is max_health also sets entity's health to his max health
 	 * @return true if the modifier was applied
 	 */
-	/*public static boolean applyModifier(LivingEntity entity, Attribute attribute, UUID uuid, String name, double amount, AttributeModifier.Operation operation, boolean permanent) {
-		return applyModifier(entity, attribute, new AttributeModifier(uuid, name, amount, operation), permanent);
-	}*/
+	public static boolean applyModifier(LivingEntity entity, Holder<Attribute> attribute, ResourceLocation id, double amount, AttributeModifier.Operation operation, boolean permanent) {
+		return applyModifier(entity, attribute, new AttributeModifier(id, amount, operation), permanent);
+	}
 
 	/**
 	 * Applies a permanent modifier to the Living Entity. If the attribute is max_health also heals the entity to the new bonus health (if any)
 	 * @return true if the modifier was applied
 	 */
-	/*public static boolean applyModifier(LivingEntity entity, Attribute attribute, UUID uuid, String name, double amount, AttributeModifier.Operation operation) {
-		return applyModifier(entity, attribute, new AttributeModifier(uuid, name, amount, operation), true);
-	}*/
+	public static boolean applyModifier(LivingEntity entity, Holder<Attribute> attribute, ResourceLocation id, double amount, AttributeModifier.Operation operation) {
+		return applyModifier(entity, attribute, new AttributeModifier(id, amount, operation), true);
+	}
 
 	/**
 	 * Applies a modifier to the Living Entity. If the attribute is max_health also heals the entity to the new bonus health (if any)
 	 * @return true if the modifier was applied
 	 */
-	/*public static boolean applyModifier(LivingEntity entity, Attribute attribute, AttributeModifier modifier, boolean permanent) {
+	public static boolean applyModifier(LivingEntity entity, Holder<Attribute> attribute, AttributeModifier modifier, boolean permanent) {
 		AttributeInstance attributeInstance = entity.getAttribute(attribute);
 		if (attributeInstance != null) {
-			if (attributeInstance.hasModifier(modifier))
+			if (attributeInstance.hasModifier(modifier.id()))
 				return false;
-            float oldMaxHealth = entity.getMaxHealth();
+			float oldMaxHealth = entity.getMaxHealth();
 			if (permanent)
 				attributeInstance.addPermanentModifier(modifier);
 			else
 				attributeInstance.addTransientModifier(modifier);
 
 			if (attribute == Attributes.MAX_HEALTH) {
-                float newMaxHealth = entity.getMaxHealth();
-                if (newMaxHealth > oldMaxHealth)
-                    entity.heal(newMaxHealth - oldMaxHealth);
-            }
+				float newMaxHealth = entity.getMaxHealth();
+				if (newMaxHealth > oldMaxHealth)
+					entity.heal(newMaxHealth - oldMaxHealth);
+			}
 			return true;
 		}
 		return false;
-	}*/
+	}
 
-    /**
-     * Removes a modifier from the Living Entity if the entity has the attribute
-     */
-    /*public static void removeModifier(LivingEntity entity, Attribute attribute, UUID uuid) {
+	/**
+	 * Removes a modifier from the Living Entity if the entity has the attribute
+	 */
+    public static void removeModifier(LivingEntity entity, Holder<Attribute> attribute, ResourceLocation id) {
         AttributeInstance attributeInstance = entity.getAttribute(attribute);
         if (attributeInstance != null)
-            attributeInstance.removeModifier(uuid);
-    }*/
+            attributeInstance.removeModifier(id);
+    }
 
 	/**
 	 * Sets the value of an attribute
 	 * @return true if the override was successful
 	 */
-	/*public static boolean setAttributeValue(LivingEntity entity, Attribute attribute, double value) {
+	public static boolean setAttributeBaseValue(LivingEntity entity, Holder<Attribute> attribute, double value) {
 		AttributeInstance attributeInstance = entity.getAttribute(attribute);
 		if (attributeInstance != null) {
 			attributeInstance.setBaseValue(value);
@@ -96,6 +90,18 @@ public class MCUtils {
 			return true;
 		}
 		return false;
+	}
+
+	/**
+	 * Different version of ItemStack#addAttributeModifiers that doesn't override the item's base modifiers
+	 */
+	/*public static void addAttributeModifierToItemStack(ItemStack itemStack, Attribute attribute, AttributeModifier modifier, EquipmentSlot modifierSlot) {
+		if (itemStack.hasTag() && !itemStack.getTag().contains("AttributeModifiers", 9)) {
+			for (Map.Entry<Attribute, AttributeModifier> entry : itemStack.getAttributeModifiers(modifierSlot).entries()) {
+				itemStack.addAttributeModifier(entry.getKey(), entry.getValue(), modifierSlot);
+			}
+		}
+		itemStack.addAttributeModifier(attribute, modifier, modifierSlot);
 	}*/
 
 /*	public static boolean hurtIgnoreInvuln(LivingEntity hurtEntity, DamageSource source, float amount) {
@@ -299,7 +305,7 @@ public class MCUtils {
 	/**
 	 * Returns a "synced" random. It's not really synced, it uses level game time, which is usually synced
 	 */
-	/*public static RandomSource syncedRandom(Player player) {
+	public static RandomSource syncedRandom(Player player) {
 		RandomSource random = player.getRandom();
 		if (player.level().isClientSide)
 			random.setSeed(player.level().getGameTime() + 1);
@@ -308,5 +314,5 @@ public class MCUtils {
 		random.setSeed(random.nextLong());
 		random.setSeed(random.nextLong());
 		return random;
-	}*/
+	}
 }
