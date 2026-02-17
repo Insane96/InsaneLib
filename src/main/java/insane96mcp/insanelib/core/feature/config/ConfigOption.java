@@ -63,11 +63,11 @@ public abstract class ConfigOption<T> {
         }
     }
 
-    public static class DoubleOption extends ConfigOption<Double> {
+    public static class DoubleCOption extends ConfigOption<Double> {
 
         public final ModConfigSpec.DoubleValue valueConfig;
 
-        public DoubleOption(ModConfigSpec.Builder builder, String name, String description, double defaultValue, double min, double max) {
+        public DoubleCOption(ModConfigSpec.Builder builder, String name, String description, double defaultValue, double min, double max) {
             super(builder, name, description);
             valueConfig = builder.defineInRange(name, defaultValue, min, max);
         }
@@ -88,11 +88,11 @@ public abstract class ConfigOption<T> {
         }
     }
 
-    public static class IntOption extends ConfigOption<Integer> {
+    public static class IntCOption extends ConfigOption<Integer> {
 
         public final ModConfigSpec.IntValue valueConfig;
 
-        public IntOption(ModConfigSpec.Builder builder, String name, String description, int defaultValue, int min, int max) {
+        public IntCOption(ModConfigSpec.Builder builder, String name, String description, int defaultValue, int min, int max) {
             super(builder, name, description);
             valueConfig = builder.defineInRange(name, defaultValue, min, max);
         }
@@ -113,11 +113,11 @@ public abstract class ConfigOption<T> {
         }
     }
 
-    public static class BoolOption extends ConfigOption<Boolean> {
+    public static class BoolCOption extends ConfigOption<Boolean> {
 
         public final ModConfigSpec.BooleanValue valueConfig;
 
-        public BoolOption(ModConfigSpec.Builder builder, String name, String description, boolean defaultValue) {
+        public BoolCOption(ModConfigSpec.Builder builder, String name, String description, boolean defaultValue) {
             super(builder, name, description);
             valueConfig = builder.define(name, defaultValue);
         }
@@ -138,11 +138,11 @@ public abstract class ConfigOption<T> {
         }
     }
 
-    public static class StringOption extends ConfigOption<String> {
+    public static class StringCOption extends ConfigOption<String> {
 
         public final ModConfigSpec.ConfigValue<String> valueConfig;
 
-        public StringOption(ModConfigSpec.Builder builder, String name, String description, String defaultValue) {
+        public StringCOption(ModConfigSpec.Builder builder, String name, String description, String defaultValue) {
             super(builder, name, description);
             valueConfig = builder.define(this.name, defaultValue);
         }
@@ -163,11 +163,11 @@ public abstract class ConfigOption<T> {
         }
     }
 
-    public static class StringListOption extends ConfigOption<List<? extends String>> {
+    public static class StringListCOption extends ConfigOption<List<? extends String>> {
 
         public final ModConfigSpec.ConfigValue<List<? extends String>> valueConfig;
 
-        public StringListOption(ModConfigSpec.Builder builder, String name, String description, List<String> defaultValue) {
+        public StringListCOption(ModConfigSpec.Builder builder, String name, String description, List<String> defaultValue) {
             super(builder, name, description);
             valueConfig = builder.defineList(this.name, defaultValue, o -> o instanceof String);
         }
@@ -188,11 +188,11 @@ public abstract class ConfigOption<T> {
         }
     }
 
-    public static class EnumOption<T extends Enum<T>> extends ConfigOption<T> {
+    public static class EnumCOption<T extends Enum<T>> extends ConfigOption<T> {
 
         public final ModConfigSpec.ConfigValue<T> valueConfig;
 
-        public EnumOption(ModConfigSpec.Builder builder, String name, String description, T defaultValue) {
+        public EnumCOption(ModConfigSpec.Builder builder, String name, String description, T defaultValue) {
             super(builder, name, description);
             valueConfig = builder.defineEnum(name, defaultValue);
         }

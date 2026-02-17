@@ -7,15 +7,15 @@ import net.neoforged.neoforge.common.ModConfigSpec;
 import javax.annotation.Nullable;
 import java.util.List;
 
-public class MinMax {
+public class MinMaxConfig {
     public double min, max;
 
-    public MinMax(double min, double max) {
+    public MinMaxConfig(double min, double max) {
         this.min = min;
         this.max = max;
     }
 
-    public MinMax(double value) {
+    public MinMaxConfig(double value) {
         this.min = value;
         this.max = value;
     }
@@ -34,12 +34,12 @@ public class MinMax {
         return Mth.nextInt(random, (int) this.min, (int) this.max);
     }
 
-    public static class Config extends ConfigOption<MinMax> {
+    public static class COption extends ConfigOption<MinMaxConfig> {
 
         private final ModConfigSpec.DoubleValue minConfig;
         private final ModConfigSpec.DoubleValue maxConfig;
 
-        public Config(ModConfigSpec.Builder builder, String name, String description, MinMax defaultValue, double rangeMin, double rangeMax) {
+        public COption(ModConfigSpec.Builder builder, String name, String description, MinMaxConfig defaultValue, double rangeMin, double rangeMax) {
             super(builder, name, description);
             List<String> split = ConfigUtils.split(name);
             builder.push(split);
@@ -49,15 +49,15 @@ public class MinMax {
         }
 
         @Override
-        public MinMax get() {
-            return new MinMax(minConfig.get(), maxConfig.get());
+        public MinMaxConfig get() {
+            return new MinMaxConfig(minConfig.get(), maxConfig.get());
         }
 
         @Override
         public void set(Object value) {
-            MinMax minMax = (MinMax) value;
-            this.minConfig.set(minMax.min);
-            this.maxConfig.set(minMax.max);
+            MinMaxConfig minMaxConfig = (MinMaxConfig) value;
+            this.minConfig.set(minMaxConfig.min);
+            this.maxConfig.set(minMaxConfig.max);
         }
 
         @Nullable

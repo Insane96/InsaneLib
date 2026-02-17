@@ -4,8 +4,6 @@ import insane96mcp.insanelib.core.ModNBTData;
 import insane96mcp.insanelib.core.feature.Feature;
 import insane96mcp.insanelib.core.feature.LoadFeature;
 import insane96mcp.insanelib.core.feature.Module;
-import insane96mcp.insanelib.core.feature.config.Config;
-import insane96mcp.insanelib.core.feature.config.DifficultyBasedValue;
 import insane96mcp.insanelib.mixin.accessor.ExplosionAccessor;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
@@ -27,9 +25,6 @@ public class TagsFeature extends Feature {
 	public static ResourceLocation EXPERIENCE_MULTIPLIER;
 	public static ResourceLocation SKY_LIGHT;
 	public static ResourceLocation BLOCK_LIGHT;
-
-	@Config
-	public static DifficultyBasedValue difficultyBasedValue = new DifficultyBasedValue(1, 2, 3);
 
 	@Override
 	public void init(Module module, boolean enabledByDefault, boolean canBeDisabled) {

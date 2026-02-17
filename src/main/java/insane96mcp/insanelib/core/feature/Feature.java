@@ -3,8 +3,8 @@ package insane96mcp.insanelib.core.feature;
 import insane96mcp.insanelib.InsaneLib;
 import insane96mcp.insanelib.core.feature.config.Config;
 import insane96mcp.insanelib.core.feature.config.ConfigOption;
-import insane96mcp.insanelib.core.feature.config.DifficultyBasedValue;
-import insane96mcp.insanelib.core.feature.config.MinMax;
+import insane96mcp.insanelib.core.feature.config.DifficultyBasedConfig;
+import insane96mcp.insanelib.core.feature.config.MinMaxConfig;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.event.config.ModConfigEvent;
@@ -33,23 +33,23 @@ public class Feature {
 
     static {
         registerConfigType(Double.class, (builder, name, annotation, defaultValue) ->
-                new ConfigOption.DoubleOption(builder, name, annotation.description(), (double) defaultValue, annotation.min(), annotation.max()));
+                new ConfigOption.DoubleCOption(builder, name, annotation.description(), (double) defaultValue, annotation.min(), annotation.max()));
         registerConfigType(Integer.class, (builder, name, annotation, defaultValue) -> {
             double min = annotation.min() == -Double.MAX_VALUE ? Integer.MIN_VALUE : annotation.min();
             double max = annotation.max() == Double.MAX_VALUE ? Integer.MAX_VALUE : annotation.max();
-            return new ConfigOption.IntOption(builder, name, annotation.description(), (int) defaultValue, (int) min, (int) max);
+            return new ConfigOption.IntCOption(builder, name, annotation.description(), (int) defaultValue, (int) min, (int) max);
         });
         registerConfigType(Boolean.class, (builder, name, annotation, defaultValue) ->
-                new ConfigOption.BoolOption(builder, name, annotation.description(), (boolean) defaultValue));
+                new ConfigOption.BoolCOption(builder, name, annotation.description(), (boolean) defaultValue));
         registerConfigType(String.class, (builder, name, annotation, defaultValue) ->
-                new ConfigOption.StringOption(builder, name, annotation.description(), (String) defaultValue));
+                new ConfigOption.StringCOption(builder, name, annotation.description(), (String) defaultValue));
         //noinspection unchecked
         registerConfigType(List.class, (builder, name, annotation, defaultValue) ->
-                new ConfigOption.StringListOption(builder, name, annotation.description(), (List<String>) defaultValue));
-        registerConfigType(MinMax.class, (builder, name, annotation, defaultValue) ->
-                new MinMax.Config(builder, name, annotation.description(), (MinMax) defaultValue, annotation.min(), annotation.max()));
-        registerConfigType(DifficultyBasedValue.class, (builder, name, annotation, defaultValue) ->
-                new DifficultyBasedValue.Config(builder, name, annotation.description(), (DifficultyBasedValue) defaultValue, annotation.min(), annotation.max()));
+                new ConfigOption.StringListCOption(builder, name, annotation.description(), (List<String>) defaultValue));
+        registerConfigType(MinMaxConfig.class, (builder, name, annotation, defaultValue) ->
+                new MinMaxConfig.COption(builder, name, annotation.description(), (MinMaxConfig) defaultValue, annotation.min(), annotation.max()));
+        registerConfigType(DifficultyBasedConfig.class, (builder, name, annotation, defaultValue) ->
+                new DifficultyBasedConfig.COption(builder, name, annotation.description(), (DifficultyBasedConfig) defaultValue, annotation.min(), annotation.max()));
     }
 
     public static void registerConfigType(Class<?> type, ConfigOption.ConfigOptionFactory factory) {
@@ -162,7 +162,7 @@ public class Feature {
         if (type.isEnum()) {
             //noinspection unchecked,rawtypes
             return (builder, name, annotation, defaultValue) ->
-                    new ConfigOption.EnumOption(builder, name, annotation.description(), (Enum) defaultValue);
+                    new ConfigOption.EnumCOption(builder, name, annotation.description(), (Enum) defaultValue);
         }
 
         return null;
