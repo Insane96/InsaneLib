@@ -1,4 +1,4 @@
-package insane96mcp.insanelib.core;
+package insane96mcp.insanelib.core.feature;
 
 import insane96mcp.insanelib.InsaneLib;
 import net.minecraft.resources.ResourceLocation;

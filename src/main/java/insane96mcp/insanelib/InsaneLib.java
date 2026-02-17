@@ -1,6 +1,7 @@
 package insane96mcp.insanelib;
 
 import com.mojang.logging.LogUtils;
+import insane96mcp.insanelib.setup.ILConfig;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;

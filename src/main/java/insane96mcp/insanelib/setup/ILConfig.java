@@ -1,6 +1,7 @@
-package insane96mcp.insanelib;
+package insane96mcp.insanelib.setup;
 
-import insane96mcp.insanelib.core.Module;
+import insane96mcp.insanelib.InsaneLib;
+import insane96mcp.insanelib.core.feature.Module;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.neoforge.common.ModConfigSpec;
 import org.apache.commons.lang3.tuple.Pair;

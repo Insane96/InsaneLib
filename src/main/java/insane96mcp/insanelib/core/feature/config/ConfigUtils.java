@@ -1,4 +1,4 @@
-package insane96mcp.insanelib.core.config;
+package insane96mcp.insanelib.core.feature.config;
 
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;

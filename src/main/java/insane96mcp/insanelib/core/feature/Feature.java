@@ -1,10 +1,10 @@
-package insane96mcp.insanelib.core;
+package insane96mcp.insanelib.core.feature;
 
 import insane96mcp.insanelib.InsaneLib;
-import insane96mcp.insanelib.core.config.Config;
-import insane96mcp.insanelib.core.config.ConfigOption;
-import insane96mcp.insanelib.core.config.Difficulty;
-import insane96mcp.insanelib.core.config.MinMax;
+import insane96mcp.insanelib.core.feature.config.Config;
+import insane96mcp.insanelib.core.feature.config.ConfigOption;
+import insane96mcp.insanelib.core.feature.config.Difficulty;
+import insane96mcp.insanelib.core.feature.config.MinMax;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.event.config.ModConfigEvent;

@@ -1,0 +1,310 @@
+package insane96mcp.insanelib.util;
+
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.entity.player.Player;
+
+public class MCUtils {
+	/**
+	 * Returns the current speed of the player compared to his normal speed
+	 */
+	/*public static double getMovementSpeedRatio(LivingEntity livingEntity) {
+		double baseMS = 0.1d;
+		if (livingEntity.isSprinting()) {
+			baseMS += 0.029999999329447746;
+		}
+
+		double entityMS = livingEntity.getAttributeValue(Attributes.MOVEMENT_SPEED);
+		return entityMS / baseMS;
+	}*/
+
+	/**
+	 * Different version of ItemStack#addAttributeModifiers that doesn't override the item's base modifiers
+	 */
+	/*public static void addAttributeModifierToItemStack(ItemStack itemStack, Attribute attribute, AttributeModifier modifier, EquipmentSlot modifierSlot) {
+		if (itemStack.hasTag() && !itemStack.getTag().contains("AttributeModifiers", 9)) {
+			for (Map.Entry<Attribute, AttributeModifier> entry : itemStack.getAttributeModifiers(modifierSlot).entries()) {
+				itemStack.addAttributeModifier(entry.getKey(), entry.getValue(), modifierSlot);
+			}
+		}
+		itemStack.addAttributeModifier(attribute, modifier, modifierSlot);
+	}*/
+
+	/**
+	 * Applies a modifier to the Living Entity. If the attribute is max_health also sets entity's health to his max health
+	 * @return true if the modifier was applied
+	 */
+	/*public static boolean applyModifier(LivingEntity entity, Attribute attribute, UUID uuid, String name, double amount, AttributeModifier.Operation operation, boolean permanent) {
+		return applyModifier(entity, attribute, new AttributeModifier(uuid, name, amount, operation), permanent);
+	}*/
+
+	/**
+	 * Applies a permanent modifier to the Living Entity. If the attribute is max_health also heals the entity to the new bonus health (if any)
+	 * @return true if the modifier was applied
+	 */
+	/*public static boolean applyModifier(LivingEntity entity, Attribute attribute, UUID uuid, String name, double amount, AttributeModifier.Operation operation) {
+		return applyModifier(entity, attribute, new AttributeModifier(uuid, name, amount, operation), true);
+	}*/
+
+	/**
+	 * Applies a modifier to the Living Entity. If the attribute is max_health also heals the entity to the new bonus health (if any)
+	 * @return true if the modifier was applied
+	 */
+	/*public static boolean applyModifier(LivingEntity entity, Attribute attribute, AttributeModifier modifier, boolean permanent) {
+		AttributeInstance attributeInstance = entity.getAttribute(attribute);
+		if (attributeInstance != null) {
+			if (attributeInstance.hasModifier(modifier))
+				return false;
+            float oldMaxHealth = entity.getMaxHealth();
+			if (permanent)
+				attributeInstance.addPermanentModifier(modifier);
+			else
+				attributeInstance.addTransientModifier(modifier);
+
+			if (attribute == Attributes.MAX_HEALTH) {
+                float newMaxHealth = entity.getMaxHealth();
+                if (newMaxHealth > oldMaxHealth)
+                    entity.heal(newMaxHealth - oldMaxHealth);
+            }
+			return true;
+		}
+		return false;
+	}*/
+
+    /**
+     * Removes a modifier from the Living Entity if the entity has the attribute
+     */
+    /*public static void removeModifier(LivingEntity entity, Attribute attribute, UUID uuid) {
+        AttributeInstance attributeInstance = entity.getAttribute(attribute);
+        if (attributeInstance != null)
+            attributeInstance.removeModifier(uuid);
+    }*/
+
+	/**
+	 * Sets the value of an attribute
+	 * @return true if the override was successful
+	 */
+	/*public static boolean setAttributeValue(LivingEntity entity, Attribute attribute, double value) {
+		AttributeInstance attributeInstance = entity.getAttribute(attribute);
+		if (attributeInstance != null) {
+			attributeInstance.setBaseValue(value);
+
+			if (attribute == Attributes.MAX_HEALTH)
+				entity.setHealth(entity.getMaxHealth());
+
+			return true;
+		}
+		return false;
+	}*/
+
+/*	public static boolean hurtIgnoreInvuln(LivingEntity hurtEntity, DamageSource source, float amount) {
+		int hurtResistantTime = hurtEntity.invulnerableTime;
+		hurtEntity.invulnerableTime = 0;
+		boolean attacked = hurtEntity.hurt(source, amount);
+		hurtEntity.invulnerableTime = hurtResistantTime;
+		return attacked;
+	}*/
+
+	/**
+	 * Checks if nbt1 tags are all present in and match nbt2
+	 */
+	/*public static boolean compareNBT(CompoundTag nbt1, CompoundTag nbt2) {
+		for (String key : nbt1.getAllKeys()) {
+			if (!nbt2.contains(key))
+				return false;
+
+			if (nbt1.get(key) instanceof CompoundTag && nbt2.get(key) instanceof CompoundTag) {
+				if (!compareNBT(nbt1.getCompound(key), nbt2.getCompound(key)))
+					return false;
+			}
+			else if (!nbt1.get(key).equals(nbt2.get(key)))
+				return false;
+		}
+		return true;
+	}*/
+
+/*	public static boolean isAdvancementDone(ServerPlayer player, ResourceLocation advancementRL) {
+		Advancement advancement = player.server.getAdvancements().getAdvancement(advancementRL);
+		if (advancement == null)
+			return false;
+
+		return player.getAdvancements().getOrStartProgress(advancement).isDone();
+	}*/
+
+	/**
+	 * Copy-paste of PotionUtils.setCustomEffects but setting the potion color too
+	 */
+	/*public static ItemStack setCustomEffects(ItemStack itemStack, Collection<MobEffectInstance> mobEffectInstances) {
+		if (!mobEffectInstances.isEmpty()) {
+			CompoundTag compoundtag = itemStack.getOrCreateTag();
+			ListTag listtag = compoundtag.getList("CustomPotionEffects", 9);
+
+			for (MobEffectInstance mobeffectinstance : mobEffectInstances) {
+				listtag.add(mobeffectinstance.save(new CompoundTag()));
+			}
+			compoundtag.putInt(PotionUtils.TAG_CUSTOM_POTION_COLOR, PotionUtils.getColor(mobEffectInstances));
+
+			compoundtag.put("CustomPotionEffects", listtag);
+
+			//itemStack.setHoverName(new TranslatableComponent("unknown_potion"));
+		}
+		return itemStack;
+	}*/
+
+	/**
+	 * Returns true if the entity has a HARMFUL effect
+	 */
+	/*public static boolean hasNegativeEffect(LivingEntity entity) {
+		for (MobEffectInstance mobEffectInstance : entity.getActiveEffects()) {
+			if (entity.hasEffect(mobEffectInstance.getEffect()) && mobEffectInstance.getEffect().getCategory().equals(MobEffectCategory.HARMFUL))
+				return true;
+		}
+		return false;
+	}*/
+
+	/**
+	 * Same as hasNegativeEffect but also checks if the duration of the effect is higher than 7.5 seconds
+	 */
+	/*public static boolean hasLongNegativeEffect(LivingEntity entity) {
+		for (MobEffectInstance mobEffectInstance : entity.getActiveEffects()) {
+			if (entity.hasEffect(mobEffectInstance.getEffect()) && mobEffectInstance.getEffect().getCategory().equals(MobEffectCategory.HARMFUL) && mobEffectInstance.getDuration() > 150)
+				return true;
+		}
+		return false;
+	}
+*/
+	/**
+	 * Returns a spawnable Y spot for the entity at the given x, y, z. Returns level.getMinBuildHeight() - 1 when no spawn spots are found, otherwise the Y coord
+	 */
+	/*public static int getFittingY(EntityType<?> entityType, BlockPos pos, Level level, int minRelativeY) {
+		int height = (int) Math.ceil(entityType.getHeight());
+		int fittingYPos = level.getMinBuildHeight() - 1;
+		for (int y = pos.getY(); y > pos.getY() - minRelativeY; y--) {
+			boolean viable = true;
+			BlockPos p = new BlockPos(pos.getX(), y, pos.getZ());
+			for (int i = 0; i < height; i++) {
+				if (level.getBlockState(p.above(i)).blocksMotion()) {
+					viable = false;
+					break;
+				}
+			}
+			if (!viable)
+				continue;
+			fittingYPos = y;
+			if (!level.getBlockState(p.below()).blocksMotion())
+				continue;
+			return y;
+		}
+		return fittingYPos;
+	}*/
+
+/*	public static int getEnchantmentLevel(ResourceLocation enchantmentId, ItemStack stack) {
+		if (stack.isEmpty())
+			return 0;
+		ListTag listTag = stack.getEnchantmentTags();
+		for (int i = 0; i < listTag.size(); ++i) {
+			CompoundTag compoundTag = listTag.getCompound(i);
+			ResourceLocation itemEnchantment = ResourceLocation.tryParse(compoundTag.getString("id"));
+			if (itemEnchantment != null && itemEnchantment.equals(enchantmentId)) {
+				return Mth.clamp(compoundTag.getInt("lvl"), 0, 255);
+			}
+		}
+		return 0;
+	}*/
+
+	/**
+	 * Creates a MobEffectInstance with the possibility to prevent it from begin cured
+	 */
+	/*public static MobEffectInstance createEffectInstance(MobEffect potion, int duration, int amplifier, boolean ambient, boolean showParticles, boolean showIcon, boolean canBeCured) {
+		MobEffectInstance effectInstance = new MobEffectInstance(potion, duration, amplifier, ambient, showParticles, showIcon);
+		if (!canBeCured)
+			effectInstance.setCurativeItems(new ArrayList<>());
+		return effectInstance;
+	}*/
+
+/*	public static ArrayList<MobEffectInstance> parseMobEffectsList(List<? extends String> list) {
+		ArrayList<MobEffectInstance> mobEffectInstances = new ArrayList<>();
+		for (String s : list) {
+			MobEffectInstance mobEffectInstance = parseEffectInstance(s);
+			if (mobEffectInstance != null)
+				mobEffectInstances.add(mobEffectInstance);
+		}
+		return mobEffectInstances;
+	}*/
+
+	/**
+	 * Parses a string with the following format effect_id,duration,amplifier
+	 */
+	/*@Nullable
+	public static MobEffectInstance parseEffectInstance(String s) {
+		String[] split = s.split(",");
+		if (split.length != 3) {
+			InsaneLib.LOGGER.warn("Invalid Mob Effect \"{}\"", s);
+			return null;
+		}
+
+		ResourceLocation effectRL = ResourceLocation.tryParse(split[0]);
+		if (effectRL == null) {
+			InsaneLib.LOGGER.warn("{} mob effect is not valid", split[0]);
+			return null;
+		}
+		if (!BuiltInRegistries.MOB_EFFECT.containsKey(effectRL)) {
+			InsaneLib.LOGGER.warn("{} mob effect seems to not exist", split[0]);
+			return null;
+		}
+		MobEffect effect = BuiltInRegistries.MOB_EFFECT.get(effectRL);
+
+		//Duration
+		if (!NumberUtils.isParsable(split[1])) {
+			InsaneLib.LOGGER.warn("Invalid duration \"{}\" for Mob Effect", s);
+			return null;
+		}
+		int duration = Integer.parseInt(split[1]);
+
+		//Amplifier
+		if (!NumberUtils.isParsable(split[2])) {
+			InsaneLib.LOGGER.warn("Invalid amplifier \"{}\" for Mob Effect", s);
+			return null;
+		}
+		int amplifier = Integer.parseInt(split[2]);
+
+		//noinspection ConstantConditions
+		return new MobEffectInstance(Holder.direct(effect), duration, amplifier);
+	}*/
+
+	/**
+	 * Returns the Tag in the player persistent data that is kept on death / dimension change
+	 */
+	public static CompoundTag getOrCreatePersistedData(Player player) {
+		CompoundTag tag;
+		if (!player.getPersistentData().contains(Player.PERSISTED_NBT_TAG)) {
+			tag = new CompoundTag();
+			player.getPersistentData().put(Player.PERSISTED_NBT_TAG, tag);
+		}
+		else {
+			tag = player.getPersistentData().getCompound(Player.PERSISTED_NBT_TAG);
+		}
+		return tag;
+	}
+
+	/*public static float getFoodEffectiveness(FoodProperties foodProperties) {
+		return foodProperties.getNutrition() + getFoodSaturationRestored(foodProperties);
+	}
+
+	public static float getFoodSaturationRestored(FoodProperties foodProperties) {
+		return foodProperties.getNutrition() * foodProperties.getSaturationModifier() * 2;
+	}*/
+
+	/**
+	 * Returns a "synced" random. It's not really synced, it uses level game time, which is usually synced
+	 */
+	/*public static RandomSource syncedRandom(Player player) {
+		RandomSource random = player.getRandom();
+		if (player.level().isClientSide)
+			random.setSeed(player.level().getGameTime() + 1);
+		else
+			random.setSeed(player.level().getGameTime());
+		random.setSeed(random.nextLong());
+		random.setSeed(random.nextLong());
+		return random;
+	}*/
+}

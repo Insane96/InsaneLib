@@ -1,4 +1,4 @@
-package insane96mcp.insanelib.core.config;
+package insane96mcp.insanelib.core.feature.config;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
