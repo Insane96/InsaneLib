@@ -1,13 +1,15 @@
 package insane96mcp.insanelib.util;
 
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 
 public class MCUtils {
 	/**
 	 * Returns the current speed of the player compared to his normal speed
 	 */
-	/*public static double getMovementSpeedRatio(LivingEntity livingEntity) {
+	public static double getMovementSpeedRatio(LivingEntity livingEntity) {
 		double baseMS = 0.1d;
 		if (livingEntity.isSprinting()) {
 			baseMS += 0.029999999329447746;
@@ -15,7 +17,7 @@ public class MCUtils {
 
 		double entityMS = livingEntity.getAttributeValue(Attributes.MOVEMENT_SPEED);
 		return entityMS / baseMS;
-	}*/
+	}
 
 	/**
 	 * Different version of ItemStack#addAttributeModifiers that doesn't override the item's base modifiers

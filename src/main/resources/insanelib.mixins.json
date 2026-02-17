@@ -3,6 +3,9 @@
     "package": "insane96mcp.insanelib.mixin",
     "compatibilityLevel": "JAVA_21",
     "mixins": [
+        "LivingEntityMixin",
+        "NearestAttackableTargetGoalMixin",
+        "PlayerMixin",
         "accessor.ExplosionAccessor"
     ],
     "injectors": {

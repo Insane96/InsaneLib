@@ -25,7 +25,7 @@ The `IdTagMatcher` system must be replaced by the new generic, type-safe `ObjTag
 - [ ] **`JsonFeature(Module, boolean, boolean)` constructor** — same as above, remove.
 
 #### `Feature.java` improvements
-- [ ] **`loadConfigOptions()` reflection**: The large if/else chain for field types (Double, Integer, List, Enum, MinMax, Difficulty, Blacklist, IdTagMatcher) is fragile and hard to extend. Consider using a registry of type handlers or a `Map<Class<?>, ConfigOptionFactory>` to make it extensible without modifying the method.
+- [x] **`loadConfigOptions()` reflection**: The large if/else chain for field types (Double, Integer, List, Enum, MinMax, Difficulty, Blacklist, IdTagMatcher) is fragile and hard to extend. Consider using a registry of type handlers or a `Map<Class<?>, ConfigOptionFactory>` to make it extensible without modifying the method.
 - [x] **`LogHelper` → `InsaneLib.LOGGER`**
 - [x] **`fieldNameToConfigOption()`**: Works fine, no changes needed.
 
@@ -92,8 +92,8 @@ The `IdTagMatcher` system must be replaced by the new generic, type-safe `ObjTag
 ## 5. Modules / Features
 
 - [ ] `Modules.java` — Initializes the `"insanelib:base"` module
-- [ ] `FixesFeature.java` — Follow range fix, zombie bonus health, jump movement factor
-- [ ] `TagsFeature.java` — Entity metadata (spawn type, explosion fire, XP multiplier, light)
+- [x] `FixesFeature.java` — Follow range fix, zombie bonus health, jump movement factor
+- [x] `TagsFeature.java` — Entity metadata (spawn type, explosion fire, XP multiplier, light)
 - [ ] `TimeStopNoPlayerOnline.java` — Stops time when no players online
 - [ ] `BetterFallingBlocks.java` — Smarter falling block behavior
 - [ ] `BetterFallingBlockExtensor.java` — Interface for falling block source tracking
