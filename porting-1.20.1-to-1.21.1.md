@@ -91,10 +91,10 @@ The `IdTagMatcher` system must be replaced by the new generic, type-safe `ObjTag
 
 ## 5. Modules / Features
 
-- [ ] `Modules.java` — Initializes the `"insanelib:base"` module
+- [x] `Modules.java` — Initializes the `"insanelib:base"` module
 - [x] `FixesFeature.java` — Follow range fix, zombie bonus health, jump movement factor
 - [x] `TagsFeature.java` — Entity metadata (spawn type, explosion fire, XP multiplier, light)
-- [ ] `TimeStopNoPlayerOnline.java` — Stops time when no players online
+- [x] `TimeStopNoPlayerOnline.java` — Stops time when no players online
 - [ ] `BetterFallingBlocks.java` — Smarter falling block behavior
 - [ ] `BetterFallingBlockExtensor.java` — Interface for falling block source tracking
 
@@ -160,8 +160,8 @@ The `IdTagMatcher` system must be replaced by the new generic, type-safe `ObjTag
 ## 12. World
 
 - [x] `ILMobEffect.java` — MobEffect with cure prevention
-- [ ] `ScheduledTasks.java` — Server tick task scheduler
-- [ ] `ScheduledTickTask.java` — Abstract delayed task
+- [x] `ScheduledTasks.java` — Server tick task scheduler
+- [x] `ScheduledTickTask.java` — Abstract delayed task
 
 ---
 
@@ -174,7 +174,7 @@ The `IdTagMatcher` system must be replaced by the new generic, type-safe `ObjTag
 - [ ] `TagUtils.java` — Tag checking utilities
 - [ ] `ClientUtils.java` — Client rendering helpers
 - [ ] `FileUtils.java` — Recursive file listing
-- [ ] `IntegratedPack.java` — Built-in datapack system
+- [x] `IntegratedPack.java` — Built-in datapack system
 - [ ] `Utils.java` — Enum search, decimal formatting
 - [ ] `ILGsonHelper.java` — Nullable JSON field helpers
 - [ ] `Validator.java` — Abstract JSON validator

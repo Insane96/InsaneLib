@@ -6,7 +6,8 @@
         "LivingEntityMixin",
         "NearestAttackableTargetGoalMixin",
         "PlayerMixin",
-        "accessor.ExplosionAccessor"
+        "accessor.ExplosionAccessor",
+        "accessor.ServerLevelAccessor"
     ],
     "injectors": {
         "defaultRequire": 1

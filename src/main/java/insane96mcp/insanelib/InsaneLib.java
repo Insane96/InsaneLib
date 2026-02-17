@@ -2,6 +2,7 @@ package insane96mcp.insanelib;
 
 import com.mojang.logging.LogUtils;
 import insane96mcp.insanelib.setup.ILConfig;
+import insane96mcp.insanelib.util.IntegratedPack;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
@@ -17,6 +18,7 @@ public class InsaneLib {
     public InsaneLib(IEventBus modEventBus, ModContainer modContainer) {
         ILConfig.init(modEventBus);
         modContainer.registerConfig(ModConfig.Type.COMMON, ILConfig.COMMON_SPEC, MOD_ID + ".toml");
+        modEventBus.addListener(IntegratedPack::onAddPackFinders);
     }
 
     /**
