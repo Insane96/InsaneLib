@@ -9,8 +9,8 @@ import net.neoforged.fml.config.ModConfig;
 public class Modules {
     static Module BaseModule;
 
-    public static void init(IEventBus eventBus) {
-        BaseModule = Module.Builder.create(InsaneLib.MOD_ID, "base", "Base", ModConfig.Type.COMMON, ILConfig.builder, eventBus)
+    public static void init(IEventBus modEventBus) {
+        BaseModule = Module.Builder.create(InsaneLib.MOD_ID, "base", "Base", ModConfig.Type.COMMON, ILConfig.builder, modEventBus)
                 .canBeDisabled(false)
                 .build();
     }

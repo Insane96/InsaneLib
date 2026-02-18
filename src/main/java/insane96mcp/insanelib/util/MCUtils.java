@@ -1,9 +1,11 @@
 package insane96mcp.insanelib.util;
 
 import net.minecraft.core.Holder;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
@@ -11,6 +13,8 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.food.FoodProperties;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.ItemAttributeModifiers;
 
 public class MCUtils {
 	/**
@@ -94,16 +98,15 @@ public class MCUtils {
 	}
 
 	/**
-	 * Different version of ItemStack#addAttributeModifiers that doesn't override the item's base modifiers
+	 * Adds the attribute modifier to the stack, but also adds the default attribute modifiers from the item
 	 */
-	/*public static void addAttributeModifierToItemStack(ItemStack itemStack, Attribute attribute, AttributeModifier modifier, EquipmentSlot modifierSlot) {
-		if (itemStack.hasTag() && !itemStack.getTag().contains("AttributeModifiers", 9)) {
-			for (Map.Entry<Attribute, AttributeModifier> entry : itemStack.getAttributeModifiers(modifierSlot).entries()) {
-				itemStack.addAttributeModifier(entry.getKey(), entry.getValue(), modifierSlot);
-			}
-		}
-		itemStack.addAttributeModifier(attribute, modifier, modifierSlot);
-	}*/
+	public static void addAttributeModifierToItemStack(ItemStack itemStack, Holder<Attribute> attribute, AttributeModifier modifier, EquipmentSlotGroup equipmentSlotGroup) {
+		ItemAttributeModifiers modifiers = itemStack.getOrDefault(DataComponents.ATTRIBUTE_MODIFIERS, ItemAttributeModifiers.EMPTY);
+		if (modifiers.modifiers().isEmpty())
+			modifiers = itemStack.getItem().getDefaultAttributeModifiers(itemStack);
+		modifiers.modifiers().add(new ItemAttributeModifiers.Entry(attribute, modifier, equipmentSlotGroup));
+		itemStack.set(DataComponents.ATTRIBUTE_MODIFIERS, modifiers);
+	}
 
 /*	public static boolean hurtIgnoreInvuln(LivingEntity hurtEntity, DamageSource source, float amount) {
 		int hurtResistantTime = hurtEntity.invulnerableTime;
