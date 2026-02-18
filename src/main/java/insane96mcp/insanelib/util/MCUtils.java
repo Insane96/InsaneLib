@@ -1,9 +1,11 @@
 package insane96mcp.insanelib.util;
 
+import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.entity.LivingEntity;
@@ -134,13 +136,16 @@ public class MCUtils {
 		return true;
 	}*/
 
-	/*public static boolean isAdvancementDone(ServerPlayer player, ResourceLocation advancementRL) {
-		Advancement advancement = player.server.getAdvancements().getAdvancement(advancementRL);
+	/**
+	 * Returns true if the player has completed the advancement
+	 */
+	public static boolean isAdvancementDone(ServerPlayer player, ResourceLocation advancementRL) {
+		AdvancementHolder advancement = player.server.getAdvancements().get(advancementRL);
 		if (advancement == null)
 			return false;
 
 		return player.getAdvancements().getOrStartProgress(advancement).isDone();
-	}*/
+	}
 
 	/**
 	 * Copy-paste of PotionUtils.setCustomEffects but setting the potion color too
