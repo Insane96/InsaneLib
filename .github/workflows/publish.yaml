@@ -37,10 +37,11 @@ jobs:                                     #The place where you actually tell the
       - name: Read Changelog
         id: read_changelog
         run: |
+          delimiter="$(openssl rand -hex 8)"
           {
-            echo 'changelog<<CHANGELOG_END'
+            echo "changelog<<${delimiter}"
             cat changelog.md
-            echo CHANGELOG_END
+            echo "${delimiter}"
           } >> "$GITHUB_OUTPUT"
 
       - name: Publish (CurseForge+Modrinth)
