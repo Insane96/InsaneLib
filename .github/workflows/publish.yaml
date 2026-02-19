@@ -38,9 +38,9 @@ jobs:                                     #The place where you actually tell the
         id: read_changelog
         run: |
           {
-            echo 'changelog<<EOF'
+            echo 'changelog<<CHANGELOG_END'
             cat changelog.md
-            echo EOF
+            echo CHANGELOG_END
           } >> "$GITHUB_OUTPUT"
 
       - name: Publish (CurseForge+Modrinth)
