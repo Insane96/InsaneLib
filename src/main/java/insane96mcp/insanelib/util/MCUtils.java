@@ -106,7 +106,7 @@ public class MCUtils {
 		ItemAttributeModifiers modifiers = itemStack.getOrDefault(DataComponents.ATTRIBUTE_MODIFIERS, ItemAttributeModifiers.EMPTY);
 		if (modifiers.modifiers().isEmpty())
 			modifiers = itemStack.getItem().getDefaultAttributeModifiers(itemStack);
-		modifiers.modifiers().add(new ItemAttributeModifiers.Entry(attribute, modifier, equipmentSlotGroup));
+		modifiers.withModifierAdded(attribute, modifier, equipmentSlotGroup);
 		itemStack.set(DataComponents.ATTRIBUTE_MODIFIERS, modifiers);
 	}
 
