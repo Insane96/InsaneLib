@@ -34,6 +34,15 @@ jobs:                                     #The place where you actually tell the
       - name: Build
         run: ./gradlew clean build
 
+      - name: Read Changelog
+        id: read_changelog
+        run: |
+          {
+            echo 'changelog<<EOF'
+            cat changelog.md
+            echo EOF
+          } >> "$GITHUB_OUTPUT"
+
       - name: Publish (CurseForge+Modrinth)
         uses: Kir-Antipov/mc-publish@v3.3
         with:
@@ -46,4 +55,4 @@ jobs:                                     #The place where you actually tell the
           files: |
             build/libs/!(*-@(slim)).jar
 
-          changelog: https://github.com/Insane96/InsaneLib/blob/${{ github.ref_name }}/changelog.md
+          changelog: ${{ steps.read_changelog.outputs.changelog }}
