@@ -41,6 +41,7 @@ jobs:                                     #The place where you actually tell the
           {
             echo "changelog<<${delimiter}"
             cat changelog.md
+            printf '\n'
             echo "${delimiter}"
           } >> "$GITHUB_OUTPUT"
 
