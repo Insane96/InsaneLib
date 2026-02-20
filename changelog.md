@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.0.0.5-alpha
+* Fixed "Fix Air Speed.Sprinting Jump Slowdown" being ignored
+
 ## 2.0.0.4-alpha
 Port to 1.21.1
 

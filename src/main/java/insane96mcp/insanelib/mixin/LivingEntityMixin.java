@@ -1,6 +1,7 @@
 package insane96mcp.insanelib.mixin;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
+import insane96mcp.insanelib.core.feature.Feature;
 import insane96mcp.insanelib.module.base.FixesFeature;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -18,7 +19,7 @@ public abstract class LivingEntityMixin extends Entity {
 
     @ModifyExpressionValue(method = "jumpFromGround", at = @At(value = "CONSTANT", args = "doubleValue=0.2"))
     private double insanelib$changeForwardJumpStrengthWhenSprinting(double original) {
-        if (!((LivingEntity) (Object) this instanceof Player player))
+        if (!((LivingEntity) (Object) this instanceof Player player) || !Feature.isEnabled(FixesFeature.class) || !FixesFeature.fixAirSpeed$sprintingJumpSlowdown)
             return original;
         return FixesFeature.getFlyingSpeed(player, (float) original);
     }
