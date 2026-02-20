@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.0.1.0-alpha
+* Added back MessageCreeperDataSync 
+  * Creeper data is now automatically synced client-side (if the mod is installed on the client).
+
 ## 2.0.0.5-alpha
 * Fixed "Fix Air Speed.Sprinting Jump Slowdown" being ignored
 

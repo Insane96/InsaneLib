@@ -1,6 +1,7 @@
 package insane96mcp.insanelib;
 
 import com.mojang.logging.LogUtils;
+import insane96mcp.insanelib.network.NetworkHandler;
 import insane96mcp.insanelib.setup.ILConfig;
 import insane96mcp.insanelib.util.IntegratedPack;
 import net.minecraft.resources.ResourceLocation;
@@ -19,6 +20,7 @@ public class InsaneLib {
         ILConfig.init(modEventBus);
         modContainer.registerConfig(ModConfig.Type.COMMON, ILConfig.COMMON_SPEC, MOD_ID + ".toml");
         modEventBus.addListener(IntegratedPack::onAddPackFinders);
+        modEventBus.addListener(NetworkHandler::register);
     }
 
     /**

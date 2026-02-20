@@ -3,9 +3,11 @@
     "package": "insane96mcp.insanelib.mixin",
     "compatibilityLevel": "JAVA_21",
     "mixins": [
+        "CreeperMixin",
         "LivingEntityMixin",
         "NearestAttackableTargetGoalMixin",
         "PlayerMixin",
+        "accessor.CreeperAccessor",
         "accessor.ExplosionAccessor",
         "accessor.ServerLevelAccessor"
     ],

@@ -12,8 +12,8 @@ The `IdTagMatcher` system must be replaced by the new generic, type-safe `ObjTag
 - [ ] **`IdTagValue.java`** — needs rework to use `ObjTag<T>` instead of `IdTagMatcher`
 - [ ] **`IdTagRange.java`** — needs rework to use `ObjTag<T>` instead of `IdTagMatcher`
 - [ ] **`TwinIdTagMatcher.java`** — needs rework to use `ObjTag<T>` instead of `IdTagMatcher`
-- [ ] **`Blacklist.java`** — internally uses `IdTagMatcher`, must be migrated to `ObjTag<T>`
-- [ ] **`Feature.java`** — has `IdTagMatcher.Config` option type in `loadConfigOptions()`, must be updated
+- [x] **`Blacklist.java`** — migrated to generic `Blacklist<T>` with single `isBlackOrNotWhiteListed(T)` using `ObjTag<T>`
+- [x] **`Feature.java`** — `ObjTag` and `Blacklist` added as registered config types
 - [ ] **`JsonFeature.java`** — tag resolution helpers (`isItemInTag`, `isBlockInTag`, etc.) can be simplified since `ObjTag.matches()` handles this natively
 
 ### Feature/Module Framework Improvements
@@ -60,7 +60,7 @@ The `IdTagMatcher` system must be replaced by the new generic, type-safe `ObjTag
 
 - [x] `Feature.java` — Base class for all features (moved to `core`)
 - [x] `Module.java` — Module system, groups features (moved to `core`)
-- [ ] `JsonFeature.java` — Extension of Feature for JSON configs (blocked on ObjTag)
+- [ ] `JsonFeature.java` — Extension of Feature for JSON configs (blocked on JsonConfigSyncMessage → blocked on JsonFeature itself, deferred)
 - [x] `LoadFeature.java` — Annotation for auto-loading features (moved to `core`)
 - [x] `ConfigOption.java` — Abstract base for typed config options (moved to `core.config`)
 - [x] ~~`Label.java`~~ — REMOVED (deprecated, not porting)
@@ -70,7 +70,7 @@ The `IdTagMatcher` system must be replaced by the new generic, type-safe `ObjTag
 ## 3. Config Types
 
 - [x] `Config.java` annotation — Annotates static fields for auto config generation (moved to `core.config`)
-- [ ] `Blacklist.java` — IdTagMatcher-based black/whitelist (blocked on ObjTag)
+- [x] `Blacklist.java` — Migrated to generic `Blacklist<T>` with `ObjTag<T>` (moved to `core.config`)
 - [x] `Difficulty.java` — Per-difficulty config option (moved to `core.config`)
 - [x] `MinMax.java` — Min/max range config option (moved to `core.config`)
 - [x] `ConfigUtils.java` — Config path splitting utility (moved to `core.config`)
@@ -80,6 +80,7 @@ The `IdTagMatcher` system must be replaced by the new generic, type-safe `ObjTag
 ## 4. Data Classes
 
 - [ ] `IdTagMatcher.java` — To be replaced by `ObjTag<T>`
+- [x] `ObjTag.java` — NEW, type-safe replacement for `IdTagMatcher`. Supports direct object and tag references for any registry type. Includes `COption<T>`, `Serializer`, `AdapterFactory`, `RegistryMappings`.
 - [ ] `IdTagValue.java` — Needs rework with `ObjTag<T>`
 - [ ] `IdTagRange.java` — Needs rework with `ObjTag<T>`
 - [ ] `TwinIdTagMatcher.java` — Needs rework with `ObjTag<T>`
@@ -92,7 +93,7 @@ The `IdTagMatcher` system must be replaced by the new generic, type-safe `ObjTag
 ## 5. Modules / Features
 
 - [x] `Modules.java` — Initializes the `"insanelib:base"` module
-- [x] `FixesFeature.java` — Follow range fix, zombie bonus health, jump movement factor
+- [x] `FixesFeature.java` — Follow range fix, zombie bonus health, jump movement factor. Added `PlayerEvent.StartTracking` handler for Creeper data sync
 - [x] `TagsFeature.java` — Entity metadata (spawn type, explosion fire, XP multiplier, light)
 - [x] `TimeStopNoPlayerOnline.java` — Stops time when no players online
 - [ ] `BetterFallingBlocks.java` — Smarter falling block behavior
@@ -117,6 +118,7 @@ The `IdTagMatcher` system must be replaced by the new generic, type-safe `ObjTag
 ## 7. Mixins
 
 - [ ] `CakeBlockMixin` — CakeEatEvent injection
+- [x] `CreeperMixin` — NEW, injects into `readAdditionalSaveData` to sync fuse/radius to clients when updated mid-game
 - [ ] `EntityMixin` — FallingBlock spawnAtLocation override
 - [ ] `FallingBlockEntityMixin` — BetterFallingBlocks logic (~400 lines)
 - [ ] `FireBlockMixin` — BlockBurntEvent injection
@@ -126,16 +128,17 @@ The `IdTagMatcher` system must be replaced by the new generic, type-safe `ObjTag
 - [ ] `LocalPlayerMixin` — Sprint + item use speed events (client)
 - [ ] `ServerLevelAccessor` — setTickTime accessor
 - [ ] `IntArrayTagAccessor` — toArray accessor
+- [x] `CreeperAccessor` — NEW, getter/setter for `maxSwell` and `explosionRadius`
 
 ---
 
 ## 8. Network
 
-- [ ] `NetworkHandler.java` — Channel registration (3 messages)
-- [ ] `MessageCreeperDataSync.java` — Creeper fuse/radius sync
-- [ ] `JsonConfigSyncMessage.java` — JSON config sync
-- [ ] `EntityModNBTDataSync.java` — Entity NBT data sync
-- [ ] `ClientNetworkHandler.java` — Client-side message handler
+- [x] `NetworkHandler.java` — Ported to `RegisterPayloadHandlersEvent` + `PayloadRegistrar.optional()`
+- [x] `MessageCreeperDataSync.java` — Ported to `CustomPacketPayload` record, uses `CreeperAccessor` directly instead of NBT roundtrip
+- [ ] `JsonConfigSyncMessage.java` — Deferred (needs `JsonFeature`)
+- [ ] `EntityModNBTDataSync.java` — Deferred (needs design decision on generic StreamCodec)
+- [x] ~~`ClientNetworkHandler.java`~~ — REMOVED, logic inlined in `MessageCreeperDataSync.handle`
 
 ---
 
