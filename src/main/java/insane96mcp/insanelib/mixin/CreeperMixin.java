@@ -16,7 +16,7 @@ public abstract class CreeperMixin {
 
     @Inject(method = "readAdditionalSaveData", at = @At("TAIL"))
     private void onReadAdditionalSaveData(CompoundTag compound, CallbackInfo ci) {
-        if (self().level().isClientSide || !self().isAddedToWorld())
+        if (self().level().isClientSide)
             return;
         MessageCreeperDataSync.syncCreeperToPlayers(self());
     }
