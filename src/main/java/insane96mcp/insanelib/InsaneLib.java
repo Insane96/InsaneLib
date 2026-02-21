@@ -1,26 +1,39 @@
 package insane96mcp.insanelib;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.mojang.logging.LogUtils;
+import insane96mcp.insanelib.data.AttributeModifierOperationSerializer;
+import insane96mcp.insanelib.data.JsonFeatureDataReloadListener;
 import insane96mcp.insanelib.network.NetworkHandler;
 import insane96mcp.insanelib.setup.ILConfig;
 import insane96mcp.insanelib.util.IntegratedPack;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.AddReloadListenerEvent;
 import org.slf4j.Logger;
 
 @Mod(InsaneLib.MOD_ID)
 public class InsaneLib {
     public static final String MOD_ID = "insanelib";
     public static final Logger LOGGER = LogUtils.getLogger();
+    public static final String CONFIG_FOLDER = "config/" + MOD_ID;
 
     public InsaneLib(IEventBus modEventBus, ModContainer modContainer) {
         ILConfig.init(modEventBus);
-        modContainer.registerConfig(ModConfig.Type.COMMON, ILConfig.COMMON_SPEC, MOD_ID + ".toml");
+        modContainer.registerConfig(ModConfig.Type.COMMON, ILConfig.COMMON_SPEC, MOD_ID + "/common.toml");
         modEventBus.addListener(IntegratedPack::onAddPackFinders);
         modEventBus.addListener(NetworkHandler::register);
+        NeoForge.EVENT_BUS.addListener(this::onAddReloadListeners);
+    }
+
+    private void onAddReloadListeners(AddReloadListenerEvent event) {
+        event.addListener(JsonFeatureDataReloadListener.INSTANCE);
     }
 
     /**
@@ -41,5 +54,14 @@ public class InsaneLib {
      */
     public static String lang(String path) {
         return MOD_ID + "." + path;
+    }
+
+    public static Gson createGson() {
+        GsonBuilder gsonBuilder = new GsonBuilder()
+                .setPrettyPrinting()
+                .registerTypeAdapter(AttributeModifier.Operation.class, new AttributeModifierOperationSerializer());
+        //if (ModList.get().isLoaded("sereneseasons"))
+        //    gsonBuilder.registerTypeAdapter(Season.SubSeason.class, new SubSeasonSerializer());
+        return gsonBuilder.create();
     }
 }

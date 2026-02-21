@@ -13,6 +13,16 @@ public class PlayerMixin {
         return FixesFeature.getFlyingSpeed((Player) (Object) this, original);
     }
 
+    /*@ModifyExpressionValue(method = "attack", at = @At(value = "CONSTANT", args = "floatValue=0.2", ordinal = 0))
+    public float iguanatweaksreborn$noDamageWhenSpamming(float value) {
+        return PlayerAttributes.noDamageWhenSpamming() ? 0f : value;
+    }
+
+    @ModifyExpressionValue(method = "attack", at = @At(value = "CONSTANT", args = "floatValue=0.8"))
+    public float iguanatweaksreborn$noDamageWhenSpamming2(float value) {
+        return PlayerAttributes.noDamageWhenSpamming() ? 1f : value;
+    }*/
+
     /*@ModifyVariable(method = "causeFoodExhaustion", argsOnly = true, at = @At("HEAD"))
     private float changeExhaustionAmount(float amount) {
         return ILEventFactory.onPlayerExhaustionEvent((Player) (Object) this, amount);

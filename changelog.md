@@ -1,4 +1,8 @@
-# Changelog
+## 2.0.2.0-alpha
+* Added Player Attributes feature
+  * Directly from Insane's Survival Overhaul, change players attributes with a json in the config folder.
+  * By default, it will slightly reduce movement speed and block reach
+* Added back JsonFeature (needed for Player Attributes)
 
 ## 2.0.1.0-alpha
 * Added back MessageCreeperDataSync 
