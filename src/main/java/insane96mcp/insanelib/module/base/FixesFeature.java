@@ -27,6 +27,9 @@ public class FixesFeature extends Feature {
 	@Config(description = "If true, mobs will have their follow range fixed. https://bugs.mojang.com/browse/MC-145656. Only affects entities in `insanelib:fix_follow_range` entity type tag (all vanilla mobs by default) and entities that use the NearestAttackableTargetGoal goal.")
 	public static Boolean fixFollowRange = true;
 
+	@Config(description = "Makes drowned and fishes use the swim speed attribute (neoforge:swim_speed) instead of movement speed.")
+	public static Boolean fixSwimmersSwimmingAttribute = true;
+
 	@Config(description = "Removes the random bonus health given to Leader Zombies. In vanilla it's useless since doesn't work. https://minecraft.wiki/Attribute#Vanilla_modifiers")
 	public static Boolean removeZombiesBonusHealth = true;
 
@@ -41,6 +44,10 @@ public class FixesFeature extends Feature {
 
 	public static boolean shouldFixFollowRange() {
 		return Feature.isEnabled(FixesFeature.class) && fixFollowRange;
+	}
+
+	public static boolean shouldFixSwimmersSwimmingAttribute() {
+		return Feature.isEnabled(FixesFeature.class) && fixSwimmersSwimmingAttribute;
 	}
 
 	@SubscribeEvent

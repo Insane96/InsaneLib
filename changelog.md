@@ -1,3 +1,6 @@
+## 2.0.3.0-alpha
+* Added Fix Swimmers Swimming Attribute, making Drowned and Fishes use the neoforge swimming speed attribute instead of the vanilla movement speed
+
 ## 2.0.2.1-alpha
 * Player attributes are now empty by default
 
