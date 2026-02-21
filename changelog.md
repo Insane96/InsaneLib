@@ -1,3 +1,6 @@
+## 2.0.2.1-alpha
+* Player attributes are now empty by default
+
 ## 2.0.2.0-alpha
 * Added Player Attributes feature
   * Directly from Insane's Survival Overhaul, change players attributes with a json in the config folder.

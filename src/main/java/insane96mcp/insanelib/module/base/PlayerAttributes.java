@@ -8,8 +8,6 @@ import insane96mcp.insanelib.data.SerializableAttributeModifier;
 import insane96mcp.insanelib.util.MCUtils;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.ai.attributes.AttributeModifier;
-import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 
@@ -24,8 +22,7 @@ public class PlayerAttributes extends JsonFeature {
 	//public static Boolean noDamageWhenSpamming = true;
 
 	public static final ArrayList<SerializableAttributeModifier> ATTRIBUTE_MODIFIERS_DEFAULT = new ArrayList<>(List.of(
-			new SerializableAttributeModifier(MOVEMENT_SPEED_REDUCTION_ID, List.of(), Attributes.MOVEMENT_SPEED, -0.05d, AttributeModifier.Operation.ADD_MULTIPLIED_BASE),
-			new SerializableAttributeModifier(BLOCK_REACH_REDUCTION_ID, List.of(), Attributes.BLOCK_INTERACTION_RANGE, -1d, AttributeModifier.Operation.ADD_VALUE)
+
 	));
 	public static final ArrayList<SerializableAttributeModifier> attributeModifiers = new ArrayList<>();
 
