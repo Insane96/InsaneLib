@@ -2,11 +2,15 @@ package insane96mcp.insanelib.core;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
+import com.google.gson.TypeAdapterFactory;
 import insane96mcp.insanelib.InsaneLib;
 import insane96mcp.insanelib.core.feature.Feature;
 import insane96mcp.insanelib.core.feature.Module;
 import insane96mcp.insanelib.data.JsonFeatureDataReloadListener;
+import insane96mcp.insanelib.data.ObjTag;
 import insane96mcp.insanelib.network.message.JsonConfigSyncMessage;
+import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.OnDatapackSyncEvent;
@@ -28,7 +32,7 @@ import java.util.function.Consumer;
  * An extension of {@link Feature} that can handle Json Configs
  */
 public abstract class JsonFeature extends Feature {
-    public final List<JsonConfig<?>> JSON_CONFIGS = new ArrayList<>();
+    private final List<JsonConfig<?>> JSON_CONFIGS = new ArrayList<>();
 
     public JsonFeature() {
         super();
@@ -105,31 +109,48 @@ public abstract class JsonFeature extends Feature {
          */
         @Nullable
         ResourceLocation syncType;
+        /**
+         * Optional extra {@link TypeAdapterFactory} registered when the list items contain {@link ObjTag} fields.
+         * Set via {@link #withRegistryFor(ResourceKey)}.
+         */
+        @Nullable
+        TypeAdapterFactory adapterFactory;
 
-        public JsonConfig(String fileName, List<T> list, List<T> defaultList, Type listType, @Nullable BiConsumer<List<T>, Boolean> onLoad, boolean syncToClient, ResourceLocation syncType) {
+        public JsonConfig(String fileName, List<T> list, List<T> defaultList, Type listType) {
             this.fileName = fileName;
             this.list = list;
             this.defaultList = defaultList;
             this.listType = listType;
+        }
+
+        /** Sets the callback invoked after the json is loaded (both server and client side). */
+        public JsonConfig<T> onLoad(BiConsumer<List<T>, Boolean> onLoad) {
             this.onLoad = onLoad;
-            this.syncToClient = syncToClient;
+            return this;
+        }
+
+        /** Enables syncing this config to clients on datapack reload. */
+        public JsonConfig<T> syncToClient(ResourceLocation syncType) {
+            this.syncToClient = true;
             this.syncType = syncType;
+            return this;
         }
 
-        public JsonConfig(String fileName, List<T> list, List<T> defaultList, Type listType, boolean syncToClient, ResourceLocation syncType) {
-            this(fileName, list, defaultList, listType, null, syncToClient, syncType);
+        /**
+         * Registers an {@link ObjTag.AdapterFactory} for the given registry so that list items
+         * containing {@link ObjTag} fields can be deserialized correctly via Gson.
+         */
+        public <R> JsonConfig<T> withRegistryFor(ResourceKey<Registry<R>> registryKey) {
+            this.adapterFactory = new ObjTag.AdapterFactory<>(registryKey);
+            return this;
         }
 
-        public JsonConfig(String fileName, List<T> list, List<T> defaultList, Type listType, BiConsumer<List<T>, Boolean> onLoad) {
-            this(fileName, list, defaultList, listType, onLoad, false, null);
-        }
-
-        public JsonConfig(String fileName, List<T> list, List<T> defaultList, Type listType) {
-            this(fileName, list, defaultList, listType, false, null);
+        private Gson createGson() {
+            return InsaneLib.createGson(this.adapterFactory);
         }
 
         protected void loadAndReadFile(File folder) {
-            Gson gson = InsaneLib.createGson();
+            Gson gson = createGson();
 
             File file = new File(folder, this.fileName);
             if (!file.exists()) {
@@ -170,7 +191,7 @@ public abstract class JsonFeature extends Feature {
             if (!this.syncToClient)
                 return;
 
-            Gson gson = InsaneLib.createGson();
+            Gson gson = createGson();
 
             if (event.getPlayer() == null) {
                 event.getPlayerList().getPlayers().forEach(player -> JsonConfigSyncMessage.sync(this.syncType, gson.toJson(this.list, this.listType), player));
@@ -179,6 +200,10 @@ public abstract class JsonFeature extends Feature {
                 JsonConfigSyncMessage.sync(this.syncType, gson.toJson(this.list, this.listType), event.getPlayer());
             }
         }
+    }
+
+    public List<JsonConfig<?>> getJsonConfigs() {
+        return JSON_CONFIGS;
     }
 
     public static class SyncType {

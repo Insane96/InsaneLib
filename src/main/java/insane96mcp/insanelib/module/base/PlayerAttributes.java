@@ -29,7 +29,7 @@ public class PlayerAttributes extends JsonFeature {
 	@Override
 	public void init(Module module, boolean enabledByDefault, boolean canBeDisabled) {
 		super.init(module, enabledByDefault, canBeDisabled);
-		JSON_CONFIGS.add(new JsonConfig<>("players_attribute_modifiers.json", attributeModifiers, ATTRIBUTE_MODIFIERS_DEFAULT, SerializableAttributeModifier.LIST_TYPE));
+		this.getJsonConfigs().add(new JsonConfig<>("players_attribute_modifiers.json", attributeModifiers, ATTRIBUTE_MODIFIERS_DEFAULT, SerializableAttributeModifier.LIST_TYPE));
 	}
 
 	@Override

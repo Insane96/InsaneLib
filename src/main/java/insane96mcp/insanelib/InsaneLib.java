@@ -2,6 +2,7 @@ package insane96mcp.insanelib;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.TypeAdapterFactory;
 import com.mojang.logging.LogUtils;
 import insane96mcp.insanelib.data.AttributeModifierOperationSerializer;
 import insane96mcp.insanelib.data.JsonFeatureDataReloadListener;
@@ -56,12 +57,27 @@ public class InsaneLib {
         return MOD_ID + "." + path;
     }
 
-    public static Gson createGson() {
+    public static GsonBuilder createGsonBuilder() {
         GsonBuilder gsonBuilder = new GsonBuilder()
                 .setPrettyPrinting()
                 .registerTypeAdapter(AttributeModifier.Operation.class, new AttributeModifierOperationSerializer());
         //if (ModList.get().isLoaded("sereneseasons"))
         //    gsonBuilder.registerTypeAdapter(Season.SubSeason.class, new SubSeasonSerializer());
-        return gsonBuilder.create();
+        return gsonBuilder;
+    }
+
+    public static Gson createGson() {
+        return createGsonBuilder().create();
+    }
+
+    /**
+     * Creates a Gson instance with an optional extra {@link TypeAdapterFactory} registered.
+     * Used by {@link insane96mcp.insanelib.core.JsonFeature.JsonConfig} when {@code withRegistryFor()} is set.
+     */
+    public static Gson createGson(TypeAdapterFactory adapterFactory) {
+        GsonBuilder builder = createGsonBuilder();
+        if (adapterFactory != null)
+            builder.registerTypeAdapterFactory(adapterFactory);
+        return builder.create();
     }
 }
