@@ -1,3 +1,19 @@
+## 2.1.0.0-beta
+* Ported more MCUtils functions
+* Modules now require Resource Location as identifier
+  * String, String it's still there, can be used, but it's deprecated
+* You can now use ILModConfig to prevent having to create a config class each mod
+  * In the mod class
+    ```java
+      public static ILModConfig CONFIG;
+    
+      public YourMod(IEventBus modEventBus, ModContainer modContainer) {
+        CONFIG = new ILModConfig(MOD_ID, ModConfig.Type.COMMON, modEventBus,
+                Modules::init, InsaneLib.class.getClassLoader());
+        modContainer.registerConfig(ModConfig.Type.COMMON, CONFIG.spec, MOD_ID + "/common.toml");
+      }
+    ```
+
 ## 2.0.4.0-beta
 * Ported Better Falling Blocks
 

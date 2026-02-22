@@ -6,8 +6,9 @@ import com.google.gson.TypeAdapterFactory;
 import com.mojang.logging.LogUtils;
 import insane96mcp.insanelib.data.AttributeModifierOperationSerializer;
 import insane96mcp.insanelib.data.JsonFeatureDataReloadListener;
+import insane96mcp.insanelib.module.Modules;
 import insane96mcp.insanelib.network.NetworkHandler;
-import insane96mcp.insanelib.setup.ILConfig;
+import insane96mcp.insanelib.setup.ILModConfig;
 import insane96mcp.insanelib.util.IntegratedPack;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
@@ -25,9 +26,12 @@ public class InsaneLib {
     public static final Logger LOGGER = LogUtils.getLogger();
     public static final String CONFIG_FOLDER = "config/" + MOD_ID;
 
+    public static ILModConfig CONFIG;
+
     public InsaneLib(IEventBus modEventBus, ModContainer modContainer) {
-        ILConfig.init(modEventBus);
-        modContainer.registerConfig(ModConfig.Type.COMMON, ILConfig.COMMON_SPEC, MOD_ID + "/common.toml");
+        CONFIG = new ILModConfig(MOD_ID, ModConfig.Type.COMMON, modEventBus,
+                Modules::init, InsaneLib.class.getClassLoader());
+        modContainer.registerConfig(ModConfig.Type.COMMON, CONFIG.spec, MOD_ID + "/common.toml");
         modEventBus.addListener(IntegratedPack::onAddPackFinders);
         modEventBus.addListener(NetworkHandler::register);
         NeoForge.EVENT_BUS.addListener(this::onAddReloadListeners);
