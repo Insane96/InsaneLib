@@ -9,6 +9,6 @@ import java.util.Set;
 
 @Mixin(MobEffectInstance.class)
 public interface MobEffectInstanceAccessor {
-    @Accessor
-    Set<EffectCure> getCures();
+    @Accessor(value = "cures")
+    Set<EffectCure> getCuresField();
 }

@@ -1,3 +1,6 @@
+## 2.1.0.1-beta
+* Fixed startup crash
+
 ## 2.1.0.0-beta
 * Modules now require Resource Location as identifier
 * You can now use `ILModConfig` to prevent having to create a config class each mod

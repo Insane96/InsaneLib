@@ -209,7 +209,7 @@ public class MCUtils {
 	public static MobEffectInstance createEffectInstance(Holder<MobEffect> potion, int duration, int amplifier, boolean ambient, boolean showParticles, boolean showIcon, boolean canBeCured) {
 		MobEffectInstance effectInstance = new MobEffectInstance(potion, duration, amplifier, ambient, showParticles, showIcon);
 		if (!canBeCured)
-			((MobEffectInstanceAccessor) effectInstance).getCures().clear();
+			((MobEffectInstanceAccessor) effectInstance).getCuresField().clear();
 		return effectInstance;
 	}
 
