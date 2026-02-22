@@ -232,7 +232,7 @@ public class Module {
         List<String> requiredMods = (List<String>) annotationDataMap.get("requiresMods");
         for (String modId : requiredMods) {
             if (!ModList.get().isLoaded(modId)) {
-                InsaneLib.LOGGER.info("Feature %s not loaded because %s is not present".formatted(className, modId));
+                InsaneLib.LOGGER.info("Feature {} not loaded because {} is not present", className, modId);
                 return false;
             }
         }
