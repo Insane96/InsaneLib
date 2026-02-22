@@ -1,12 +1,19 @@
 package insane96mcp.insanelib.util;
 
+import insane96mcp.insanelib.mixin.accessor.MobEffectInstanceAccessor;
 import net.minecraft.advancements.AdvancementHolder;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffectCategory;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
@@ -17,6 +24,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
+import net.minecraft.world.level.Level;
 
 public class MCUtils {
 	/**
@@ -110,18 +118,18 @@ public class MCUtils {
 		itemStack.set(DataComponents.ATTRIBUTE_MODIFIERS, modifiers);
 	}
 
-/*	public static boolean hurtIgnoreInvuln(LivingEntity hurtEntity, DamageSource source, float amount) {
+	public static boolean hurtIgnoreInvulnerability(LivingEntity hurtEntity, DamageSource source, float amount) {
 		int hurtResistantTime = hurtEntity.invulnerableTime;
 		hurtEntity.invulnerableTime = 0;
 		boolean attacked = hurtEntity.hurt(source, amount);
 		hurtEntity.invulnerableTime = hurtResistantTime;
 		return attacked;
-	}*/
+	}
 
 	/**
 	 * Checks if nbt1 tags are all present in and match nbt2
 	 */
-	/*public static boolean compareNBT(CompoundTag nbt1, CompoundTag nbt2) {
+	public static boolean compareNBT(CompoundTag nbt1, CompoundTag nbt2) {
 		for (String key : nbt1.getAllKeys()) {
 			if (!nbt2.contains(key))
 				return false;
@@ -130,11 +138,12 @@ public class MCUtils {
 				if (!compareNBT(nbt1.getCompound(key), nbt2.getCompound(key)))
 					return false;
 			}
+			//Can't be null. Looping over all the keys
 			else if (!nbt1.get(key).equals(nbt2.get(key)))
 				return false;
 		}
 		return true;
-	}*/
+	}
 
 	/**
 	 * Returns true if the player has completed the advancement
@@ -148,51 +157,31 @@ public class MCUtils {
 	}
 
 	/**
-	 * Copy-paste of PotionUtils.setCustomEffects but setting the potion color too
-	 */
-	/*public static ItemStack setCustomEffects(ItemStack itemStack, Collection<MobEffectInstance> mobEffectInstances) {
-		if (!mobEffectInstances.isEmpty()) {
-			CompoundTag compoundtag = itemStack.getOrCreateTag();
-			ListTag listtag = compoundtag.getList("CustomPotionEffects", 9);
-
-			for (MobEffectInstance mobeffectinstance : mobEffectInstances) {
-				listtag.add(mobeffectinstance.save(new CompoundTag()));
-			}
-			compoundtag.putInt(PotionUtils.TAG_CUSTOM_POTION_COLOR, PotionUtils.getColor(mobEffectInstances));
-
-			compoundtag.put("CustomPotionEffects", listtag);
-
-			//itemStack.setHoverName(new TranslatableComponent("unknown_potion"));
-		}
-		return itemStack;
-	}*/
-
-	/**
 	 * Returns true if the entity has a HARMFUL effect
 	 */
-	/*public static boolean hasNegativeEffect(LivingEntity entity) {
+	public static boolean hasNegativeEffect(LivingEntity entity) {
 		for (MobEffectInstance mobEffectInstance : entity.getActiveEffects()) {
-			if (entity.hasEffect(mobEffectInstance.getEffect()) && mobEffectInstance.getEffect().getCategory().equals(MobEffectCategory.HARMFUL))
-				return true;
-		}
-		return false;
-	}*/
-
-	/**
-	 * Same as hasNegativeEffect but also checks if the duration of the effect is higher than 7.5 seconds
-	 */
-	/*public static boolean hasLongNegativeEffect(LivingEntity entity) {
-		for (MobEffectInstance mobEffectInstance : entity.getActiveEffects()) {
-			if (entity.hasEffect(mobEffectInstance.getEffect()) && mobEffectInstance.getEffect().getCategory().equals(MobEffectCategory.HARMFUL) && mobEffectInstance.getDuration() > 150)
+			if (entity.hasEffect(mobEffectInstance.getEffect()) && mobEffectInstance.getEffect().value().getCategory().equals(MobEffectCategory.HARMFUL))
 				return true;
 		}
 		return false;
 	}
-*/
+
+	/**
+	 * Same as hasNegativeEffect but also checks if the duration of the effect is higher than 7.5 seconds
+	 */
+	public static boolean hasLongNegativeEffect(LivingEntity entity) {
+		for (MobEffectInstance mobEffectInstance : entity.getActiveEffects()) {
+			if (entity.hasEffect(mobEffectInstance.getEffect()) && mobEffectInstance.getEffect().value().getCategory().equals(MobEffectCategory.HARMFUL) && mobEffectInstance.getDuration() > 150)
+				return true;
+		}
+		return false;
+	}
+
 	/**
 	 * Returns a spawnable Y spot for the entity at the given x, y, z. Returns level.getMinBuildHeight() - 1 when no spawn spots are found, otherwise the Y coord
 	 */
-	/*public static int getFittingY(EntityType<?> entityType, BlockPos pos, Level level, int minRelativeY) {
+	public static int getFittingY(EntityType<?> entityType, BlockPos pos, Level level, int minRelativeY) {
 		int height = (int) Math.ceil(entityType.getHeight());
 		int fittingYPos = level.getMinBuildHeight() - 1;
 		for (int y = pos.getY(); y > pos.getY() - minRelativeY; y--) {
@@ -212,17 +201,17 @@ public class MCUtils {
 			return y;
 		}
 		return fittingYPos;
-	}*/
+	}
 
 	/**
-	 * Creates a MobEffectInstance with the possibility to prevent it from begin cured
+	 * Creates a MobEffectInstance with the possibility to prevent it from being cured
 	 */
-	/*public static MobEffectInstance createEffectInstance(MobEffect potion, int duration, int amplifier, boolean ambient, boolean showParticles, boolean showIcon, boolean canBeCured) {
+	public static MobEffectInstance createEffectInstance(Holder<MobEffect> potion, int duration, int amplifier, boolean ambient, boolean showParticles, boolean showIcon, boolean canBeCured) {
 		MobEffectInstance effectInstance = new MobEffectInstance(potion, duration, amplifier, ambient, showParticles, showIcon);
 		if (!canBeCured)
-			effectInstance.setCurativeItems(new ArrayList<>());
+			((MobEffectInstanceAccessor) effectInstance).getCures().clear();
 		return effectInstance;
-	}*/
+	}
 
 /*	public static ArrayList<MobEffectInstance> parseMobEffectsList(List<? extends String> list) {
 		ArrayList<MobEffectInstance> mobEffectInstances = new ArrayList<>();
@@ -232,7 +221,7 @@ public class MCUtils {
 				mobEffectInstances.add(mobEffectInstance);
 		}
 		return mobEffectInstances;
-	}*/
+	}
 
 	/**
 	 * Parses a string with the following format effect_id,duration,amplifier
