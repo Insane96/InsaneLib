@@ -167,8 +167,7 @@ public abstract class JsonFeature extends Feature {
             }
 
             this.list.clear();
-            try {
-                FileReader fileReader = new FileReader(file);
+            try (FileReader fileReader = new FileReader(file)) {
                 List<T> listRead = gson.fromJson(fileReader, listType);
                 this.list.addAll(listRead);
             }

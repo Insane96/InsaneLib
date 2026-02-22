@@ -199,7 +199,7 @@ public class ModNBTData {
      * Removes the specified nbt data from the player's persisted data
      */
     public static void removePersisted(Player player, ResourceLocation loc) {
-        remove(player.getPersistentData(), loc);
+        remove(MCUtils.getOrCreatePersistedData(player), loc);
     }
 
     /**
