@@ -8,7 +8,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE})
 public @interface LoadFeature {
-    String module();
+    String module() default "";
     String name() default "";
     String description() default "";
     boolean enabledByDefault() default true;

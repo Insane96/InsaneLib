@@ -58,16 +58,6 @@ public class Module {
             return new Builder(id, name, modConfigType, configBuilder, modEventBus);
         }
 
-        @Deprecated
-        public static Builder create(String modId, String id, String name, ModConfig.Type modConfigType, ModConfigSpec.Builder configBuilder, IEventBus modEventBus) {
-            return new Builder(ResourceLocation.fromNamespaceAndPath(modId, id), name, modConfigType, configBuilder, modEventBus);
-        }
-
-        @Deprecated
-        public static Builder create(String id, String name, ModConfig.Type modConfigType, ModConfigSpec.Builder configBuilder, IEventBus modEventBus) {
-            return new Builder(ResourceLocation.parse(id), name, modConfigType, configBuilder, modEventBus);
-        }
-
         public Builder setDescription(String description) {
             module.description = description;
             return this;
@@ -169,7 +159,7 @@ public class Module {
                 .sorted(Comparator.comparing(a -> a.clazz().getClassName()))
                 .forEach(annotation -> {
                     try {
-                        handleFeatureAnnotation(annotation, modConfigType, classLoader, modulesToLoad);
+                        handleFeatureAnnotation(annotation, modConfigType, modId, classLoader, modulesToLoad);
                     }
                     catch (Exception e) {
                         throw new RuntimeException("Failed to load Module %s".formatted(annotation), e);
@@ -184,15 +174,33 @@ public class Module {
 
     private static void handleFeatureAnnotation(ModFileScanData.AnnotationData annotationData,
                                                 ModConfig.Type modConfigType,
+                                                String modId,
                                                 ClassLoader classLoader,
                                                 Set<Module> modulesToLoad) throws Exception {
         Map<String, Object> annotationDataMap = annotationData.annotationData();
-        ResourceLocation moduleId = ResourceLocation.parse((String) annotationDataMap.get("module"));
+        String moduleStr = (String) annotationDataMap.get("module");
 
-        Module module = Module.modules.get(moduleId);
-        if (module == null) {
-            InsaneLib.LOGGER.warn("No module found with ID {}", moduleId);
-            return;
+        Module module;
+        if (moduleStr == null || moduleStr.isEmpty()) {
+            List<Module> modModules = Module.modules.values().stream()
+                    .filter(m -> m.getId().getNamespace().equals(modId))
+                    .toList();
+            if (modModules.size() == 1) {
+                module = modModules.getFirst();
+            } else if (modModules.isEmpty()) {
+                InsaneLib.LOGGER.warn("No module found for mod {}", modId);
+                return;
+            } else {
+                InsaneLib.LOGGER.warn("@LoadFeature on {} must specify 'module' — multiple modules registered for mod {}", annotationData.clazz().getClassName(), modId);
+                return;
+            }
+        } else {
+            ResourceLocation moduleId = ResourceLocation.parse(moduleStr);
+            module = Module.modules.get(moduleId);
+            if (module == null) {
+                InsaneLib.LOGGER.warn("No module found with ID {}", moduleId);
+                return;
+            }
         }
         if (module.modConfigType != modConfigType)
             return;
