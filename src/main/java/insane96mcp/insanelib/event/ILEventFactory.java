@@ -1,0 +1,59 @@
+package insane96mcp.insanelib.event;
+
+import net.minecraft.world.entity.item.FallingBlockEntity;
+import net.neoforged.neoforge.common.NeoForge;
+
+public class ILEventFactory {
+
+    /*public static boolean doPlayerSprintCheck(LocalPlayer player)
+    {
+        PlayerSprintEvent event = new PlayerSprintEvent(player);
+        MinecraftForge.EVENT_BUS.post(event);
+        return event.canSprint();
+    }
+
+    public static void onBlockBurnt(Level level, BlockPos pos, BlockState state)
+    {
+        BlockBurntEvent event = new BlockBurntEvent(level, pos, state);
+        MinecraftForge.EVENT_BUS.post(event);
+    }
+
+    public static float onPlayerExhaustionEvent(Player player, float amount)
+    {
+        PlayerExhaustionEvent event = new PlayerExhaustionEvent(player, amount);
+        MinecraftForge.EVENT_BUS.post(event);
+        return event.getAmount();
+    }
+
+    public static void onCakeEatEvent(Player player, BlockPos pos, LevelAccessor level)
+    {
+        CakeEatEvent event = new CakeEatEvent(player, pos, level);
+        MinecraftForge.EVENT_BUS.post(event);
+    }*/
+
+    public static void onFallingBlockLand(FallingBlockEntity fallingBlock)
+    {
+        FallingBlockLandEvent event = new FallingBlockLandEvent(fallingBlock);
+        NeoForge.EVENT_BUS.post(event);
+    }
+
+    /*public static int getHurtAmount(ItemStack stack, int amount, RandomSource random, @Nullable ServerPlayer player)
+    {
+        HurtItemStackEvent event = new HurtItemStackEvent(stack, amount, random, player);
+        MinecraftForge.EVENT_BUS.post(event);
+        return event.getAmount();
+    }
+
+    public static boolean onAddEatEffect(ItemStack stack, Level level, LivingEntity livingEntity)
+    {
+        AddEatEffectEvent event = new AddEatEffectEvent(livingEntity, stack, level);
+        MinecraftForge.EVENT_BUS.post(event);
+        return event.isCanceled();
+    }
+
+    public static float onUseItemModifier(LocalPlayer player, ItemStack useItem) {
+        PlayerUseItemSpeedModifierEvent event = new PlayerUseItemSpeedModifierEvent(player, useItem);
+        MinecraftForge.EVENT_BUS.post(event);
+        return event.getSpeedModifier();
+    }*/
+}
