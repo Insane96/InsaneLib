@@ -12,6 +12,7 @@
         "PlayerMixin",
         "accessor.CreeperAccessor",
         "accessor.ExplosionAccessor",
+        "accessor.MobEffectInstanceAccessor",
         "accessor.ServerLevelAccessor"
     ],
     "injectors": {

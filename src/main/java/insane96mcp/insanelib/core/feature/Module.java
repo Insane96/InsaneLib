@@ -33,12 +33,12 @@ public class Module {
     private static final Map<Class<? extends Feature>, Feature> loadedFeatures = new HashMap<>();
     private final Map<Class<? extends Feature>, Feature> features = new HashMap<>();
 
-    Module(String modId, String moduleId, String name, ModConfig.Type modConfigType, ModConfigSpec.Builder configBuilder, IEventBus modEventBus) {
-        this.id = ResourceLocation.fromNamespaceAndPath(modId, moduleId);
+    Module(ResourceLocation id, String name, ModConfig.Type modConfigType, ModConfigSpec.Builder configBuilder, IEventBus modEventBus) {
+        this.id = id;
         this.name = name;
         this.enabled = true;
         this.canBeDisabled = true;
-        this.modId = modId;
+        this.modId = id.getNamespace();
         this.modConfigType = modConfigType;
         this.configBuilder = configBuilder;
 
@@ -50,19 +50,22 @@ public class Module {
     public static class Builder {
         private final Module module;
 
-        private Builder(String modId, String id, String name, ModConfig.Type modConfigType, ModConfigSpec.Builder configBuilder, IEventBus modEventBus) {
-            this.module = new Module(modId, id, name, modConfigType, configBuilder, modEventBus);
+        private Builder(ResourceLocation id, String name, ModConfig.Type modConfigType, ModConfigSpec.Builder configBuilder, IEventBus modEventBus) {
+            this.module = new Module(id, name, modConfigType, configBuilder, modEventBus);
         }
 
-        public static Builder create(String modId, String id, String name, ModConfig.Type modConfigType, ModConfigSpec.Builder configBuilder, IEventBus modEventBus)  {
-            return new Builder(modId, id, name, modConfigType, configBuilder, modEventBus);
+        public static Builder create(ResourceLocation id, String name, ModConfig.Type modConfigType, ModConfigSpec.Builder configBuilder, IEventBus modEventBus) {
+            return new Builder(id, name, modConfigType, configBuilder, modEventBus);
         }
 
-        public static Builder create(String id, String name, ModConfig.Type modConfigType, ModConfigSpec.Builder configBuilder, IEventBus modEventBus)  {
-            String[] split = id.split(":");
-            if (split.length != 2)
-                throw new IllegalArgumentException("id seems to not be a valid Resource Location. Must be modid:module_id");
-            return new Builder(split[0], split[1], name, modConfigType, configBuilder, modEventBus);
+        @Deprecated
+        public static Builder create(String modId, String id, String name, ModConfig.Type modConfigType, ModConfigSpec.Builder configBuilder, IEventBus modEventBus) {
+            return new Builder(ResourceLocation.fromNamespaceAndPath(modId, id), name, modConfigType, configBuilder, modEventBus);
+        }
+
+        @Deprecated
+        public static Builder create(String id, String name, ModConfig.Type modConfigType, ModConfigSpec.Builder configBuilder, IEventBus modEventBus) {
+            return new Builder(ResourceLocation.parse(id), name, modConfigType, configBuilder, modEventBus);
         }
 
         public Builder setDescription(String description) {

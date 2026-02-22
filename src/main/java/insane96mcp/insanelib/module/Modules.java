@@ -10,7 +10,7 @@ public class Modules {
     static Module BaseModule;
 
     public static void init(IEventBus modEventBus) {
-        BaseModule = Module.Builder.create(InsaneLib.MOD_ID, "base", "Base", ModConfig.Type.COMMON, ILConfig.builder, modEventBus)
+        BaseModule = Module.Builder.create(InsaneLib.location("base"), "Base", ModConfig.Type.COMMON, ILConfig.builder, modEventBus)
                 .canBeDisabled(false)
                 .build();
     }
