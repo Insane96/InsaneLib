@@ -1,3 +1,6 @@
+## 2.1.1.0-beta
+* Added `MCUtils.createPotionStackFromEffectInstances`
+
 ## 2.1.0.1-beta
 * Fixed startup crash
 

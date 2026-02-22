@@ -1,10 +1,12 @@
 package insane96mcp.insanelib.util;
 
+import insane96mcp.insanelib.InsaneLib;
 import insane96mcp.insanelib.mixin.accessor.MobEffectInstanceAccessor;
 import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
@@ -22,9 +24,17 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.food.FoodProperties;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.minecraft.world.level.Level;
+import org.apache.commons.lang3.math.NumberUtils;
+
+import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 public class MCUtils {
 	/**
@@ -156,6 +166,16 @@ public class MCUtils {
 		return player.getAdvancements().getOrStartProgress(advancement).isDone();
 	}
 
+	public static ItemStack createPotionStackFromEffectInstances(Item item, List<MobEffectInstance> mobEffectInstances) {
+		return createPotionStackFromEffectInstances(item, null, mobEffectInstances);
+	}
+
+	public static ItemStack createPotionStackFromEffectInstances(Item item, @Nullable Integer color, List<MobEffectInstance> mobEffectInstances) {
+		ItemStack itemstack = new ItemStack(item);
+		itemstack.set(DataComponents.POTION_CONTENTS, new PotionContents(Optional.empty(), Optional.ofNullable(color), mobEffectInstances));
+		return itemstack;
+	}
+
 	/**
 	 * Returns true if the entity has a HARMFUL effect
 	 */
@@ -213,7 +233,7 @@ public class MCUtils {
 		return effectInstance;
 	}
 
-/*	public static ArrayList<MobEffectInstance> parseMobEffectsList(List<? extends String> list) {
+	public static ArrayList<MobEffectInstance> parseMobEffectsList(List<? extends String> list) {
 		ArrayList<MobEffectInstance> mobEffectInstances = new ArrayList<>();
 		for (String s : list) {
 			MobEffectInstance mobEffectInstance = parseEffectInstance(s);
@@ -226,7 +246,7 @@ public class MCUtils {
 	/**
 	 * Parses a string with the following format effect_id,duration,amplifier
 	 */
-	/*@Nullable
+	@Nullable
 	public static MobEffectInstance parseEffectInstance(String s) {
 		String[] split = s.split(",");
 		if (split.length != 3) {
@@ -261,7 +281,7 @@ public class MCUtils {
 
 		//noinspection ConstantConditions
 		return new MobEffectInstance(Holder.direct(effect), duration, amplifier);
-	}*/
+	}
 
 	/**
 	 * Returns the Tag in the player persistent data that is kept on death / dimension change
