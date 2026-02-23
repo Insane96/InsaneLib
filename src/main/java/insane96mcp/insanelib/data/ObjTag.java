@@ -146,6 +146,15 @@ public class ObjTag<T> {
     }
 
     /**
+     * Returns the object wrapped as a {@link Holder}, or {@code null} if this ObjTag represents a tag.
+     */
+    @Nullable
+    public Holder<T> asHolder() {
+        if (this.obj == null) return null;
+        return this.registry.wrapAsHolder(this.obj);
+    }
+
+    /**
      * Deserializes a plain registry object from a JSON string element (not a tag).
      * @return the resolved object, or null if not found in the registry
      */
