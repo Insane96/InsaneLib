@@ -47,6 +47,8 @@ public class ObjTag<T> {
     private T obj;
     @Nullable
     private TagKey<T> tag;
+    @Nullable
+    private ResourceLocation requestedId;
     private final Registry<T> registry;
     private final ResourceKey<Registry<T>> registryKey;
     //TODO Add dimension
@@ -99,7 +101,11 @@ public class ObjTag<T> {
         Registry<T> reg = (Registry<T>) BuiltInRegistries.REGISTRY.get(registry.location());
         if (reg == null)
             throw new IllegalArgumentException("Unknown registry %s".formatted(registry.location()));
-        return objOf(reg.get(id), reg);
+        T resolved = reg.containsKey(id) ? reg.get(id) : null;
+        ObjTag<T> objTag = objOf(resolved, reg);
+        if (resolved == null)
+            objTag.requestedId = id;
+        return objTag;
     }
 
     /**
@@ -125,6 +131,14 @@ public class ObjTag<T> {
      */
     public String toSerializedString() {
         return serialize().getAsString();
+    }
+
+    /**
+     * Returns true if this ObjTag resolved to a real registry object or tag.
+     * Returns false if the requested id was not found in the registry.
+     */
+    public boolean isValid() {
+        return this.obj != null || this.tag != null;
     }
 
     /**
@@ -202,6 +216,8 @@ public class ObjTag<T> {
             return new JsonPrimitive(this.registry.getKey(this.obj).toString());
         else if (this.tag != null)
             return new JsonPrimitive("#" + this.tag.location());
+        else if (this.requestedId != null)
+            return new JsonPrimitive(this.requestedId.toString());
         else
             throw new RuntimeException("Invalid ObjTag");
     }

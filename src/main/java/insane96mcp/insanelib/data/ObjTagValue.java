@@ -2,6 +2,7 @@ package insane96mcp.insanelib.data;
 
 import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
+import insane96mcp.insanelib.InsaneLib;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.util.GsonHelper;
@@ -78,7 +79,12 @@ public class ObjTagValue<T> {
         JsonArray jArray = json.getAsJsonArray();
         List<ObjTagValue<T>> list = new ArrayList<>(jArray.size());
         for (JsonElement element : jArray) {
-            list.add(deserialize(element, registryKey));
+            ObjTagValue<T> entry = deserialize(element, registryKey);
+            if (!entry.id.isValid()) {
+                InsaneLib.LOGGER.warn("ObjTagValue: '{}' was not found in the registry and will be ignored", entry.id.toSerializedString());
+                continue;
+            }
+            list.add(entry);
         }
         return list;
     }

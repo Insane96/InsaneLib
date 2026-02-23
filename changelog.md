@@ -1,3 +1,6 @@
+## 2.1.2.2-beta
+* Fix ObjTag resolving unknown registry entries as fallback objects
+
 ## 2.1.2.1-beta
 * Fixed missing `ObjTagValue.LIST_TYPE`
 
