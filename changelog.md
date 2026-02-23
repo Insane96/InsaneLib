@@ -1,3 +1,6 @@
+## 2.1.2.1-beta
+* Fixed missing `ObjTagValue.LIST_TYPE`
+
 ## 2.1.2.0-beta
 * Added back `IdTagValue` as `ObjTagValue`
 * Added `ObjTag#asHolder`
@@ -21,7 +24,7 @@
         modContainer.registerConfig(ModConfig.Type.COMMON, CONFIG.spec, MOD_ID + "/common.toml");
       }
     ```
-  * You can now create a single module mod via `ILModConfig` constructor
+  * You can also create a single module mod via `ILModConfig` constructor
     ```java
       public static ILModConfig CONFIG;
     

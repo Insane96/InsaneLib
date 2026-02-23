@@ -2,8 +2,6 @@ package insane96mcp.insanelib.data;
 
 import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.util.GsonHelper;
@@ -38,6 +36,8 @@ public class ObjTagValue<T> {
     public static <T> ObjTagValue<T> of(String id, double value, ResourceKey<Registry<T>> registryKey) {
         return new ObjTagValue<>(ObjTag.of(id, registryKey), value);
     }
+
+    public static final Type LIST_TYPE = new TypeToken<ArrayList<ObjTagValue<?>>>(){}.getType();
 
     @Override
     public String toString() {
@@ -105,34 +105,4 @@ public class ObjTagValue<T> {
         }
     }
 
-    /**
-     * Gson {@link TypeAdapterFactory} for {@code ObjTagValue} fields.
-     * Register with {@code gsonBuilder.registerTypeAdapterFactory(new ObjTagValue.AdapterFactory<>(registryKey))}.
-     */
-    public static class AdapterFactory<T> implements com.google.gson.TypeAdapterFactory {
-        private final ResourceKey<Registry<T>> registryKey;
-
-        public AdapterFactory(ResourceKey<Registry<T>> registryKey) {
-            this.registryKey = registryKey;
-        }
-
-        @Override
-        @SuppressWarnings("unchecked")
-        public <R> TypeAdapter<R> create(Gson gson, TypeToken<R> typeToken) {
-            if (!ObjTagValue.class.isAssignableFrom(typeToken.getRawType())) return null;
-
-            return (TypeAdapter<R>) new TypeAdapter<ObjTagValue<T>>() {
-                @Override
-                public void write(JsonWriter out, ObjTagValue<T> value) {
-                    gson.toJson(value.serialize(), out);
-                }
-
-                @Override
-                public ObjTagValue<T> read(JsonReader in) {
-                    JsonElement json = JsonParser.parseReader(in);
-                    return ObjTagValue.deserialize(json, registryKey);
-                }
-            };
-        }
-    }
 }
