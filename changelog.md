@@ -1,3 +1,7 @@
+## 2.1.2.0-beta
+* Added back `IdTagValue` as `ObjTagValue`
+* Added `ObjTag#asHolder`
+
 ## 2.1.1.0-beta
 * Added `MCUtils.createPotionStackFromEffectInstances`
 
