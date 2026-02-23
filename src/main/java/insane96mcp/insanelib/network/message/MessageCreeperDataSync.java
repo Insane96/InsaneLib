@@ -7,10 +7,16 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerChunkCache;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.monster.Creeper;
+import net.minecraft.world.level.ChunkPos;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
+import net.neoforged.neoforge.network.registration.NetworkRegistry;
 
 public record MessageCreeperDataSync(int id, int maxSwell, int explosionRadius) implements CustomPacketPayload {
     public static final CustomPacketPayload.Type<MessageCreeperDataSync> TYPE =
@@ -41,11 +47,19 @@ public record MessageCreeperDataSync(int id, int maxSwell, int explosionRadius) 
     }
 
     public static void syncCreeperToPlayers(Creeper creeper) {
+        if (!(creeper.level() instanceof ServerLevel serverLevel)) return;
         MessageCreeperDataSync msg = new MessageCreeperDataSync(
                 creeper.getId(),
                 ((CreeperAccessor) creeper).getMaxSwell(),
                 ((CreeperAccessor) creeper).getExplosionRadius()
         );
-        PacketDistributor.sendToPlayersTrackingEntity(creeper, msg);
+        ResourceLocation channelId = TYPE.id();
+        if (serverLevel.getChunkSource() instanceof ServerChunkCache chunkCache) {
+            for (ServerPlayer player : chunkCache.chunkMap.getPlayers(new ChunkPos(creeper.blockPosition()), false)) {
+                if (NetworkRegistry.hasChannel(player.connection, channelId)) {
+                    PacketDistributor.sendToPlayer(player, msg);
+                }
+            }
+        }
     }
 }

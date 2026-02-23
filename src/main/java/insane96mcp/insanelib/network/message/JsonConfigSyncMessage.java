@@ -9,6 +9,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
+import net.neoforged.neoforge.network.registration.NetworkRegistry;
 
 public record JsonConfigSyncMessage(ResourceLocation syncType, String json) implements CustomPacketPayload {
 
@@ -43,6 +44,8 @@ public record JsonConfigSyncMessage(ResourceLocation syncType, String json) impl
     }
 
     public static void sync(ResourceLocation syncType, String json, ServerPlayer player) {
+        if (!NetworkRegistry.hasChannel(player.connection, TYPE.id()))
+            return;
         PacketDistributor.sendToPlayer(player, new JsonConfigSyncMessage(syncType, json));
     }
 }
