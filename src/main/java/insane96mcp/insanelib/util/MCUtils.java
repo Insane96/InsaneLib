@@ -259,11 +259,11 @@ public class MCUtils {
 			InsaneLib.LOGGER.warn("{} mob effect is not valid", split[0]);
 			return null;
 		}
-		if (!BuiltInRegistries.MOB_EFFECT.containsKey(effectRL)) {
+		var effectHolder = BuiltInRegistries.MOB_EFFECT.getHolder(effectRL);
+		if (effectHolder.isEmpty()) {
 			InsaneLib.LOGGER.warn("{} mob effect seems to not exist", split[0]);
 			return null;
 		}
-		MobEffect effect = BuiltInRegistries.MOB_EFFECT.get(effectRL);
 
 		//Duration
 		if (!NumberUtils.isParsable(split[1])) {
@@ -279,8 +279,7 @@ public class MCUtils {
 		}
 		int amplifier = Integer.parseInt(split[2]);
 
-		//noinspection ConstantConditions
-		return new MobEffectInstance(Holder.direct(effect), duration, amplifier);
+		return new MobEffectInstance(effectHolder.get(), duration, amplifier);
 	}
 
 	/**

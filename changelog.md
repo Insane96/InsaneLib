@@ -1,3 +1,6 @@
+## 2.1.2.5-beta
+* Crash fix when saving a parsed effect instance
+
 ## 2.1.2.4-beta
 * Fix Network messages again
 
