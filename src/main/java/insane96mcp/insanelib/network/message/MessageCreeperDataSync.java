@@ -7,7 +7,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerChunkCache;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -46,19 +45,21 @@ public record MessageCreeperDataSync(int id, int maxSwell, int explosionRadius) 
         });
     }
 
-    public static void syncCreeperToPlayers(Creeper creeper) {
-        if (!(creeper.level() instanceof ServerLevel serverLevel)) return;
-        MessageCreeperDataSync msg = new MessageCreeperDataSync(
+    public static void syncCreeperToPlayer(Creeper creeper, ServerPlayer player) {
+        if (!NetworkRegistry.hasChannel(player.connection, TYPE.id()))
+            return;
+        PacketDistributor.sendToPlayer(player, new MessageCreeperDataSync(
                 creeper.getId(),
                 ((CreeperAccessor) creeper).getMaxSwell(),
                 ((CreeperAccessor) creeper).getExplosionRadius()
-        );
-        ResourceLocation channelId = TYPE.id();
+        ));
+    }
+
+    public static void syncCreeperToTrackingPlayers(Creeper creeper) {
+        if (!(creeper.level() instanceof ServerLevel serverLevel)) return;
         if (serverLevel.getChunkSource() instanceof ServerChunkCache chunkCache) {
             for (ServerPlayer player : chunkCache.chunkMap.getPlayers(new ChunkPos(creeper.blockPosition()), false)) {
-                if (NetworkRegistry.hasChannel(player.connection, channelId)) {
-                    PacketDistributor.sendToPlayer(player, msg);
-                }
+                syncCreeperToPlayer(creeper, player);
             }
         }
     }

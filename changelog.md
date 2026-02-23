@@ -1,5 +1,8 @@
+## 2.1.2.4-beta
+* Fix Network messages again
+
 ## 2.1.2.3-beta
-* Fix Network messages being sent to clients with no mod installed 
+* Fix Network messages being sent to clients with no mod installed
 
 ## 2.1.2.2-beta
 * Fix ObjTag resolving unknown registry entries as fallback objects

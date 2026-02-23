@@ -18,6 +18,6 @@ public abstract class CreeperMixin {
     private void onReadAdditionalSaveData(CompoundTag compound, CallbackInfo ci) {
         if (self().level().isClientSide)
             return;
-        MessageCreeperDataSync.syncCreeperToPlayers(self());
+        MessageCreeperDataSync.syncCreeperToTrackingPlayers(self());
     }
 }

@@ -3,7 +3,6 @@ package insane96mcp.insanelib.module.base;
 import insane96mcp.insanelib.core.feature.Feature;
 import insane96mcp.insanelib.core.feature.LoadFeature;
 import insane96mcp.insanelib.core.feature.config.Config;
-import insane96mcp.insanelib.mixin.accessor.CreeperAccessor;
 import insane96mcp.insanelib.network.message.MessageCreeperDataSync;
 import insane96mcp.insanelib.util.MCUtils;
 import net.minecraft.resources.ResourceLocation;
@@ -18,7 +17,6 @@ import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
-import net.neoforged.neoforge.network.PacketDistributor;
 
 @LoadFeature(module = "insanelib:base", description = "Various fixes and improvements")
 public class FixesFeature extends Feature {
@@ -56,12 +54,7 @@ public class FixesFeature extends Feature {
 			return;
 		if (!(event.getTarget() instanceof Creeper creeper))
 			return;
-		MessageCreeperDataSync msg = new MessageCreeperDataSync(
-				creeper.getId(),
-				((CreeperAccessor) creeper).getMaxSwell(),
-				((CreeperAccessor) creeper).getExplosionRadius()
-		);
-		PacketDistributor.sendToPlayer((ServerPlayer) event.getEntity(), msg);
+		MessageCreeperDataSync.syncCreeperToPlayer(creeper, (ServerPlayer) event.getEntity());
 	}
 
 	@SubscribeEvent(priority = EventPriority.LOWEST)
