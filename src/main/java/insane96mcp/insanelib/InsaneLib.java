@@ -6,7 +6,9 @@ import com.google.gson.TypeAdapterFactory;
 import com.mojang.logging.LogUtils;
 import insane96mcp.insanelib.data.AttributeModifierOperationSerializer;
 import insane96mcp.insanelib.data.JsonFeatureDataReloadListener;
+import insane96mcp.insanelib.module.base.PushResistance;
 import insane96mcp.insanelib.network.NetworkHandler;
+import insane96mcp.insanelib.setup.ILAttributes;
 import insane96mcp.insanelib.setup.ILModConfig;
 import insane96mcp.insanelib.util.IntegratedPack;
 import net.minecraft.resources.ResourceLocation;
@@ -27,12 +29,16 @@ public class InsaneLib {
 
     public static ILModConfig CONFIG;
 
-    public InsaneLib(IEventBus modEventBus, ModContainer modContainer) {
+    public InsaneLib(IEventBus eventBus, ModContainer modContainer) {
         CONFIG = new ILModConfig(location("base"), "Base", ModConfig.Type.COMMON,
-                modEventBus, InsaneLib.class.getClassLoader());
+                eventBus, InsaneLib.class.getClassLoader());
         modContainer.registerConfig(ModConfig.Type.COMMON, CONFIG.spec, MOD_ID + "/common.toml");
-        modEventBus.addListener(IntegratedPack::onAddPackFinders);
-        modEventBus.addListener(NetworkHandler::register);
+
+        ILAttributes.REGISTRY.register(eventBus);
+
+        eventBus.addListener(IntegratedPack::onAddPackFinders);
+        eventBus.addListener(NetworkHandler::register);
+        eventBus.addListener(PushResistance::attribute);
         NeoForge.EVENT_BUS.addListener(this::onAddReloadListeners);
     }
 

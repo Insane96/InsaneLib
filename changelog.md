@@ -1,3 +1,6 @@
+## 2.1.3.0-beta
+* Ported Push Resistance attribute from Enhanced AI
+
 ## 2.1.2.5-beta
 * Crash fix when saving a parsed effect instance
 
