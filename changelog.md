@@ -1,3 +1,27 @@
+## 2.2.0.0-beta
+* Added Item Definitions feature
+  * Use data packs to change items' data components  
+  E.g. in `data/<namespace>/item_definitions/strong_diamond_sword.json` will make diamond swords have 50 Attack Damage and 2000 durability
+  ```json
+  {
+      "item": "minecraft:diamond_sword",
+      "components": {
+          "minecraft:max_damage": 2000,
+          "minecraft:attribute_modifiers": {
+              "modifiers": [
+                  {
+                      "type": "minecraft:generic.attack_damage",
+                      "id": "minecraft:attack_damage",
+                      "amount": 50.0,
+                      "operation": "add_value",
+                      "slot": "mainhand"
+                  }
+              ]
+          }
+      }
+  }
+  ```
+
 ## 2.1.3.0-beta
 * Ported Push Resistance attribute from Enhanced AI
 
