@@ -34,6 +34,10 @@ public record SerializableAttributeModifier(ResourceLocation id, List<EquipmentS
         @Override
         public SerializableAttributeModifier deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
             JsonObject jObject = json.getAsJsonObject();
+            String sAttribute = GsonHelper.getAsString(jObject, "attribute");
+            Optional<Holder.Reference<Attribute>> attribute = BuiltInRegistries.ATTRIBUTE.getHolder(ResourceLocation.parse(sAttribute));
+            if (attribute.isEmpty())
+                throw new JsonParseException("Invalid attribute: %s".formatted(sAttribute));
             ResourceLocation id = ResourceLocation.parse(GsonHelper.getAsString(jObject, "id"));
             List<EquipmentSlot> slots = new ArrayList<>();
             if (jObject.has("slot")) {
@@ -46,10 +50,6 @@ public record SerializableAttributeModifier(ResourceLocation id, List<EquipmentS
                     slots.add(slot);
                 }
             }
-            String sAttribute = GsonHelper.getAsString(jObject, "attribute");
-            Optional<Holder.Reference<Attribute>> attribute = BuiltInRegistries.ATTRIBUTE.getHolder(ResourceLocation.parse(sAttribute));
-            if (attribute.isEmpty())
-                throw new JsonParseException("Invalid attribute: %s".formatted(sAttribute));
             double amount = GsonHelper.getAsDouble(jObject, "amount");
             AttributeModifier.Operation operation = context.deserialize(jObject.get("operation"), AttributeModifier.Operation.class);
             return new SerializableAttributeModifier(id, slots, attribute.get(), amount, operation);
@@ -58,6 +58,7 @@ public record SerializableAttributeModifier(ResourceLocation id, List<EquipmentS
         @Override
         public JsonElement serialize(SerializableAttributeModifier src, Type typeOfSrc, JsonSerializationContext context) {
             JsonObject jObject = new JsonObject();
+            jObject.addProperty("attribute", BuiltInRegistries.ATTRIBUTE.getKey(src.attribute.value()).toString());
             jObject.addProperty("id", src.id.toString());
             if (src.slots.size() == 1) {
                 jObject.addProperty("slot", src.slots.get(0).getName());
@@ -69,7 +70,6 @@ public record SerializableAttributeModifier(ResourceLocation id, List<EquipmentS
                 }
                 jObject.add("slots", jArraySlots);
             }
-            jObject.addProperty("attribute", BuiltInRegistries.ATTRIBUTE.getKey(src.attribute.value()).toString());
             jObject.addProperty("amount", src.amount);
             jObject.addProperty("operation", src.operation.getSerializedName());
             return jObject;
@@ -77,20 +77,20 @@ public record SerializableAttributeModifier(ResourceLocation id, List<EquipmentS
     }
 
     public static SerializableAttributeModifier fromNetwork(FriendlyByteBuf byteBuf) {
-        ResourceLocation id = byteBuf.readResourceLocation();
-        List<EquipmentSlot> slots = byteBuf.readList(byteBuf1 -> byteBuf1.readEnum(EquipmentSlot.class));
         Optional<Holder.Reference<Attribute>> attribute = BuiltInRegistries.ATTRIBUTE.getHolder(ResourceLocation.parse(byteBuf.readUtf()));
         if (attribute.isEmpty())
             throw new IllegalStateException("Invalid attribute from network: %s".formatted(byteBuf.readUtf()));
+        ResourceLocation id = byteBuf.readResourceLocation();
+        List<EquipmentSlot> slots = byteBuf.readList(byteBuf1 -> byteBuf1.readEnum(EquipmentSlot.class));
         double amount = byteBuf.readDouble();
         AttributeModifier.Operation operation = byteBuf.readEnum(AttributeModifier.Operation.class);
         return new SerializableAttributeModifier(id, slots, attribute.get(), amount, operation);
     }
 
     public void toNetwork(FriendlyByteBuf byteBuf) {
+        byteBuf.writeUtf(BuiltInRegistries.ATTRIBUTE.getKey(this.attribute.value()).toString());
         byteBuf.writeResourceLocation(this.id);
         byteBuf.writeCollection(this.slots, FriendlyByteBuf::writeEnum);
-        byteBuf.writeUtf(BuiltInRegistries.ATTRIBUTE.getKey(this.attribute.value()).toString());
         byteBuf.writeDouble(this.amount);
         byteBuf.writeEnum(this.operation);
     }
