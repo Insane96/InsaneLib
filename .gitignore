@@ -25,3 +25,6 @@ runs
 run-data
 
 repo
+
+# claude code
+.claude
