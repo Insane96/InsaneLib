@@ -1,6 +1,6 @@
 {
     "pack": {
         "description": "Prevents weather and time from ticking if there are no players online.",
-        "pack_format": 15
+        "pack_format": 48
     }
 }

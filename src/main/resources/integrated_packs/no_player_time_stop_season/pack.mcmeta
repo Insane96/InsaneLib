@@ -1,6 +1,6 @@
 {
     "pack": {
         "description": "Prevents Season ticking when no players are online",
-        "pack_format": 15
+        "pack_format": 48
     }
 }
