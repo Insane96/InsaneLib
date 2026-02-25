@@ -14,7 +14,7 @@ import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import java.util.ArrayList;
 import java.util.List;
 
-@LoadFeature(module = "insanelib:base", description = "Apply attribute modifiers to players. Attributes can be added in the config folder of this feature's folder (requires a world to be opened at least once). Updating attribute modifiers of players them to rejoin")
+@LoadFeature(description = "Apply attribute modifiers to players. Attributes can be added in the config folder of this feature's folder (requires a world to be opened at least once). Updating attribute modifiers of players them to rejoin")
 public class PlayerAttributes extends JsonFeature {
 	public static final ResourceLocation MOVEMENT_SPEED_REDUCTION_ID = InsaneLib.location("player_movement_speed_reduction");
 	public static final ResourceLocation BLOCK_REACH_REDUCTION_ID = InsaneLib.location("player_block_reach_reduction");

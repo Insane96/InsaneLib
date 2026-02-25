@@ -18,7 +18,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 
-@LoadFeature(module = "insanelib:base", description = "Various fixes and improvements")
+@LoadFeature(description = "Various fixes and improvements")
 public class FixesFeature extends Feature {
 	private static final ResourceLocation LEADER_ZOMBIE_BONUS_ID = ResourceLocation.withDefaultNamespace("leader_zombie_bonus");
 

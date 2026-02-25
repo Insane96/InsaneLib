@@ -23,7 +23,7 @@ import javax.annotation.Nullable;
 import java.util.Optional;
 import java.util.function.Predicate;
 
-@LoadFeature(module = "insanelib:base", enabledByDefault = false, description = "If true, game time and day time, will not advance if no players are online. This can break anything that relies on game time")
+@LoadFeature(enabledByDefault = false, description = "If true, game time and day time, will not advance if no players are online. This can break anything that relies on game time so it's disabled by default.")
 public class TimeStopNoPlayerOnline extends Feature {
 
     @Config(description = "If true, also prevents weather from advancing if no players are online. This needs to be disabled in order to allow to set the gamerule again.")

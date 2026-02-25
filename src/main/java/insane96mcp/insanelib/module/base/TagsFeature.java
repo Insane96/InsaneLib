@@ -16,7 +16,6 @@ import net.neoforged.neoforge.event.level.ExplosionEvent;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
 
 @LoadFeature(
-		module = "insanelib:base",
 		description = "Set and use some tags to get and set some mobs properties. E.g. cause fire explosion for mobs, or get current light level.",
 		canBeDisabled = false
 )
