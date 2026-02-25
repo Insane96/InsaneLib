@@ -7,7 +7,9 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -44,9 +46,25 @@ import java.util.Map;
  * }
  * }</pre>
  *
- * <p>When multiple definitions target the same item, they are merged — last definition wins per component type.
+ * <p>Use {@code "remove_components"} to explicitly remove components that the item has by default:
+ * <pre>{@code
+ * {
+ *   "item": "minecraft:apple",
+ *   "remove_components": [
+ *     "minecraft:food"
+ *   ]
+ * }
+ * }</pre>
+ *
+ * <p>The optional {@code "priority"} field (integer, default {@code 0}) controls merge order when multiple
+ * definitions target the same item. Higher priority wins — definitions are applied in ascending priority order,
+ * so a definition with priority {@code 10} overwrites one with priority {@code 0}. Definitions with equal
+ * priority follow file load order.
+ *
+ * <p>When multiple definitions target the same item, they are merged — higher priority wins per component type.
+ * A higher-priority remove overrides a lower-priority set, and vice versa.
  */
-public record ItemDefinition(ObjTag<Item> item, Map<ResourceLocation, JsonElement> componentsRaw) {
+public record ItemDefinition(ObjTag<Item> item, Map<ResourceLocation, JsonElement> componentsRaw, List<ResourceLocation> removeComponents, int priority) {
 
     public static ItemDefinition fromJson(JsonObject json) {
         ObjTag<Item> item = ObjTag.deserialize(json.get("item"), Registries.ITEM);
@@ -57,6 +75,13 @@ public record ItemDefinition(ObjTag<Item> item, Map<ResourceLocation, JsonElemen
                 componentsRaw.put(ResourceLocation.parse(entry.getKey()), entry.getValue());
             }
         }
-        return new ItemDefinition(item, componentsRaw);
+        List<ResourceLocation> removeComponents = new ArrayList<>();
+        if (json.has("remove_components")) {
+            for (JsonElement element : json.getAsJsonArray("remove_components")) {
+                removeComponents.add(ResourceLocation.parse(element.getAsString()));
+            }
+        }
+        int priority = json.has("priority") ? json.get("priority").getAsInt() : 0;
+        return new ItemDefinition(item, componentsRaw, removeComponents, priority);
     }
 }
