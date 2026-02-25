@@ -1,3 +1,6 @@
+## Upcoming
+* Remove component, priority and rename
+
 ## 2.2.0.0-beta
 * Added Item Definitions feature
   * Use data packs to change items' data components  

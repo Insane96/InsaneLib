@@ -1,6 +1,6 @@
 package insane96mcp.insanelib.mixin;
 
-import insane96mcp.insanelib.module.base.items.ItemDefinitionsReloadListener;
+import insane96mcp.insanelib.module.base.items.ItemComponentsReloadListener;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.PatchedDataComponentMap;
 import net.minecraft.world.item.Item;
@@ -28,7 +28,7 @@ public abstract class ItemStackMixin {
      */
     @Inject(method = "getComponents", at = @At("HEAD"), cancellable = true)
     private void onGetComponents(CallbackInfoReturnable<DataComponentMap> cir) {
-        DataComponentMap override = ItemDefinitionsReloadListener.PATCHED_COMPONENTS.get(getItem());
+        DataComponentMap override = ItemComponentsReloadListener.PATCHED_COMPONENTS.get(getItem());
         if (override == null)
             return;
         cir.setReturnValue(PatchedDataComponentMap.fromPatch(override, this.components.asPatch()));
