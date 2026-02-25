@@ -8,6 +8,8 @@
         "EntityMixin",
         "FallingBlockEntityMixin",
         "FishMoveControlMixin",
+        "ItemMixin",
+        "ItemStackMixin",
         "LivingEntityMixin",
         "NearestAttackableTargetGoalMixin",
         "PlayerMixin",

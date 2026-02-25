@@ -7,6 +7,7 @@ import com.mojang.logging.LogUtils;
 import insane96mcp.insanelib.data.AttributeModifierOperationSerializer;
 import insane96mcp.insanelib.data.JsonFeatureDataReloadListener;
 import insane96mcp.insanelib.module.base.PushResistance;
+import insane96mcp.insanelib.module.base.items.ItemDefinitionsReloadListener;
 import insane96mcp.insanelib.network.NetworkHandler;
 import insane96mcp.insanelib.setup.ILAttributes;
 import insane96mcp.insanelib.setup.ILModConfig;
@@ -44,6 +45,7 @@ public class InsaneLib {
 
     private void onAddReloadListeners(AddReloadListenerEvent event) {
         event.addListener(JsonFeatureDataReloadListener.INSTANCE);
+        event.addListener(ItemDefinitionsReloadListener.INSTANCE);
     }
 
     /**
