@@ -1,5 +1,8 @@
-## Upcoming
-* Remove component, priority and rename
+## 2.2.1.0-beta
+* Renamed Item Definitions to Item components (the data pack folder has also changed to `item_components`) 
+  * Added `remove_component`, a list of components to remove from the item
+  * Added `priority`, integer value. When multiple json target the same item, components are merged — higher priority wins per component type.
+* A higher-priority remove overrides a lower-priority set, and vice versa.
 
 ## 2.2.0.0-beta
 * Added Item Definitions feature
