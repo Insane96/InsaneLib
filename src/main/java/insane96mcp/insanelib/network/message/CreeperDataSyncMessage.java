@@ -17,15 +17,15 @@ import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.neoforged.neoforge.network.registration.NetworkRegistry;
 
-public record MessageCreeperDataSync(int id, int maxSwell, int explosionRadius) implements CustomPacketPayload {
-    public static final CustomPacketPayload.Type<MessageCreeperDataSync> TYPE =
+public record CreeperDataSyncMessage(int id, int maxSwell, int explosionRadius) implements CustomPacketPayload {
+    public static final CustomPacketPayload.Type<CreeperDataSyncMessage> TYPE =
             new CustomPacketPayload.Type<>(InsaneLib.location("creeper_data_sync"));
 
-    public static final StreamCodec<ByteBuf, MessageCreeperDataSync> STREAM_CODEC = StreamCodec.composite(
-            ByteBufCodecs.VAR_INT, MessageCreeperDataSync::id,
-            ByteBufCodecs.VAR_INT, MessageCreeperDataSync::maxSwell,
-            ByteBufCodecs.VAR_INT, MessageCreeperDataSync::explosionRadius,
-            MessageCreeperDataSync::new
+    public static final StreamCodec<ByteBuf, CreeperDataSyncMessage> STREAM_CODEC = StreamCodec.composite(
+            ByteBufCodecs.VAR_INT, CreeperDataSyncMessage::id,
+            ByteBufCodecs.VAR_INT, CreeperDataSyncMessage::maxSwell,
+            ByteBufCodecs.VAR_INT, CreeperDataSyncMessage::explosionRadius,
+            CreeperDataSyncMessage::new
     );
 
     @Override
@@ -33,7 +33,7 @@ public record MessageCreeperDataSync(int id, int maxSwell, int explosionRadius) 
         return TYPE;
     }
 
-    public static void handle(final MessageCreeperDataSync payload, final IPayloadContext context) {
+    public static void handle(final CreeperDataSyncMessage payload, final IPayloadContext context) {
         context.enqueueWork(() -> {
             var level = Minecraft.getInstance().level;
             if (level == null) return;
@@ -48,7 +48,7 @@ public record MessageCreeperDataSync(int id, int maxSwell, int explosionRadius) 
     public static void syncCreeperToPlayer(Creeper creeper, ServerPlayer player) {
         if (!NetworkRegistry.hasChannel(player.connection, TYPE.id()))
             return;
-        PacketDistributor.sendToPlayer(player, new MessageCreeperDataSync(
+        PacketDistributor.sendToPlayer(player, new CreeperDataSyncMessage(
                 creeper.getId(),
                 ((CreeperAccessor) creeper).getMaxSwell(),
                 ((CreeperAccessor) creeper).getExplosionRadius()

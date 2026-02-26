@@ -3,7 +3,7 @@ package insane96mcp.insanelib.module.base;
 import insane96mcp.insanelib.core.feature.Feature;
 import insane96mcp.insanelib.core.feature.LoadFeature;
 import insane96mcp.insanelib.core.feature.config.Config;
-import insane96mcp.insanelib.network.message.MessageCreeperDataSync;
+import insane96mcp.insanelib.network.message.CreeperDataSyncMessage;
 import insane96mcp.insanelib.util.MCUtils;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
@@ -54,7 +54,7 @@ public class FixesFeature extends Feature {
 			return;
 		if (!(event.getTarget() instanceof Creeper creeper))
 			return;
-		MessageCreeperDataSync.syncCreeperToPlayer(creeper, (ServerPlayer) event.getEntity());
+		CreeperDataSyncMessage.syncCreeperToPlayer(creeper, (ServerPlayer) event.getEntity());
 	}
 
 	@SubscribeEvent(priority = EventPriority.LOWEST)

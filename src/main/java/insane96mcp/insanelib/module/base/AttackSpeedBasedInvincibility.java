@@ -1,0 +1,31 @@
+package insane96mcp.insanelib.module.base;
+
+import insane96mcp.insanelib.core.feature.Feature;
+import insane96mcp.insanelib.core.feature.LoadFeature;
+import insane96mcp.insanelib.network.message.InvulnerableTimeSyncMessage;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
+
+@LoadFeature(description = "Invincibility frames based off attack speed, so faster attacks will give less invincibility frames and viceversa.")
+public class AttackSpeedBasedInvincibility extends Feature {
+	@SubscribeEvent
+	public void onAttack(LivingIncomingDamageEvent event) {
+		if (!this.isEnabled()
+				|| !(event.getSource().getEntity() instanceof LivingEntity livingEntity)
+				|| event.getEntity().invulnerableTime > 10
+				|| livingEntity.getAttribute(Attributes.ATTACK_SPEED) == null
+				|| livingEntity.getMainHandItem().getAttributeModifiers().modifiers().stream().noneMatch(e -> e.attribute().is(Attributes.ATTACK_SPEED) && e.slot().test(EquipmentSlot.MAINHAND)))
+			return;
+
+		int time = (int) ((1f / livingEntity.getAttribute(Attributes.ATTACK_SPEED).getValue()) * 20);
+		event.setInvulnerabilityTicks(time + 10);
+		//event.getEntity().invulnerableTime = time;
+		//event.getEntity().hurtDuration = time;
+		//event.getEntity().hurtTime = time;
+		InvulnerableTimeSyncMessage.sync((ServerLevel) event.getEntity().level(), event.getEntity(), time);
+	}
+}
