@@ -10,9 +10,9 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
+import net.neoforged.neoforge.network.registration.NetworkRegistry;
 
 public record InvulnerableTimeSyncMessage(int entityId, int invulnerableTime) implements CustomPacketPayload {
     public static final CustomPacketPayload.Type<InvulnerableTimeSyncMessage> TYPE =
@@ -43,8 +43,9 @@ public record InvulnerableTimeSyncMessage(int entityId, int invulnerableTime) im
 
     public static void sync(ServerLevel level, Entity entity, int invincibilityFrames) {
         var msg = new InvulnerableTimeSyncMessage(entity.getId(), invincibilityFrames);
-        for (Player player : level.players()) {
-            PacketDistributor.sendToPlayer((ServerPlayer) player, msg);
+        for (ServerPlayer player : level.players()) {
+            if (NetworkRegistry.hasChannel(player.connection, TYPE.id()))
+                PacketDistributor.sendToPlayer(player, msg);
         }
     }
 }

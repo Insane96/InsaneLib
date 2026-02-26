@@ -1,3 +1,6 @@
+## 2.3.1.1-beta
+* Fixed invincibility feature erroring when installed server side only
+
 ## 2.3.1.0-beta
 * Added config option to limit invincibility frames to only faster attack speeds
 
