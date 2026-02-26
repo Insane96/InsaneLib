@@ -1,3 +1,8 @@
+## 2.3.0.0-beta
+* Added Attack Speed Based Invincibility feature
+  * Makes attack change invincibility frames based off attack speed, so faster attacks will give less invincibility frames and vice versa
+  * If installed on the client, they will actually see the red invincibility frames correctly based off attack speed
+
 ## 2.2.2.0-beta
 * Added back `/insanelib` command, but, more importantly, added a new subcommand get_data_components
   * With `/insanelib get_data_components <item>` you can get a list of all the data components that are currently applied to the item
