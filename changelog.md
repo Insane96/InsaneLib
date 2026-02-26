@@ -1,3 +1,7 @@
+## 2.2.2.0-beta
+* Added back `/insanelib` command, but, more importantly, added a new subcommand get_data_components
+  * With `/insanelib get_data_components <item>` you can get a list of all the data components that are currently applied to the item
+
 ## 2.2.1.0-beta
 * Renamed Item Definitions to Item components (the data pack folder has also changed to `item_components`) 
   * Added `remove_components`, a list of components to remove from the item
