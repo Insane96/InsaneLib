@@ -1,3 +1,6 @@
+## 2.3.1.0-beta
+* Added config option to limit invincibility frames to only faster attack speeds
+
 ## 2.3.0.0-beta
 * Added Attack Speed Based Invincibility feature
   * Makes attack change invincibility frames based off attack speed, so faster attacks will give less invincibility frames and vice versa
