@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.TypeAdapterFactory;
 import com.mojang.logging.LogUtils;
+import insane96mcp.insanelib.command.ILCommand;
 import insane96mcp.insanelib.data.AttributeModifierOperationSerializer;
 import insane96mcp.insanelib.data.JsonFeatureDataReloadListener;
 import insane96mcp.insanelib.module.base.PushResistance;
@@ -20,6 +21,7 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.AddReloadListenerEvent;
+import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import org.slf4j.Logger;
 
 @Mod(InsaneLib.MOD_ID)
@@ -41,6 +43,11 @@ public class InsaneLib {
         eventBus.addListener(NetworkHandler::register);
         eventBus.addListener(PushResistance::attribute);
         NeoForge.EVENT_BUS.addListener(this::onAddReloadListeners);
+        NeoForge.EVENT_BUS.addListener(this::onRegisterCommands);
+    }
+
+    private void onRegisterCommands(RegisterCommandsEvent event) {
+        ILCommand.register(event.getDispatcher(), event.getBuildContext());
     }
 
     private void onAddReloadListeners(AddReloadListenerEvent event) {
