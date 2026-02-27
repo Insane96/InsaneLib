@@ -207,6 +207,8 @@ public class Module {
 
         Type type = annotationData.clazz();
         Class<?> clazz = Class.forName(type.getClassName(), false, classLoader);
+        if (!Feature.class.isAssignableFrom(clazz))
+            throw new RuntimeException("Class %s is annotated with @LoadFeature but does not extend Feature".formatted(type.getClassName()));
         @SuppressWarnings("unchecked")
         Class<? extends Feature> featureClazz = (Class<? extends Feature>) clazz;
 
