@@ -27,7 +27,7 @@ public class AttackSpeedBasedInvincibility extends Feature {
 				|| livingEntity.getMainHandItem().getAttributeModifiers().modifiers().stream().noneMatch(e -> e.attribute().is(Attributes.ATTACK_SPEED) && e.slot().test(EquipmentSlot.MAINHAND)))
 			return;
 
-		int time = (int) ((1f / livingEntity.getAttribute(Attributes.ATTACK_SPEED).getValue()) * 20);
+		int time = (int) ((1f / livingEntity.getAttribute(Attributes.ATTACK_SPEED).getValue()) * 20 * 0.9f);
 		event.setInvulnerabilityTicks(time + 10);
 		//event.getEntity().invulnerableTime = time;
 		//event.getEntity().hurtDuration = time;
