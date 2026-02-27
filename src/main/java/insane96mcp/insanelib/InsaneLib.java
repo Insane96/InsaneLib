@@ -11,6 +11,7 @@ import insane96mcp.insanelib.module.base.PushResistance;
 import insane96mcp.insanelib.module.base.items.ItemComponentsReloadListener;
 import insane96mcp.insanelib.network.NetworkHandler;
 import insane96mcp.insanelib.setup.ILAttributes;
+import insane96mcp.insanelib.setup.ILDataComponents;
 import insane96mcp.insanelib.setup.ILModConfig;
 import insane96mcp.insanelib.util.IntegratedPack;
 import net.minecraft.resources.ResourceLocation;
@@ -38,6 +39,7 @@ public class InsaneLib {
         modContainer.registerConfig(ModConfig.Type.COMMON, CONFIG.spec, MOD_ID + "/common.toml");
 
         ILAttributes.REGISTRY.register(eventBus);
+        ILDataComponents.REGISTRY.register(eventBus);
 
         eventBus.addListener(IntegratedPack::onAddPackFinders);
         eventBus.addListener(NetworkHandler::register);
