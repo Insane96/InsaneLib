@@ -1,6 +1,6 @@
-## Upcoming
+## 2.4.0.0-beta
 * Added insanelib:knockback_multiplier data component
-  * 0~1 that can reduce the knockback applied by an item
+  * 0~1 that can reduce the knockback of an item
 
 ## 2.3.1.1-beta
 * Fixed invincibility feature erroring when installed server side only

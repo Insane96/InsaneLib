@@ -7,7 +7,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.event.entity.living.LivingKnockBackEvent;
 
-@LoadFeature(description = "A new item component insanelib:knockback_multiplier (0~1) that can reduce the knockback applied by an item", canBeDisabled = false)
+@LoadFeature(description = "A new item component insanelib:knockback_multiplier (0~1) that can reduce the knockback of an item", canBeDisabled = false)
 public class KnockbackMultiplier extends Feature {
     @SubscribeEvent
     public void onLivingKnockback(LivingKnockBackEvent event) {
