@@ -1,3 +1,6 @@
+## 2.4.1.1-beta
+* Fixed concurrent modification exception
+
 ## 2.4.1.0-beta
 * Ported back `ClientUtils`
 

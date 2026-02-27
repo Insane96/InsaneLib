@@ -182,9 +182,12 @@ public class Module {
 
         Module module;
         if (moduleStr == null || moduleStr.isEmpty()) {
-            List<Module> modModules = Module.modules.values().stream()
-                    .filter(m -> m.getId().getNamespace().equals(modId))
-                    .toList();
+            List<Module> modModules;
+            synchronized (_lock) {
+                modModules = Module.modules.values().stream()
+                        .filter(m -> m.getId().getNamespace().equals(modId))
+                        .toList();
+            }
             if (modModules.size() == 1) {
                 module = modModules.getFirst();
             } else if (modModules.isEmpty()) {
@@ -196,7 +199,9 @@ public class Module {
             }
         } else {
             ResourceLocation moduleId = ResourceLocation.parse(moduleStr);
-            module = Module.modules.get(moduleId);
+            synchronized (_lock) {
+                module = Module.modules.get(moduleId);
+            }
             if (module == null) {
                 InsaneLib.LOGGER.warn("No module found with ID {}", moduleId);
                 return;
