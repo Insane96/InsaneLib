@@ -23,5 +23,8 @@
     },
     "overwrites": {
         "requireAnnotations": true
-  }
+    },
+    "client": [
+        "accessor.GuiGraphicsAccessor"
+    ]
 }

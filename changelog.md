@@ -1,3 +1,6 @@
+## 2.4.1.0-beta
+* Ported back `ClientUtils`
+
 ## 2.4.0.1-beta
 * Attack invincibility frames are now reduced by 10%
 * Fixed invincibility frames not shown on entities if damage was not from an entity or from non-weapon
