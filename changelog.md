@@ -1,3 +1,7 @@
+## 2.4.0.1-beta
+* Attack invincibility frames are now reduced by 10%
+* Fixed invincibility frames not shown on entities if damage was not from an entity or from non-weapon
+
 ## 2.4.0.0-beta
 * Added insanelib:knockback_multiplier data component
   * 0~1 that can reduce the knockback of an item
