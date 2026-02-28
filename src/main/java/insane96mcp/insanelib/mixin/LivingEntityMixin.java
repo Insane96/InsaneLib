@@ -23,19 +23,4 @@ public abstract class LivingEntityMixin extends Entity {
             return original;
         return FixesFeature.getFlyingSpeed(player, (float) original);
     }
-
-    @ModifyExpressionValue(method = "hurt", at = @At(value = "CONSTANT", args = "intValue=10"))
-    public int insanelib$reflectInvulnerabilityFrames(int original) {
-        return this.invulnerableTime - 10;
-    }
-
-    @ModifyExpressionValue(method = "handleDamageEvent", at = @At(value = "CONSTANT", args = "intValue=20"))
-    public int insanelib$reflectInvulnerabilityFramesInEvent(int original) {
-        return this.invulnerableTime > 10 ? this.invulnerableTime : original;
-    }
-
-    @ModifyExpressionValue(method = "handleDamageEvent", at = @At(value = "CONSTANT", args = "intValue=10"))
-    public int insanelib$reflectInvulnerabilityFramesInEvent2(int original) {
-        return this.invulnerableTime > 10 ? this.invulnerableTime - 10 : original;
-    }
 }
