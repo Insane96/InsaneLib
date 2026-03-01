@@ -1,3 +1,6 @@
+## 2.4.3.0-beta
+* Added back `PlayerUseItemMovSpeedEvent` and `PlayerSprintEvent`
+
 ## 2.4.2.0-beta
 * Moved Attack Speed Based Invincibility feature to ISO
 

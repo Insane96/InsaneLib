@@ -25,6 +25,7 @@
         "requireAnnotations": true
     },
     "client": [
-        "accessor.GuiGraphicsAccessor"
+        "accessor.GuiGraphicsAccessor",
+        "client.LocalPlayerMixin"
     ]
 }

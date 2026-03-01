@@ -1,18 +1,20 @@
 package insane96mcp.insanelib.event;
 
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.entity.item.FallingBlockEntity;
+import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.common.NeoForge;
 
 public class ILEventFactory {
 
-    /*public static boolean doPlayerSprintCheck(LocalPlayer player)
+    public static boolean doPlayerSprintCheck(LocalPlayer player)
     {
         PlayerSprintEvent event = new PlayerSprintEvent(player);
-        MinecraftForge.EVENT_BUS.post(event);
+        NeoForge.EVENT_BUS.post(event);
         return event.canSprint();
     }
 
-    public static void onBlockBurnt(Level level, BlockPos pos, BlockState state)
+    /*public static void onBlockBurnt(Level level, BlockPos pos, BlockState state)
     {
         BlockBurntEvent event = new BlockBurntEvent(level, pos, state);
         MinecraftForge.EVENT_BUS.post(event);
@@ -49,11 +51,11 @@ public class ILEventFactory {
         AddEatEffectEvent event = new AddEatEffectEvent(livingEntity, stack, level);
         MinecraftForge.EVENT_BUS.post(event);
         return event.isCanceled();
-    }
-
-    public static float onUseItemModifier(LocalPlayer player, ItemStack useItem) {
-        PlayerUseItemSpeedModifierEvent event = new PlayerUseItemSpeedModifierEvent(player, useItem);
-        MinecraftForge.EVENT_BUS.post(event);
-        return event.getSpeedModifier();
     }*/
+
+    public static float onUseItemMovementSpeedModifier(LocalPlayer player, ItemStack useItem) {
+        PlayerUseItemMovSpeedEvent event = new PlayerUseItemMovSpeedEvent(player, useItem);
+        NeoForge.EVENT_BUS.post(event);
+        return event.getSpeedModifier();
+    }
 }
