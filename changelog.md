@@ -1,4 +1,4 @@
-## Upcoming
+## 2.4.2.0-beta
 * Moved Attack Speed Based Invincibility feature to ISO
 
 ## 2.4.1.1-beta
