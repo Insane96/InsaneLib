@@ -1,3 +1,6 @@
+## Upcoming
+* Added back `feature_enabled` neoforge condition and loot condition
+
 ## 2.4.3.0-beta
 * Added back `PlayerUseItemMovSpeedEvent` and `PlayerSprintEvent`
 

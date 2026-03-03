@@ -11,6 +11,7 @@ import insane96mcp.insanelib.module.base.PushResistance;
 import insane96mcp.insanelib.module.base.items.ItemComponentsReloadListener;
 import insane96mcp.insanelib.network.NetworkHandler;
 import insane96mcp.insanelib.setup.ILAttributes;
+import insane96mcp.insanelib.setup.ILConditions;
 import insane96mcp.insanelib.setup.ILDataComponents;
 import insane96mcp.insanelib.setup.ILModConfig;
 import insane96mcp.insanelib.util.IntegratedPack;
@@ -40,6 +41,8 @@ public class InsaneLib {
 
         ILAttributes.REGISTRY.register(eventBus);
         ILDataComponents.REGISTRY.register(eventBus);
+        ILConditions.CONDITION_CODECS.register(eventBus);
+        ILConditions.LOOT_CONDITIONS.register(eventBus);
 
         eventBus.addListener(IntegratedPack::onAddPackFinders);
         eventBus.addListener(NetworkHandler::register);
