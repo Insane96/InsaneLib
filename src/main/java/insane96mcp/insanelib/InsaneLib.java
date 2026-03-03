@@ -15,16 +15,23 @@ import insane96mcp.insanelib.setup.ILConditions;
 import insane96mcp.insanelib.setup.ILDataComponents;
 import insane96mcp.insanelib.setup.ILModConfig;
 import insane96mcp.insanelib.util.IntegratedPack;
+import net.minecraft.Util;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
+import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.AddReloadListenerEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import org.slf4j.Logger;
+
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.util.Locale;
 
 @Mod(InsaneLib.MOD_ID)
 public class InsaneLib {
@@ -33,6 +40,11 @@ public class InsaneLib {
     public static final String CONFIG_FOLDER = "config/" + MOD_ID;
 
     public static ILModConfig CONFIG;
+
+    /**
+     * Same as {@link net.neoforged.neoforge.common.extensions.IAttributeExtension.FORMAT} but with one decimal place
+     */
+    public static DecimalFormat ONE_DECIMAL_FORMATTER;
 
     public InsaneLib(IEventBus eventBus, ModContainer modContainer) {
         CONFIG = new ILModConfig(location("base"), "Base", ModConfig.Type.COMMON,
@@ -44,6 +56,7 @@ public class InsaneLib {
         ILConditions.CONDITION_CODECS.register(eventBus);
         ILConditions.LOOT_CONDITIONS.register(eventBus);
 
+        eventBus.addListener(InsaneLib::clientSetup);
         eventBus.addListener(IntegratedPack::onAddPackFinders);
         eventBus.addListener(NetworkHandler::register);
         eventBus.addListener(PushResistance::attribute);
@@ -58,6 +71,12 @@ public class InsaneLib {
     private void onAddReloadListeners(AddReloadListenerEvent event) {
         event.addListener(JsonFeatureDataReloadListener.INSTANCE);
         event.addListener(ItemComponentsReloadListener.INSTANCE);
+    }
+
+    @SubscribeEvent
+    public static void clientSetup(FMLClientSetupEvent event) {
+        ONE_DECIMAL_FORMATTER = Util.make(new DecimalFormat("#.#"),
+                fmt -> fmt.setDecimalFormatSymbols(DecimalFormatSymbols.getInstance(Locale.ROOT)));
     }
 
     /**

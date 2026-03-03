@@ -1,3 +1,6 @@
+## 2.4.6.0-beta
+* Added back `InsaneLib.ONE_DECIMAL_FORMATTER`
+
 ## 2.4.5.0-beta
 * Added `MCUtils.computeFoodFormula` using EvalEx
 * Added back all the events
