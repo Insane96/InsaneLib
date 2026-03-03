@@ -1,5 +1,7 @@
 package insane96mcp.insanelib.util;
 
+import com.ezylang.evalex.Expression;
+import com.ezylang.evalex.data.EvaluationValue;
 import insane96mcp.insanelib.InsaneLib;
 import insane96mcp.insanelib.mixin.accessor.MobEffectInstanceAccessor;
 import net.minecraft.advancements.AdvancementHolder;
@@ -72,24 +74,24 @@ public class MCUtils {
 	 */
 	public static boolean applyModifier(LivingEntity entity, Holder<Attribute> attribute, AttributeModifier modifier, boolean permanent) {
 		AttributeInstance attributeInstance = entity.getAttribute(attribute);
-		if (attributeInstance != null) {
-			if (attributeInstance.hasModifier(modifier.id()))
-				return false;
-			float oldMaxHealth = entity.getMaxHealth();
-			if (permanent)
-				attributeInstance.addPermanentModifier(modifier);
-			else
-				attributeInstance.addTransientModifier(modifier);
+        if (attributeInstance == null)
+            return false;
 
-			if (attribute == Attributes.MAX_HEALTH) {
-				float newMaxHealth = entity.getMaxHealth();
-				if (newMaxHealth > oldMaxHealth)
-					entity.heal(newMaxHealth - oldMaxHealth);
-			}
-			return true;
-		}
-		return false;
-	}
+        if (attributeInstance.hasModifier(modifier.id()))
+            return false;
+        float oldMaxHealth = entity.getMaxHealth();
+        if (permanent)
+            attributeInstance.addPermanentModifier(modifier);
+        else
+            attributeInstance.addTransientModifier(modifier);
+
+        if (attribute == Attributes.MAX_HEALTH) {
+            float newMaxHealth = entity.getMaxHealth();
+            if (newMaxHealth > oldMaxHealth)
+                entity.heal(newMaxHealth - oldMaxHealth);
+        }
+        return true;
+    }
 
 	/**
 	 * Removes a modifier from the Living Entity if the entity has the attribute
@@ -313,5 +315,40 @@ public class MCUtils {
 		random.setSeed(random.nextLong());
 		random.setSeed(random.nextLong());
 		return random;
+	}
+
+	/**
+	 * Evaluates an EvalEx formula against a food item's properties.
+	 * <p>
+	 * The following variables are available in the formula:
+	 * <ul>
+	 *   <li>{@code hunger} — the food's nutrition value</li>
+	 *   <li>{@code saturation} — the food's saturation modifier</li>
+	 *   <li>{@code effectiveness} — the food's effectiveness (hunger * saturation * 2)</li>
+	 *   <li>{@code eat_seconds} — the time in seconds it takes to eat the food</li>
+	 *   <li>{@code can_always_eat} — true if the food can be eaten even when food bar is full</li>
+	 * </ul>
+	 *
+	 * @param food    the food properties to evaluate the formula against
+	 * @param formula an EvalEx expression string
+	 * @return the result of the formula as a float, or {@code -1} if evaluation fails
+	 */
+	public static float computeFoodFormula(FoodProperties food, String formula) {
+		Expression expression = new Expression(formula);
+		try {
+			//noinspection ConstantConditions
+			EvaluationValue result = expression
+					.with("hunger", food.nutrition())
+					.and("saturation", food.saturation())
+					.and("effectiveness", MCUtils.getFoodEffectiveness(food))
+					.and("eat_seconds", food.eatSeconds())
+					.and("can_always_eat", food.canAlwaysEat())
+					.evaluate();
+			return result.getNumberValue().floatValue();
+		}
+		catch (Exception ex) {
+			InsaneLib.LOGGER.error("Failed to evaluate food formula {}, {}", expression, ex);
+			return -1f;
+		}
 	}
 }
