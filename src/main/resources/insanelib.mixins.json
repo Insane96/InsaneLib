@@ -3,10 +3,12 @@
     "package": "insane96mcp.insanelib.mixin",
     "compatibilityLevel": "JAVA_21",
     "mixins": [
+        "CakeBlockMixin",
         "CreeperMixin",
         "DrownedMoveControlMixin",
         "EntityMixin",
         "FallingBlockEntityMixin",
+        "FireBlockMixin",
         "FishMoveControlMixin",
         "ItemMixin",
         "ItemStackMixin",

@@ -1,5 +1,6 @@
 ## 2.4.5.0-beta
 * Added `MCUtils.computeFoodFormula` using EvalEx
+* Added back all the events
 
 ## 2.4.4.0-beta
 * Added back `feature_enabled` neoforge condition and loot condition
