@@ -1,28 +1,39 @@
+## 2.4.6.2-beta
+### Technical
+* Attached sources in the .jar
+
 ## 2.4.6.1-beta
+### Technical
 * Changed MCUtils.computeFoodFormula variables
   * Removed effectiveness
   * Renamed hunger to nutrition
 
 ## 2.4.6.0-beta
+### Technical
 * Added back `InsaneLib.ONE_DECIMAL_FORMATTER`
 
 ## 2.4.5.0-beta
+### Technical
 * Added `MCUtils.computeFoodFormula` using EvalEx
 * Added back all the events
 
 ## 2.4.4.0-beta
+### Technical
 * Added back `feature_enabled` neoforge condition and loot condition
 
 ## 2.4.3.0-beta
+### Technical
 * Added back `PlayerUseItemMovSpeedEvent` and `PlayerSprintEvent`
 
 ## 2.4.2.0-beta
 * Moved Attack Speed Based Invincibility feature to ISO
 
 ## 2.4.1.1-beta
+### Technical
 * Fixed concurrent modification exception
 
 ## 2.4.1.0-beta
+### Technical
 * Ported back `ClientUtils`
 
 ## 2.4.0.1-beta

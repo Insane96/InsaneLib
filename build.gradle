@@ -127,3 +127,7 @@ idea {
         downloadJavadoc = true
     }
 }
+
+jar {
+    from sourceSets.main.allJava
+}
