@@ -1,3 +1,8 @@
+## 2.4.6.1-beta
+* Changed MCUtils.computeFoodFormula variables
+  * Removed effectiveness
+  * Renamed hunger to nutrition
+
 ## 2.4.6.0-beta
 * Added back `InsaneLib.ONE_DECIMAL_FORMATTER`
 

@@ -322,9 +322,8 @@ public class MCUtils {
 	 * <p>
 	 * The following variables are available in the formula:
 	 * <ul>
-	 *   <li>{@code hunger} — the food's nutrition value</li>
-	 *   <li>{@code saturation} — the food's saturation modifier</li>
-	 *   <li>{@code effectiveness} — the food's effectiveness (hunger * saturation * 2)</li>
+	 *   <li>{@code nutrition} — the food's nutrition value</li>
+	 *   <li>{@code saturation} — the food's saturation value</li>
 	 *   <li>{@code eat_seconds} — the time in seconds it takes to eat the food</li>
 	 *   <li>{@code can_always_eat} — true if the food can be eaten even when food bar is full</li>
 	 * </ul>
@@ -338,9 +337,8 @@ public class MCUtils {
 		try {
 			//noinspection ConstantConditions
 			EvaluationValue result = expression
-					.with("hunger", food.nutrition())
+					.with("nutrition", food.nutrition())
 					.and("saturation", food.saturation())
-					.and("effectiveness", MCUtils.getFoodEffectiveness(food))
 					.and("eat_seconds", food.eatSeconds())
 					.and("can_always_eat", food.canAlwaysEat())
 					.evaluate();
