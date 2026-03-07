@@ -1,3 +1,7 @@
+## 2.4.7.1-beta
+### Technical
+* Fixed self() methods not being @Unique
+
 ## 2.4.7.0-beta
 ### Technical
 * Added `ItemComponentsReloadListener.PROGRAMMATIC_PROVIDERS` to change stacks programmatically
