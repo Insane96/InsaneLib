@@ -27,18 +27,41 @@ public class ItemComponentsFeature extends Feature {
             return;
 
         ItemComponentsReloadListener.PATCHED_COMPONENTS.clear();
-        if (ItemComponentsReloadListener.DEFINITIONS.isEmpty())
-            return;
 
         RegistryOps<JsonElement> ops = RegistryOps.create(JsonOps.INSTANCE, event.getRegistryAccess());
-
-        // Sort by priority ascending so higher priority definitions are applied last and win
-        List<ItemComponent> sorted = new ArrayList<>(ItemComponentsReloadListener.DEFINITIONS);
-        sorted.sort(Comparator.comparingInt(ItemComponent::priority));
 
         // Collect merged components per item (higher priority wins per component type)
         Map<Item, Map<DataComponentType<?>, Object>> allComponents = new HashMap<>();
         Map<Item, Set<DataComponentType<?>>> allRemovals = new HashMap<>();
+
+        // Seed with programmatic patches first (lowest priority — data pack definitions overwrite these)
+        if (!ItemComponentsReloadListener.PROGRAMMATIC_PROVIDERS.isEmpty()) {
+            Map<Item, DataComponentPatch> programmatic = new HashMap<>();
+            for (var provider : ItemComponentsReloadListener.PROGRAMMATIC_PROVIDERS)
+                provider.accept(event.getRegistryAccess(), programmatic);
+
+            for (Map.Entry<Item, DataComponentPatch> entry : programmatic.entrySet()) {
+                Item item = entry.getKey();
+                Map<DataComponentType<?>, Object> setMap = allComponents.computeIfAbsent(item, k -> new LinkedHashMap<>());
+                Set<DataComponentType<?>> removeSet = allRemovals.computeIfAbsent(item, k -> new HashSet<>());
+                entry.getValue().entrySet().forEach(e -> {
+                    if (e.getValue().isPresent()) {
+                        removeSet.remove(e.getKey());
+                        setMap.put(e.getKey(), e.getValue().get());
+                    } else {
+                        setMap.remove(e.getKey());
+                        removeSet.add(e.getKey());
+                    }
+                });
+            }
+        }
+
+        if (ItemComponentsReloadListener.DEFINITIONS.isEmpty() && allComponents.isEmpty() && allRemovals.isEmpty())
+            return;
+
+        // Sort by priority ascending so higher priority definitions are applied last and win
+        List<ItemComponent> sorted = new ArrayList<>(ItemComponentsReloadListener.DEFINITIONS);
+        sorted.sort(Comparator.comparingInt(ItemComponent::priority));
 
         for (ItemComponent definition : sorted) {
             if (!definition.item().isValid()) {

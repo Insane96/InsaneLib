@@ -1,3 +1,7 @@
+## 2.4.7.0-beta
+### Technical
+* Added `ItemComponentsReloadListener.PROGRAMMATIC_PROVIDERS` to change stacks programmatically
+
 ## 2.4.6.2-beta
 ### Technical
 * Attached sources in the .jar
