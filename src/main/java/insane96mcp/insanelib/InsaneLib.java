@@ -10,10 +10,7 @@ import insane96mcp.insanelib.data.JsonFeatureDataReloadListener;
 import insane96mcp.insanelib.module.base.PushResistance;
 import insane96mcp.insanelib.module.base.items.ItemComponentsReloadListener;
 import insane96mcp.insanelib.network.NetworkHandler;
-import insane96mcp.insanelib.setup.ILAttributes;
-import insane96mcp.insanelib.setup.ILConditions;
-import insane96mcp.insanelib.setup.ILDataComponents;
-import insane96mcp.insanelib.setup.ILModConfig;
+import insane96mcp.insanelib.setup.*;
 import insane96mcp.insanelib.util.IntegratedPack;
 import net.minecraft.Util;
 import net.minecraft.resources.ResourceLocation;
@@ -55,6 +52,8 @@ public class InsaneLib {
         ILDataComponents.REGISTRY.register(eventBus);
         ILConditions.CONDITION_CODECS.register(eventBus);
         ILConditions.LOOT_CONDITIONS.register(eventBus);
+        ILGlobalLootModifiers.REGISTRY.register(eventBus);
+        ILLootFunctions.REGISTRY.register(eventBus);
 
         eventBus.addListener(InsaneLib::clientSetup);
         eventBus.addListener(IntegratedPack::onAddPackFinders);

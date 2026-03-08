@@ -1,3 +1,92 @@
+## 2.4.8.0-beta
+### Technical
+* Added loot modifiers:
+  * `insanelib:replace_loot` — replaces items in a loot table with another item, optionally copying components (durability, enchantments) and scaling the count
+    ```json
+    {
+      "type": "insanelib:replace_loot",
+      "conditions": [...],
+      "original_item": "minecraft:iron_sword",
+      "replacement_item": "minecraft:diamond_sword",
+      "copy_components": true,
+      "count_multiplier": 1.0
+    }
+    ```
+  * `insanelib:inject_loot_table` — injects the contents of another loot table into the current one
+    ```json
+    {
+      "type": "insanelib:inject_loot_table",
+      "conditions": [...],
+      "loot_table": "minecraft:chests/simple_dungeon"
+    }
+    ```
+  * `insanelib:drop_multiplier` — multiplies the count of matching items in loot
+    ```json
+    {
+      "type": "insanelib:drop_multiplier",
+      "conditions": [...],
+      "item": "minecraft:wheat",
+      "multiplier": 2.0
+    }
+    ```
+  * `insanelib:loot_purger` — removes or damages items based on distance from world spawn; useful for progressive loot difficulty
+    ```json
+    {
+      "type": "insanelib:loot_purger",
+      "conditions": [...],
+      "end_range": 5000,
+      "start_range": 0,
+      "multiplier_at_start": 0.0,
+      "apply_to_damageable": false,
+      "blacklisted_items_tag": "insanelib:loot_purger_blacklist",
+      "blacklisted_entity_type_tag": "insanelib:loot_purger_entity_blacklist"
+    }
+    ```
+    Items are progressively purged the closer to spawn the loot generates. At `start_range` the survival chance is `multiplier_at_start`, at `end_range` it is 1. `apply_to_damageable` damages items proportionally instead of removing them.
+  * `insanelib:disenchant` — removes enchantments from all items; enchanted books become plain books
+    ```json
+    {
+      "type": "insanelib:disenchant",
+      "conditions": [...],
+      "blacklisted_items_tag": "insanelib:disenchant_blacklist"
+    }
+    ```
+* Added loot functions:
+  * `insanelib:enchant_randomly_weightless` — enchants an item with a given number of random enchantments, each chosen with equal probability (no weight). Supports books.
+    ```json
+    {
+      "function": "insanelib:enchant_randomly_weightless",
+      "conditions": [...],
+      "count": 2,
+      "max_lvl": false,
+      "treasure": false
+    }
+    ```
+    `count`: number of enchantments to apply (supports number providers). `max_lvl`: always apply the maximum level. `treasure`: allow treasure enchantments (tag `minecraft:treasure`).
+  * `insanelib:enchant_with_treasure` — applies a single random treasure enchantment to the item. Supports books.
+    ```json
+    {
+      "function": "insanelib:enchant_with_treasure",
+      "conditions": [...],
+      "allow_curses": true,
+      "allow_treasure": true
+    }
+    ```
+    `allow_curses`: include curse enchantments (tag `minecraft:curse`). `allow_treasure`: include non-curse treasure enchantments.
+* Added loot conditions:
+  * `insanelib:block_tag_match` — passes if the broken block is in the given tag (returns true if no block state is in context)
+    ```json
+    { "condition": "insanelib:block_tag_match", "block_tag": "minecraft:logs" }
+    ```
+  * `insanelib:killer_has_advancement` — passes if the killing player has completed the given advancement
+    ```json
+    { "condition": "insanelib:killer_has_advancement", "advancement": "minecraft:story/mine_diamond" }
+    ```
+  * `insanelib:non_player_arised_drop` — passes if the drop was not caused by a player, explosion, or tool (i.e. natural mob death without a player killer)
+    ```json
+    { "condition": "insanelib:non_player_arised_drop" }
+    ```
+
 ## 2.4.7.1-beta
 ### Technical
 * Fixed self() methods not being @Unique
