@@ -1,3 +1,7 @@
+## 2.4.9.0-beta
+### Technical
+* Added back json utilities (`ILGsonHelper` and validators)
+
 ## 2.4.8.0-beta
 ### Technical
 * Added loot modifiers:
