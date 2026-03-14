@@ -1,3 +1,7 @@
+## 2.4.9.1-beta
+### Technical
+* Added `JsonFeature#loadAndReadJson` overloads for specifying the registry
+
 ## 2.4.9.0-beta
 ### Technical
 * Added back json utilities (`ILGsonHelper` and validators)

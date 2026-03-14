@@ -68,7 +68,15 @@ public abstract class JsonFeature extends Feature {
     }
 
     protected static <T> void loadAndReadJson(String json, List<T> list, final List<T> defaultList, Type listType) {
-        Gson gson = InsaneLib.createGson();
+        loadAndReadJson(json, list, defaultList, listType, (TypeAdapterFactory) null);
+    }
+
+    protected static <T, R> void loadAndReadJson(String json, List<T> list, final List<T> defaultList, Type listType, ResourceKey<Registry<R>> registryKey) {
+        loadAndReadJson(json, list, defaultList, listType, new ObjTag.AdapterFactory<>(registryKey));
+    }
+
+    private static <T> void loadAndReadJson(String json, List<T> list, final List<T> defaultList, Type listType, @Nullable TypeAdapterFactory adapterFactory) {
+        Gson gson = InsaneLib.createGson(adapterFactory);
         list.clear();
         List<T> listRead;
         try {
