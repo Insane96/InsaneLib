@@ -1,3 +1,7 @@
+## 2.4.9.2-beta
+### Technical
+* Allow `ObjTag` to use dynamic registries
+
 ## 2.4.9.1-beta
 ### Technical
 * Added `JsonFeature#loadAndReadJson` overloads for specifying the registry

@@ -49,6 +49,7 @@ public class ObjTag<T> {
     private TagKey<T> tag;
     @Nullable
     private ResourceLocation requestedId;
+    @Nullable
     private final Registry<T> registry;
     private final ResourceKey<Registry<T>> registryKey;
     //TODO Add dimension
@@ -65,6 +66,20 @@ public class ObjTag<T> {
         this.tag = tag;
         this.registry = registry;
         this.registryKey = (ResourceKey<Registry<T>>) registry.key();
+    }
+
+    /** For dynamic registries not present in {@link BuiltInRegistries} — direct object reference deferred by id. */
+    private ObjTag(ResourceLocation requestedId, ResourceKey<Registry<T>> registryKey) {
+        this.requestedId = requestedId;
+        this.registry = null;
+        this.registryKey = registryKey;
+    }
+
+    /** For dynamic registries not present in {@link BuiltInRegistries} — tag reference. */
+    private ObjTag(TagKey<T> tag, ResourceKey<Registry<T>> registryKey) {
+        this.tag = tag;
+        this.registry = null;
+        this.registryKey = registryKey;
     }
 
     /**
@@ -100,7 +115,8 @@ public class ObjTag<T> {
         //noinspection unchecked
         Registry<T> reg = (Registry<T>) BuiltInRegistries.REGISTRY.get(registry.location());
         if (reg == null)
-            throw new IllegalArgumentException("Unknown registry %s".formatted(registry.location()));
+            // Dynamic registry (e.g. enchantments in 1.21.1) — defer resolution to match time
+            return new ObjTag<>(id, registry);
         T resolved = reg.containsKey(id) ? reg.get(id) : null;
         ObjTag<T> objTag = objOf(resolved, reg);
         if (resolved == null)
@@ -115,7 +131,8 @@ public class ObjTag<T> {
         //noinspection unchecked
         Registry<T> reg = (Registry<T>) BuiltInRegistries.REGISTRY.get(registry.location());
         if (reg == null)
-            throw new IllegalArgumentException("Unknown registry %s".formatted(registry.location()));
+            // Dynamic registry — store tag key only, use Holder.is() at match time
+            return new ObjTag<>(TagKey.create(registry, id), registry);
         return tagOf(TagKey.create(registry, id), reg);
     }
 
@@ -138,7 +155,22 @@ public class ObjTag<T> {
      * Returns false if the requested id was not found in the registry.
      */
     public boolean isValid() {
-        return this.obj != null || this.tag != null;
+        return this.obj != null || this.tag != null || this.requestedId != null;
+    }
+
+    /**
+     * Returns true if the given holder matches this ObjTag.
+     * Works for both built-in and dynamic registries.
+     * Prefer this over {@link #matches(Object)} when a {@link Holder} is available.
+     */
+    public boolean matches(Holder<T> holder) {
+        if (this.tag != null)
+            return holder.is(this.tag);
+        if (this.obj != null)
+            return holder.value().equals(this.obj);
+        if (this.requestedId != null)
+            return holder.is(this.requestedId);
+        return false;
     }
 
     /**
@@ -150,6 +182,10 @@ public class ObjTag<T> {
             return true;
         if (this.tag == null)
             return false;
+        if (this.registry == null) {
+            InsaneLib.LOGGER.debug("Registry {} not available for tag matching on {}", this.registryKey, this.tag);
+            return false;
+        }
         Optional<HolderSet.Named<T>> tag = this.registry.getTag(this.tag);
         if (tag.isEmpty()) {
             InsaneLib.LOGGER.debug("Tag {} not found", this.tag);
@@ -160,11 +196,12 @@ public class ObjTag<T> {
     }
 
     /**
-     * Returns the object wrapped as a {@link Holder}, or {@code null} if this ObjTag represents a tag.
+     * Returns the object wrapped as a {@link Holder}, or {@code null} if this ObjTag represents a tag
+     * or an unresolved dynamic registry reference.
      */
     @Nullable
     public Holder<T> asHolder() {
-        if (this.obj == null) return null;
+        if (this.obj == null || this.registry == null) return null;
         return this.registry.wrapAsHolder(this.obj);
     }
 
