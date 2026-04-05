@@ -131,19 +131,16 @@ public class ModNBTData {
     }
 
     private static String getNestedKey(String path) {
-        String key = path;
-        if (key.contains("/")) {
-            String[] parts = path.split("/");
-            key = parts[parts.length - 1];
-        }
-        return key;
+        int lastSlash = path.lastIndexOf('/');
+        return lastSlash < 0 ? path : path.substring(lastSlash + 1);
     }
 
     private static CompoundTag getNestedCompounds(String path, CompoundTag modData) {
-        if (path.contains("/")) {
-            String[] parts = path.split("/");
-            for (int i = 0; i < parts.length - 1; i++)
-                modData = getModData(modData, parts[i]);
+        int start = 0;
+        int end;
+        while ((end = path.indexOf('/', start)) >= 0) {
+            modData = getModData(modData, path.substring(start, end));
+            start = end + 1;
         }
         return modData;
     }

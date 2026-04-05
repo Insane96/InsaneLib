@@ -1,3 +1,6 @@
+## 2.4.9.3-beta
+* Optimized ModNBTData path parsing to avoid regex overhead on every NBT access
+
 ## 2.4.9.2-beta
 ### Technical
 * Allow `ObjTag` to use dynamic registries
