@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.23.4.4
+* Optimized ModNBTData path parsing to avoid regex overhead on every NBT access 
+
 ## 1.23.4.3
 * Scaffolding is no longer affected by Better Falling Blocks
 
