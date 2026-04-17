@@ -1,3 +1,6 @@
+## 2.4.11.0-beta
+* Added `insanelib:enchantability` item component
+
 ## 2.4.10.0-beta
 * Added `merge_components` array for item_components
   * Arrays are concatenated, objects are recursively merged, and primitives are overridden.  
