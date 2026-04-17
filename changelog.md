@@ -1,3 +1,8 @@
+## 2.4.10.0-beta
+* Added `merge_components` array for item_components
+  * Arrays are concatenated, objects are recursively merged, and primitives are overridden.  
+    This is useful for adding entries to a list component (e.g. appending attribute modifiers) without discarding the item's existing values
+
 ## 2.4.9.3-beta
 * Optimized ModNBTData path parsing to avoid regex overhead on every NBT access
 

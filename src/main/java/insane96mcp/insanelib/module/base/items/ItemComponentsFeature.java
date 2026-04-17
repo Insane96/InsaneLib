@@ -1,6 +1,8 @@
 package insane96mcp.insanelib.module.base.items;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.mojang.serialization.JsonOps;
 import insane96mcp.insanelib.InsaneLib;
 import insane96mcp.insanelib.core.feature.Feature;
@@ -68,7 +70,7 @@ public class ItemComponentsFeature extends Feature {
                 InsaneLib.LOGGER.warn("ItemComponents: item '{}' not found in registry, skipping", definition.item().toSerializedString());
                 continue;
             }
-            if (definition.componentsRaw().isEmpty() && definition.removeComponents().isEmpty())
+            if (definition.componentsRaw().isEmpty() && definition.mergeComponentsRaw().isEmpty() && definition.removeComponents().isEmpty())
                 continue;
 
             Map<DataComponentType<?>, Object> decoded = decodeComponents(definition.componentsRaw(), ops);
@@ -95,6 +97,32 @@ public class ItemComponentsFeature extends Feature {
                     }
                     setMap.remove(type);
                     removeSet.add(type);
+                }
+
+                // Merge operations: deep-merge JSON into existing value (arrays concatenated, objects recursively merged)
+                for (Map.Entry<ResourceLocation, JsonElement> entry : definition.mergeComponentsRaw().entrySet()) {
+                    DataComponentType<?> type = BuiltInRegistries.DATA_COMPONENT_TYPE.get(entry.getKey());
+                    if (type == null) {
+                        InsaneLib.LOGGER.warn("ItemComponents: unknown component type '{}' in merge_components, skipping", entry.getKey());
+                        continue;
+                    }
+                    if (type.codec() == null) {
+                        InsaneLib.LOGGER.warn("ItemComponents: component type '{}' in merge_components is transient (no codec), skipping", entry.getKey());
+                        continue;
+                    }
+                    removeSet.remove(type);
+                    Object existingValue = setMap.containsKey(type) ? setMap.get(type) : item.components().get(type);
+                    try {
+                        if (existingValue == null) {
+                            setMap.put(type, decodeComponent(type, entry.getValue(), ops));
+                        } else {
+                            JsonElement existingJson = encodeComponent(type, existingValue, ops);
+                            JsonElement merged = deepMerge(existingJson, entry.getValue());
+                            setMap.put(type, decodeComponent(type, merged, ops));
+                        }
+                    } catch (Exception e) {
+                        InsaneLib.LOGGER.error("ItemComponents: failed to merge component '{}': {}", entry.getKey(), e.getMessage());
+                    }
                 }
             }
         }
@@ -138,6 +166,26 @@ public class ItemComponentsFeature extends Feature {
 
     private static <T> T decodeComponent(DataComponentType<T> type, JsonElement json, RegistryOps<JsonElement> ops) {
         return type.codec().parse(ops, json).getOrThrow();
+    }
+
+    @SuppressWarnings("unchecked")
+    private static <T> JsonElement encodeComponent(DataComponentType<T> type, Object value, RegistryOps<JsonElement> ops) {
+        return type.codec().encodeStart(ops, (T) value).getOrThrow();
+    }
+
+    private static JsonElement deepMerge(JsonElement base, JsonElement override) {
+        if (base.isJsonObject() && override.isJsonObject()) {
+            JsonObject result = base.getAsJsonObject().deepCopy();
+            for (Map.Entry<String, JsonElement> e : override.getAsJsonObject().entrySet())
+                result.add(e.getKey(), result.has(e.getKey()) ? deepMerge(result.get(e.getKey()), e.getValue()) : e.getValue());
+            return result;
+        } else if (base.isJsonArray() && override.isJsonArray()) {
+            JsonArray result = new JsonArray();
+            result.addAll(base.getAsJsonArray());
+            result.addAll(override.getAsJsonArray());
+            return result;
+        }
+        return override;
     }
 
     @SuppressWarnings("unchecked")

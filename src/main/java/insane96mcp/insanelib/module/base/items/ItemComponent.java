@@ -56,6 +56,29 @@ import java.util.Map;
  * }
  * }</pre>
  *
+ * <p>Use {@code "merge_components"} to deep-merge component values with the item's existing ones instead of
+ * replacing them. Arrays are concatenated, objects are recursively merged, and primitives are overridden.
+ * This is useful for adding entries to a list component (e.g. appending attribute modifiers) without
+ * discarding the item's existing values:
+ * <pre>{@code
+ * {
+ *   "item": "minecraft:iron_pickaxe",
+ *   "merge_components": {
+ *     "minecraft:attribute_modifiers": {
+ *       "modifiers": [
+ *         {
+ *           "type": "insanesurvivaloverhaul:piercing_damage",
+ *           "id": "insanesurvivaloverhaul:piercing_damage",
+ *           "amount": 1.0,
+ *           "operation": "add_value",
+ *           "slot": "mainhand"
+ *         }
+ *       ]
+ *     }
+ *   }
+ * }
+ * }</pre>
+ *
  * <p>The optional {@code "priority"} field (integer, default {@code 0}) controls merge order when multiple
  * definitions target the same item. Higher priority wins — definitions are applied in ascending priority order,
  * so a definition with priority {@code 10} overwrites one with priority {@code 0}. Definitions with equal
@@ -64,7 +87,7 @@ import java.util.Map;
  * <p>When multiple definitions target the same item, they are merged — higher priority wins per component type.
  * A higher-priority remove overrides a lower-priority set, and vice versa.
  */
-public record ItemComponent(ObjTag<Item> item, Map<ResourceLocation, JsonElement> componentsRaw, List<ResourceLocation> removeComponents, int priority) {
+public record ItemComponent(ObjTag<Item> item, Map<ResourceLocation, JsonElement> componentsRaw, Map<ResourceLocation, JsonElement> mergeComponentsRaw, List<ResourceLocation> removeComponents, int priority) {
 
     public static ItemComponent fromJson(JsonObject json) {
         ObjTag<Item> item = ObjTag.deserialize(json.get("item"), Registries.ITEM);
@@ -75,6 +98,13 @@ public record ItemComponent(ObjTag<Item> item, Map<ResourceLocation, JsonElement
                 componentsRaw.put(ResourceLocation.parse(entry.getKey()), entry.getValue());
             }
         }
+        Map<ResourceLocation, JsonElement> mergeComponentsRaw = new LinkedHashMap<>();
+        if (json.has("merge_components")) {
+            JsonObject mergeComponents = json.getAsJsonObject("merge_components");
+            for (Map.Entry<String, JsonElement> entry : mergeComponents.entrySet()) {
+                mergeComponentsRaw.put(ResourceLocation.parse(entry.getKey()), entry.getValue());
+            }
+        }
         List<ResourceLocation> removeComponents = new ArrayList<>();
         if (json.has("remove_components")) {
             for (JsonElement element : json.getAsJsonArray("remove_components")) {
@@ -82,6 +112,6 @@ public record ItemComponent(ObjTag<Item> item, Map<ResourceLocation, JsonElement
             }
         }
         int priority = json.has("priority") ? json.get("priority").getAsInt() : 0;
-        return new ItemComponent(item, componentsRaw, removeComponents, priority);
+        return new ItemComponent(item, componentsRaw, mergeComponentsRaw, removeComponents, priority);
     }
 }
