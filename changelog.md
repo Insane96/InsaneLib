@@ -1,3 +1,6 @@
+## 2.4.12.2-beta
+* Crash fix
+
 ## 2.4.12.1-beta
 * Crash fix
 

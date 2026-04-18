@@ -76,12 +76,12 @@ public class SerializableMobEffectInstance {
 			if (id == null) {
 				throw new JsonParseException("Invalid id: %s".formatted(sId));
 			}
-			MobEffect mobEffect = BuiltInRegistries.MOB_EFFECT.get(id);
-			if (mobEffect == null) {
+			var holderOpt = BuiltInRegistries.MOB_EFFECT.getHolder(id);
+			if (holderOpt.isEmpty()) {
 				throw new JsonParseException("%s is not a known mob_effect".formatted(id));
 			}
 			int duration = GsonHelper.getAsInt(jObject, "duration");
-			Builder builder = new Builder(Holder.direct(mobEffect), duration);
+			Builder builder = new Builder(holderOpt.get(), duration);
 			if (jObject.has("amplifier"))
 				builder.setAmplifier(GsonHelper.getAsInt(jObject, "amplifier"));
 			if (jObject.has("amplifier"))
