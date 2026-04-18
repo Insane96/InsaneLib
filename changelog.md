@@ -1,3 +1,7 @@
+## 2.4.12.0-beta
+### Technical
+* Added `SerializableMobEffectInstance`
+
 ## 2.4.11.0-beta
 * Added `insanelib:enchantability` item component
 
