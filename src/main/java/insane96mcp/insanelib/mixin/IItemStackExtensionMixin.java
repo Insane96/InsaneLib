@@ -12,7 +12,7 @@ public interface IItemStackExtensionMixin {
     /**
      * Returns insanelib:enchantability component value when present, overriding the item's default enchantability
      */
-    @ModifyReturnValue(method = "getEnchantmentValue", at = @At("RETURN"))
+    @ModifyReturnValue(method = "getEnchantmentValue", at = @At("RETURN"), remap = false)
     private int insanelib$onGetEnchantmentValue(int original) {
         Integer enchantability = ((ItemStack) (Object) this).get(ILDataComponents.ENCHANTABILITY.get());
         if (enchantability != null)
