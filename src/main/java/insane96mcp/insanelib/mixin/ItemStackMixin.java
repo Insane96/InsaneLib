@@ -2,7 +2,6 @@ package insane96mcp.insanelib.mixin;
 
 import insane96mcp.insanelib.event.ILEventFactory;
 import insane96mcp.insanelib.module.base.items.ItemComponentsReloadListener;
-import insane96mcp.insanelib.setup.ILDataComponents;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.PatchedDataComponentMap;
 import net.minecraft.server.level.ServerLevel;
@@ -40,16 +39,6 @@ public abstract class ItemStackMixin {
         if (override == null)
             return;
         cir.setReturnValue(PatchedDataComponentMap.fromPatch(override, this.components.asPatch()));
-    }
-
-    /**
-     * Returns insanelib:enchantability component value when present, overriding the item's default enchantability
-     */
-    @Inject(method = "getEnchantmentValue", at = @At("RETURN"), cancellable = true)
-    private void insanelib$onGetEnchantmentValue(CallbackInfoReturnable<Integer> cir) {
-        Integer enchantability = ((ItemStack) (Object) this).get(ILDataComponents.ENCHANTABILITY.get());
-        if (enchantability != null)
-            cir.setReturnValue(enchantability);
     }
 
     @ModifyVariable(at = @At(value = "STORE", ordinal = 0), method = "hurtAndBreak(ILnet/minecraft/server/level/ServerLevel;Lnet/minecraft/world/entity/LivingEntity;Ljava/util/function/Consumer;)V", ordinal = 0, argsOnly = true)
