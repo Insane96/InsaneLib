@@ -54,6 +54,7 @@ public class InsaneLib {
         ILConditions.LOOT_CONDITIONS.register(eventBus);
         ILGlobalLootModifiers.REGISTRY.register(eventBus);
         ILLootFunctions.REGISTRY.register(eventBus);
+        ILCriteriaTriggers.REGISTRY.register(eventBus);
 
         eventBus.addListener(InsaneLib::clientSetup);
         eventBus.addListener(IntegratedPack::onAddPackFinders);
@@ -61,6 +62,7 @@ public class InsaneLib {
         eventBus.addListener(PushResistance::attribute);
         NeoForge.EVENT_BUS.addListener(this::onAddReloadListeners);
         NeoForge.EVENT_BUS.addListener(this::onRegisterCommands);
+        NeoForge.EVENT_BUS.addListener(ILCriteriaTriggers::onBlockBreak);
     }
 
     private void onRegisterCommands(RegisterCommandsEvent event) {

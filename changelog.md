@@ -1,3 +1,7 @@
+## 2.4.13.0-beta
+* Added `block_broken` advancement trigger
+* Renamed `allow_curses` field to `allow_non_curse_treasure` in `insanelib:enchant_with_treasure`
+
 ## 2.4.12.2-beta
 * Crash fix
 
