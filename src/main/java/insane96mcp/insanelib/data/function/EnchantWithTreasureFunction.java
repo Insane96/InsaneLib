@@ -32,7 +32,7 @@ import java.util.List;
  *   "function": "insanelib:enchant_with_treasure",
  *   "conditions": [...],
  *   "allow_curses": true,
- *   "allow_treasure": true
+ *   "allow_non_curse_treasure": true
  * }
  * }</pre>
  */
@@ -42,7 +42,7 @@ public class EnchantWithTreasureFunction extends LootItemConditionalFunction {
             commonFields(inst).and(
                     inst.group(
                             Codec.BOOL.optionalFieldOf("allow_curses", true).forGetter(f -> f.allowCurses),
-                            Codec.BOOL.optionalFieldOf("allow_treasure", true).forGetter(f -> f.allowTreasure)
+                            Codec.BOOL.optionalFieldOf("allow_non_curse_treasure", true).forGetter(f -> f.allowNonCurseTreasure)
                     )
             ).apply(inst, EnchantWithTreasureFunction::new)
     );
@@ -50,12 +50,12 @@ public class EnchantWithTreasureFunction extends LootItemConditionalFunction {
     /** If {@code true}, curse enchantments (tag {@code minecraft:curse}) are included in the pool. */
     final boolean allowCurses;
     /** If {@code true}, non-curse treasure enchantments are included in the pool. */
-    final boolean allowTreasure;
+    final boolean allowNonCurseTreasure;
 
-    protected EnchantWithTreasureFunction(List<LootItemCondition> conditions, boolean allowCurses, boolean allowTreasure) {
+    protected EnchantWithTreasureFunction(List<LootItemCondition> conditions, boolean allowCurses, boolean allowNonCurseTreasure) {
         super(conditions);
         this.allowCurses = allowCurses;
-        this.allowTreasure = allowTreasure;
+        this.allowNonCurseTreasure = allowNonCurseTreasure;
     }
 
     @Override
@@ -66,7 +66,7 @@ public class EnchantWithTreasureFunction extends LootItemConditionalFunction {
                 .filter(holder -> stack.supportsEnchantment(holder)
                         && holder.is(EnchantmentTags.TREASURE)
                         && (!holder.is(EnchantmentTags.CURSE) || this.allowCurses)
-                        && (holder.is(EnchantmentTags.CURSE) || this.allowTreasure))
+                        && (holder.is(EnchantmentTags.CURSE) || this.allowNonCurseTreasure))
                 .toList();
 
         if (list.isEmpty())
