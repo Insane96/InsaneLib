@@ -9,7 +9,8 @@ import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
-import net.minecraft.commands.arguments.ResourceLocationArgument;
+import net.minecraft.commands.arguments.item.ItemArgument;
+import net.minecraft.commands.arguments.item.ItemInput;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.TypedDataComponent;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -33,14 +34,11 @@ public class ILCommand {
                                             return 1;
                                         }))))
                 .then(Commands.literal("get_data_components")
-                        .then(Commands.argument("item", ResourceLocationArgument.id())
+                        .then(Commands.argument("item", ItemArgument.item(context))
                                 .executes(ctx -> {
-                                    ResourceLocation id = ResourceLocationArgument.getId(ctx, "item");
-                                    Item item = BuiltInRegistries.ITEM.getOptional(id).orElse(null);
-                                    if (item == null) {
-                                        ctx.getSource().sendFailure(Component.literal("Unknown item: " + id));
-                                        return 0;
-                                    }
+                                    ItemInput input = ItemArgument.getItem(ctx, "item");
+                                    Item item = input.getItem();
+                                    ResourceLocation id = BuiltInRegistries.ITEM.getKey(item);
 
                                     RegistryOps<JsonElement> ops = RegistryOps.create(JsonOps.INSTANCE, ctx.getSource().registryAccess());
                                     boolean isPatched = ItemComponentsReloadListener.PATCHED_COMPONENTS.containsKey(item);
