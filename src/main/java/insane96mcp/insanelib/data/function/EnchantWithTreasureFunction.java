@@ -31,8 +31,8 @@ import java.util.List;
  * {
  *   "function": "insanelib:enchant_with_treasure",
  *   "conditions": [...],
- *   "allow_curses": true,
- *   "allow_non_curse_treasure": true
+ *   "ignore_curses": false,
+ *   "ignore_treasures": false
  * }
  * }</pre>
  */
@@ -41,21 +41,21 @@ public class EnchantWithTreasureFunction extends LootItemConditionalFunction {
     public static final MapCodec<EnchantWithTreasureFunction> CODEC = RecordCodecBuilder.mapCodec(inst ->
             commonFields(inst).and(
                     inst.group(
-                            Codec.BOOL.optionalFieldOf("allow_curses", true).forGetter(f -> f.allowCurses),
-                            Codec.BOOL.optionalFieldOf("allow_non_curse_treasure", true).forGetter(f -> f.allowNonCurseTreasure)
+                            Codec.BOOL.optionalFieldOf("ignore_curses", false).forGetter(f -> f.ignoreCurses),
+                            Codec.BOOL.optionalFieldOf("ignore_treasures", false).forGetter(f -> f.ignoreTreasures)
                     )
             ).apply(inst, EnchantWithTreasureFunction::new)
     );
 
-    /** If {@code true}, curse enchantments (tag {@code minecraft:curse}) are included in the pool. */
-    final boolean allowCurses;
-    /** If {@code true}, non-curse treasure enchantments are included in the pool. */
-    final boolean allowNonCurseTreasure;
+    /** If {@code true}, curse enchantments (tag {@code minecraft:curse}) are excluded from the pool. */
+    final boolean ignoreCurses;
+    /** If {@code true}, non-curse treasure enchantments are excluded from the pool. */
+    final boolean ignoreTreasures;
 
-    protected EnchantWithTreasureFunction(List<LootItemCondition> conditions, boolean allowCurses, boolean allowNonCurseTreasure) {
+    protected EnchantWithTreasureFunction(List<LootItemCondition> conditions, boolean ignoreCurses, boolean ignoreTreasures) {
         super(conditions);
-        this.allowCurses = allowCurses;
-        this.allowNonCurseTreasure = allowNonCurseTreasure;
+        this.ignoreCurses = ignoreCurses;
+        this.ignoreTreasures = ignoreTreasures;
     }
 
     @Override
@@ -65,8 +65,8 @@ public class EnchantWithTreasureFunction extends LootItemConditionalFunction {
         List<Holder.Reference<Enchantment>> list = lookup.listElements()
                 .filter(holder -> stack.supportsEnchantment(holder)
                         && holder.is(EnchantmentTags.TREASURE)
-                        && (!holder.is(EnchantmentTags.CURSE) || this.allowCurses)
-                        && (holder.is(EnchantmentTags.CURSE) || this.allowNonCurseTreasure))
+                        && (!holder.is(EnchantmentTags.CURSE) || !this.ignoreCurses)
+                        && (holder.is(EnchantmentTags.CURSE) || !this.ignoreTreasures))
                 .toList();
 
         if (list.isEmpty())

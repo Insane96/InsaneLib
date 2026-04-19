@@ -1,6 +1,7 @@
 ## 2.4.13.0-beta
 * Added `block_broken` advancement trigger
-* Renamed `allow_curses` field to `allow_non_curse_treasure` in `insanelib:enchant_with_treasure`
+* `insanelib:enchant_with_treasure`
+  * Renamed `allow_curses` and `allow_treasure` to `ignore_curses` and `ignore_treasures`
 
 ## 2.4.12.2-beta
 * Crash fix
@@ -105,11 +106,11 @@
     {
       "function": "insanelib:enchant_with_treasure",
       "conditions": [...],
-      "allow_curses": true,
-      "allow_treasure": true
+      "ignore_curses": false,
+      "ignore_treasures": false
     }
     ```
-    `allow_curses`: include curse enchantments (tag `minecraft:curse`). `allow_treasure`: include non-curse treasure enchantments.
+    `ignore_curses`: exclude curse enchantments (tag `minecraft:curse`). `ignore_treasures`: exclude non-curse treasure enchantments.
 * Added loot conditions:
   * `insanelib:block_tag_match` — passes if the broken block is in the given tag (returns true if no block state is in context)
     ```json
