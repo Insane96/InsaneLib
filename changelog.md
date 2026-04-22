@@ -1,3 +1,6 @@
+## 2.4.13.1
+* Fixed Integrated resource packs not being enabled by default
+
 ## 2.4.13.0-beta
 * Added `block_broken` advancement trigger
 * `insanelib:enchant_with_treasure`

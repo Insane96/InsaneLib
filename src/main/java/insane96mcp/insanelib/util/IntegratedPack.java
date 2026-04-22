@@ -111,7 +111,7 @@ public class IntegratedPack implements Comparable<IntegratedPack> {
             );
 
             var selectionConfig = new PackSelectionConfig(
-                    integratedPack.shouldBeEnabled() && integratedPack.getPackType() != PackType.CLIENT_RESOURCES,
+                    integratedPack.shouldBeEnabled(),
                     Pack.Position.TOP,
                     false
             );
