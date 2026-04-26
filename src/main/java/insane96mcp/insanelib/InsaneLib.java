@@ -7,12 +7,15 @@ import com.mojang.logging.LogUtils;
 import insane96mcp.insanelib.command.ILCommand;
 import insane96mcp.insanelib.data.AttributeModifierOperationSerializer;
 import insane96mcp.insanelib.data.JsonFeatureDataReloadListener;
+import insane96mcp.insanelib.datagen.ILItemTagProvider;
 import insane96mcp.insanelib.module.base.PushResistance;
 import insane96mcp.insanelib.module.base.items.ItemComponentsReloadListener;
 import insane96mcp.insanelib.network.NetworkHandler;
 import insane96mcp.insanelib.setup.*;
 import insane96mcp.insanelib.util.IntegratedPack;
 import net.minecraft.Util;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.neoforged.bus.api.IEventBus;
@@ -22,6 +25,8 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.common.data.BlockTagsProvider;
+import net.neoforged.neoforge.data.event.GatherDataEvent;
 import net.neoforged.neoforge.event.AddReloadListenerEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import org.slf4j.Logger;
@@ -60,6 +65,7 @@ public class InsaneLib {
         eventBus.addListener(IntegratedPack::onAddPackFinders);
         eventBus.addListener(NetworkHandler::register);
         eventBus.addListener(PushResistance::attribute);
+        eventBus.addListener(InsaneLib::gatherData);
         NeoForge.EVENT_BUS.addListener(this::onAddReloadListeners);
         NeoForge.EVENT_BUS.addListener(this::onRegisterCommands);
         NeoForge.EVENT_BUS.addListener(ILCriteriaTriggers::onBlockBreak);
@@ -78,6 +84,17 @@ public class InsaneLib {
     public static void clientSetup(FMLClientSetupEvent event) {
         ONE_DECIMAL_FORMATTER = Util.make(new DecimalFormat("#.#"),
                 fmt -> fmt.setDecimalFormatSymbols(DecimalFormatSymbols.getInstance(Locale.ROOT)));
+    }
+
+    public static void gatherData(GatherDataEvent event) {
+        PackOutput output = event.getGenerator().getPackOutput();
+        BlockTagsProvider blockTagsProvider = new BlockTagsProvider(output, event.getLookupProvider(), MOD_ID, event.getExistingFileHelper()) {
+            @Override
+            protected void addTags(HolderLookup.Provider provider) {}
+        };
+        event.getGenerator().addProvider(event.includeServer(), blockTagsProvider);
+        event.getGenerator().addProvider(event.includeServer(),
+                new ILItemTagProvider(output, event.getLookupProvider(), blockTagsProvider.contentsGetter(), event.getExistingFileHelper()));
     }
 
     /**

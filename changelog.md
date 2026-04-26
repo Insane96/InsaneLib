@@ -1,3 +1,7 @@
+## 2.4.14.0
+* Added GetMaxDamageEvent to modify item's max damage
+* Added Item Tags for equipment by material
+
 ## 2.4.13.1
 * Fixed Integrated resource packs not being enabled by default
 
