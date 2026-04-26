@@ -10,6 +10,7 @@
         "FallingBlockEntityMixin",
         "FireBlockMixin",
         "FishMoveControlMixin",
+        "IItemExtensionMixin",
         "IItemStackExtensionMixin",
         "ItemMixin",
         "ItemStackMixin",

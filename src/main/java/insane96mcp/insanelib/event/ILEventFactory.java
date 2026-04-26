@@ -66,4 +66,10 @@ public class ILEventFactory {
         NeoForge.EVENT_BUS.post(event);
         return event.getSpeedModifier();
     }
+
+    public static int getMaxDamage(ItemStack stack, int original) {
+        GetMaxDamageEvent event = new GetMaxDamageEvent(stack, original);
+        NeoForge.EVENT_BUS.post(event);
+        return event.getMaxDamage();
+    }
 }
