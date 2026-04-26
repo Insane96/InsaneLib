@@ -14,7 +14,7 @@ import net.neoforged.neoforge.network.registration.NetworkRegistry;
 public record JsonConfigSyncMessage(ResourceLocation syncType, String json) implements CustomPacketPayload {
 
     public static final CustomPacketPayload.Type<JsonConfigSyncMessage> TYPE =
-            new CustomPacketPayload.Type<>(InsaneLib.location("json_config_sync"));
+            new CustomPacketPayload.Type<>(InsaneLib.id("json_config_sync"));
 
     public static final StreamCodec<FriendlyByteBuf, JsonConfigSyncMessage> STREAM_CODEC = new StreamCodec<>() {
         @Override

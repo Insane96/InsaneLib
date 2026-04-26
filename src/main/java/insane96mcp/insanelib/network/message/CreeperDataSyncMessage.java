@@ -19,7 +19,7 @@ import net.neoforged.neoforge.network.registration.NetworkRegistry;
 
 public record CreeperDataSyncMessage(int id, int maxSwell, int explosionRadius) implements CustomPacketPayload {
     public static final CustomPacketPayload.Type<CreeperDataSyncMessage> TYPE =
-            new CustomPacketPayload.Type<>(InsaneLib.location("creeper_data_sync"));
+            new CustomPacketPayload.Type<>(InsaneLib.id("creeper_data_sync"));
 
     public static final StreamCodec<ByteBuf, CreeperDataSyncMessage> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.VAR_INT, CreeperDataSyncMessage::id,

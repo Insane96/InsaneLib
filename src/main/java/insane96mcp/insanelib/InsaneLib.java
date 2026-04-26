@@ -49,7 +49,7 @@ public class InsaneLib {
     public static DecimalFormat ONE_DECIMAL_FORMATTER;
 
     public InsaneLib(IEventBus eventBus, ModContainer modContainer) {
-        CONFIG = new ILModConfig(location("base"), "Base", ModConfig.Type.COMMON,
+        CONFIG = new ILModConfig(id("base"), "Base", ModConfig.Type.COMMON,
                 eventBus, InsaneLib.class.getClassLoader());
         modContainer.registerConfig(ModConfig.Type.COMMON, CONFIG.spec, MOD_ID + "/common.toml");
 
@@ -103,7 +103,7 @@ public class InsaneLib {
      * @param path The specific path for the resource within the mod's namespace.
      * @return A {@link ResourceLocation} with the mod's namespace and the given path.
      */
-    public static ResourceLocation location(String path) {
+    public static ResourceLocation id(String path) {
         return ResourceLocation.fromNamespaceAndPath(MOD_ID, path);
     }
 

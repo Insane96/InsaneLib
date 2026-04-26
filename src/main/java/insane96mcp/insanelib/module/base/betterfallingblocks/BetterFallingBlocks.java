@@ -13,7 +13,7 @@ import net.minecraft.world.level.block.Block;
 		canBeDisabled = false
 )
 public class BetterFallingBlocks extends Feature {
-	public static final TagKey<Block> BLACKLISTED_BLOCKS = TagKey.create(Registries.BLOCK, InsaneLib.location("blacklisted_better_falling_blocks"));
+	public static final TagKey<Block> BLACKLISTED_BLOCKS = TagKey.create(Registries.BLOCK, InsaneLib.id("blacklisted_better_falling_blocks"));
 
     @Config(description = "If true, falling blocks will break blocks that are instabreakable and place instead of dropping. If the falling block ends in a non-insta-break block, it will move to the side instead.")
     public static Boolean breakInstabreakBlocks = true;

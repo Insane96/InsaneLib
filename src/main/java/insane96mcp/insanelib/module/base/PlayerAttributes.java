@@ -16,8 +16,8 @@ import java.util.List;
 
 @LoadFeature(description = "Apply attribute modifiers to players. Attributes can be added in the config folder of this feature's folder (requires a world to be opened at least once). Updating attribute modifiers of players them to rejoin")
 public class PlayerAttributes extends JsonFeature {
-	public static final ResourceLocation MOVEMENT_SPEED_REDUCTION_ID = InsaneLib.location("player_movement_speed_reduction");
-	public static final ResourceLocation BLOCK_REACH_REDUCTION_ID = InsaneLib.location("player_block_reach_reduction");
+	public static final ResourceLocation MOVEMENT_SPEED_REDUCTION_ID = InsaneLib.id("player_movement_speed_reduction");
+	public static final ResourceLocation BLOCK_REACH_REDUCTION_ID = InsaneLib.id("player_block_reach_reduction");
 	//@Config(description = "In vanilla, if you attack as soon as you just attacked you already deal 20% of the full damage. This changes that to 0%.")
 	//public static Boolean noDamageWhenSpamming = true;
 

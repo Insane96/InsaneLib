@@ -68,7 +68,7 @@ public class ILTags {
         public static final TagKey<Item> EQUIPMENT_TURTLE = tag("equipment/turtle");
 
         private static TagKey<Item> tag(String path) {
-            return TagKey.create(Registries.ITEM, InsaneLib.location(path));
+            return TagKey.create(Registries.ITEM, InsaneLib.id(path));
         }
     }
 }
