@@ -8,11 +8,11 @@ import net.minecraft.world.item.Item;
 public class ILTags {
 
     public static class Items {
-        // Wood
-        public static final TagKey<Item> EQUIPMENT_TOOLS_WOOD = tag("equipment/tools/wood");
-        public static final TagKey<Item> EQUIPMENT_WEAPONS_WOOD = tag("equipment/weapons/wood");
-        public static final TagKey<Item> EQUIPMENT_HAND_WOOD = tag("equipment/hand/wood");
-        public static final TagKey<Item> EQUIPMENT_WOOD = tag("equipment/wood");
+        // Wooden
+        public static final TagKey<Item> EQUIPMENT_TOOLS_WOODEN = tag("equipment/tools/wooden");
+        public static final TagKey<Item> EQUIPMENT_WEAPONS_WOODEN = tag("equipment/weapons/wooden");
+        public static final TagKey<Item> EQUIPMENT_HAND_WOODEN = tag("equipment/hand/wooden");
+        public static final TagKey<Item> EQUIPMENT_WOODEN = tag("equipment/wooden");
 
         // Stone
         public static final TagKey<Item> EQUIPMENT_TOOLS_STONE = tag("equipment/tools/stone");
@@ -27,12 +27,12 @@ public class ILTags {
         public static final TagKey<Item> EQUIPMENT_ARMOR_IRON = tag("equipment/armor/iron");
         public static final TagKey<Item> EQUIPMENT_IRON = tag("equipment/iron");
 
-        // Gold
-        public static final TagKey<Item> EQUIPMENT_TOOLS_GOLD = tag("equipment/tools/gold");
-        public static final TagKey<Item> EQUIPMENT_WEAPONS_GOLD = tag("equipment/weapons/gold");
-        public static final TagKey<Item> EQUIPMENT_HAND_GOLD = tag("equipment/hand/gold");
-        public static final TagKey<Item> EQUIPMENT_ARMOR_GOLD = tag("equipment/armor/gold");
-        public static final TagKey<Item> EQUIPMENT_GOLD = tag("equipment/gold");
+        // Golden
+        public static final TagKey<Item> EQUIPMENT_TOOLS_GOLDEN = tag("equipment/tools/golden");
+        public static final TagKey<Item> EQUIPMENT_WEAPONS_GOLDEN = tag("equipment/weapons/golden");
+        public static final TagKey<Item> EQUIPMENT_HAND_GOLDEN = tag("equipment/hand/golden");
+        public static final TagKey<Item> EQUIPMENT_ARMOR_GOLDEN = tag("equipment/armor/golden");
+        public static final TagKey<Item> EQUIPMENT_GOLDEN = tag("equipment/golden");
 
         // Diamond
         public static final TagKey<Item> EQUIPMENT_TOOLS_DIAMOND = tag("equipment/tools/diamond");
@@ -47,6 +47,13 @@ public class ILTags {
         public static final TagKey<Item> EQUIPMENT_HAND_NETHERITE = tag("equipment/hand/netherite");
         public static final TagKey<Item> EQUIPMENT_ARMOR_NETHERITE = tag("equipment/armor/netherite");
         public static final TagKey<Item> EQUIPMENT_NETHERITE = tag("equipment/netherite");
+
+        // Copper (items don't exist in vanilla 1.21.1, entries are required=false)
+        public static final TagKey<Item> EQUIPMENT_TOOLS_COPPER = tag("equipment/tools/copper");
+        public static final TagKey<Item> EQUIPMENT_WEAPONS_COPPER = tag("equipment/weapons/copper");
+        public static final TagKey<Item> EQUIPMENT_HAND_COPPER = tag("equipment/hand/copper");
+        public static final TagKey<Item> EQUIPMENT_ARMOR_COPPER = tag("equipment/armor/copper");
+        public static final TagKey<Item> EQUIPMENT_COPPER = tag("equipment/copper");
 
         // Leather (armor only)
         public static final TagKey<Item> EQUIPMENT_ARMOR_LEATHER = tag("equipment/armor/leather");

@@ -5,6 +5,7 @@ import insane96mcp.insanelib.setup.ILTags;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.tags.ItemTagsProvider;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
@@ -20,11 +21,11 @@ public class ILItemTagProvider extends ItemTagsProvider {
 
     @Override
     protected void addTags(HolderLookup.Provider provider) {
-        // Wood
-        tag(ILTags.Items.EQUIPMENT_TOOLS_WOOD).add(Items.WOODEN_PICKAXE, Items.WOODEN_AXE, Items.WOODEN_SHOVEL, Items.WOODEN_HOE);
-        tag(ILTags.Items.EQUIPMENT_WEAPONS_WOOD).add(Items.WOODEN_SWORD);
-        tag(ILTags.Items.EQUIPMENT_HAND_WOOD).addTag(ILTags.Items.EQUIPMENT_TOOLS_WOOD).addTag(ILTags.Items.EQUIPMENT_WEAPONS_WOOD);
-        tag(ILTags.Items.EQUIPMENT_WOOD).addTag(ILTags.Items.EQUIPMENT_HAND_WOOD);
+        // Wooden
+        tag(ILTags.Items.EQUIPMENT_TOOLS_WOODEN).add(Items.WOODEN_PICKAXE, Items.WOODEN_AXE, Items.WOODEN_SHOVEL, Items.WOODEN_HOE);
+        tag(ILTags.Items.EQUIPMENT_WEAPONS_WOODEN).add(Items.WOODEN_SWORD);
+        tag(ILTags.Items.EQUIPMENT_HAND_WOODEN).addTag(ILTags.Items.EQUIPMENT_TOOLS_WOODEN).addTag(ILTags.Items.EQUIPMENT_WEAPONS_WOODEN);
+        tag(ILTags.Items.EQUIPMENT_WOODEN).addTag(ILTags.Items.EQUIPMENT_HAND_WOODEN);
 
         // Stone
         tag(ILTags.Items.EQUIPMENT_TOOLS_STONE).add(Items.STONE_PICKAXE, Items.STONE_AXE, Items.STONE_SHOVEL, Items.STONE_HOE);
@@ -39,12 +40,12 @@ public class ILItemTagProvider extends ItemTagsProvider {
         tag(ILTags.Items.EQUIPMENT_ARMOR_IRON).add(Items.IRON_HELMET, Items.IRON_CHESTPLATE, Items.IRON_LEGGINGS, Items.IRON_BOOTS);
         tag(ILTags.Items.EQUIPMENT_IRON).addTag(ILTags.Items.EQUIPMENT_HAND_IRON).addTag(ILTags.Items.EQUIPMENT_ARMOR_IRON);
 
-        // Gold
-        tag(ILTags.Items.EQUIPMENT_TOOLS_GOLD).add(Items.GOLDEN_PICKAXE, Items.GOLDEN_AXE, Items.GOLDEN_SHOVEL, Items.GOLDEN_HOE);
-        tag(ILTags.Items.EQUIPMENT_WEAPONS_GOLD).add(Items.GOLDEN_SWORD);
-        tag(ILTags.Items.EQUIPMENT_HAND_GOLD).addTag(ILTags.Items.EQUIPMENT_TOOLS_GOLD).addTag(ILTags.Items.EQUIPMENT_WEAPONS_GOLD);
-        tag(ILTags.Items.EQUIPMENT_ARMOR_GOLD).add(Items.GOLDEN_HELMET, Items.GOLDEN_CHESTPLATE, Items.GOLDEN_LEGGINGS, Items.GOLDEN_BOOTS);
-        tag(ILTags.Items.EQUIPMENT_GOLD).addTag(ILTags.Items.EQUIPMENT_HAND_GOLD).addTag(ILTags.Items.EQUIPMENT_ARMOR_GOLD);
+        // Golden
+        tag(ILTags.Items.EQUIPMENT_TOOLS_GOLDEN).add(Items.GOLDEN_PICKAXE, Items.GOLDEN_AXE, Items.GOLDEN_SHOVEL, Items.GOLDEN_HOE);
+        tag(ILTags.Items.EQUIPMENT_WEAPONS_GOLDEN).add(Items.GOLDEN_SWORD);
+        tag(ILTags.Items.EQUIPMENT_HAND_GOLDEN).addTag(ILTags.Items.EQUIPMENT_TOOLS_GOLDEN).addTag(ILTags.Items.EQUIPMENT_WEAPONS_GOLDEN);
+        tag(ILTags.Items.EQUIPMENT_ARMOR_GOLDEN).add(Items.GOLDEN_HELMET, Items.GOLDEN_CHESTPLATE, Items.GOLDEN_LEGGINGS, Items.GOLDEN_BOOTS);
+        tag(ILTags.Items.EQUIPMENT_GOLDEN).addTag(ILTags.Items.EQUIPMENT_HAND_GOLDEN).addTag(ILTags.Items.EQUIPMENT_ARMOR_GOLDEN);
 
         // Diamond
         tag(ILTags.Items.EQUIPMENT_TOOLS_DIAMOND).add(Items.DIAMOND_PICKAXE, Items.DIAMOND_AXE, Items.DIAMOND_SHOVEL, Items.DIAMOND_HOE);
@@ -59,6 +60,22 @@ public class ILItemTagProvider extends ItemTagsProvider {
         tag(ILTags.Items.EQUIPMENT_HAND_NETHERITE).addTag(ILTags.Items.EQUIPMENT_TOOLS_NETHERITE).addTag(ILTags.Items.EQUIPMENT_WEAPONS_NETHERITE);
         tag(ILTags.Items.EQUIPMENT_ARMOR_NETHERITE).add(Items.NETHERITE_HELMET, Items.NETHERITE_CHESTPLATE, Items.NETHERITE_LEGGINGS, Items.NETHERITE_BOOTS);
         tag(ILTags.Items.EQUIPMENT_NETHERITE).addTag(ILTags.Items.EQUIPMENT_HAND_NETHERITE).addTag(ILTags.Items.EQUIPMENT_ARMOR_NETHERITE);
+
+        // Copper (required=false — items don't exist in vanilla 1.21.1)
+        tag(ILTags.Items.EQUIPMENT_TOOLS_COPPER)
+                .addOptional(ResourceLocation.withDefaultNamespace("copper_pickaxe"))
+                .addOptional(ResourceLocation.withDefaultNamespace("copper_axe"))
+                .addOptional(ResourceLocation.withDefaultNamespace("copper_shovel"))
+                .addOptional(ResourceLocation.withDefaultNamespace("copper_hoe"));
+        tag(ILTags.Items.EQUIPMENT_WEAPONS_COPPER)
+                .addOptional(ResourceLocation.withDefaultNamespace("copper_sword"));
+        tag(ILTags.Items.EQUIPMENT_HAND_COPPER).addTag(ILTags.Items.EQUIPMENT_TOOLS_COPPER).addTag(ILTags.Items.EQUIPMENT_WEAPONS_COPPER);
+        tag(ILTags.Items.EQUIPMENT_ARMOR_COPPER)
+                .addOptional(ResourceLocation.withDefaultNamespace("copper_helmet"))
+                .addOptional(ResourceLocation.withDefaultNamespace("copper_chestplate"))
+                .addOptional(ResourceLocation.withDefaultNamespace("copper_leggings"))
+                .addOptional(ResourceLocation.withDefaultNamespace("copper_boots"));
+        tag(ILTags.Items.EQUIPMENT_COPPER).addTag(ILTags.Items.EQUIPMENT_HAND_COPPER).addTag(ILTags.Items.EQUIPMENT_ARMOR_COPPER);
 
         // Leather (armor only)
         tag(ILTags.Items.EQUIPMENT_ARMOR_LEATHER).add(Items.LEATHER_HELMET, Items.LEATHER_CHESTPLATE, Items.LEATHER_LEGGINGS, Items.LEATHER_BOOTS);

@@ -1,3 +1,6 @@
+## 2.4.14.1
+* Added copper equipment item tags and fixed wooden and golden being wood and gold
+
 ## 2.4.14.0
 * Added GetMaxDamageEvent to modify item's max damage
 * Added Item Tags for equipment by material
