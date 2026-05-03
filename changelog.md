@@ -1,3 +1,6 @@
+## 2.4.15.0
+* Fixed a NeoForge bug that caused `global_loot_modifiers.json` to not respect the order of the loot modifiers
+
 ## 2.4.14.1
 * Added copper equipment item tags and fixed wooden and golden being wood and gold
 

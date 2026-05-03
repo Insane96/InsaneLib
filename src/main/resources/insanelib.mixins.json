@@ -15,6 +15,7 @@
         "ItemMixin",
         "ItemStackMixin",
         "LivingEntityMixin",
+        "LootModifierManagerMixin",
         "NearestAttackableTargetGoalMixin",
         "PlayerMixin",
         "accessor.CreeperAccessor",
