@@ -37,10 +37,9 @@ public class ItemComponentsFeature extends Feature {
         Map<Item, Set<DataComponentType<?>>> allRemovals = new HashMap<>();
 
         // Seed with programmatic patches first (lowest priority — data pack definitions overwrite these)
-        if (!ItemComponentsReloadListener.PROGRAMMATIC_PROVIDERS.isEmpty()) {
+        for (var provider : ItemComponentsReloadListener.PROGRAMMATIC_PROVIDERS) {
             Map<Item, DataComponentPatch> programmatic = new HashMap<>();
-            for (var provider : ItemComponentsReloadListener.PROGRAMMATIC_PROVIDERS)
-                provider.accept(event.getRegistryAccess(), programmatic);
+            provider.accept(event.getRegistryAccess(), programmatic);
 
             for (Map.Entry<Item, DataComponentPatch> entry : programmatic.entrySet()) {
                 Item item = entry.getKey();

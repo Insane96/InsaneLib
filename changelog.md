@@ -1,3 +1,6 @@
+## 2.4.15.1
+* Fixed Item components' programmatic providers overwriting each-other
+
 ## 2.4.15.0
 * Fixed a NeoForge bug that caused `global_loot_modifiers.json` to not respect the order of the loot modifiers
 
