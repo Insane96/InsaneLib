@@ -1,3 +1,7 @@
+## 2.4.16.0
+* Added `ILRangedAttribute`
+  * Same as a `RangedAttribute`, but the `descriptionId` is calculated from the attribute id and can define a `baseId`.
+
 ## 2.4.15.1
 * Fixed Item components' programmatic providers overwriting each-other
 
