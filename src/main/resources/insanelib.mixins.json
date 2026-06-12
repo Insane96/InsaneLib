@@ -1,36 +1,38 @@
 {
-    "required": true,
-    "package": "insane96mcp.insanelib.mixin",
-    "compatibilityLevel": "JAVA_21",
-    "mixins": [
-        "CakeBlockMixin",
-        "CreeperMixin",
-        "DrownedMoveControlMixin",
-        "EntityMixin",
-        "FallingBlockEntityMixin",
-        "FireBlockMixin",
-        "FishMoveControlMixin",
-        "IItemExtensionMixin",
-        "IItemStackExtensionMixin",
-        "ItemMixin",
-        "ItemStackMixin",
-        "LivingEntityMixin",
-        "LootModifierManagerMixin",
-        "NearestAttackableTargetGoalMixin",
-        "PlayerMixin",
-        "accessor.CreeperAccessor",
-        "accessor.ExplosionAccessor",
-        "accessor.MobEffectInstanceAccessor",
-        "accessor.ServerLevelAccessor"
-    ],
-    "injectors": {
-        "defaultRequire": 1
-    },
-    "overwrites": {
-        "requireAnnotations": true
-    },
-    "client": [
-        "accessor.GuiGraphicsAccessor",
-        "client.LocalPlayerMixin"
-    ]
+	"required": true,
+	"package": "insane96mcp.insanelib.mixin",
+	"compatibilityLevel": "JAVA_21",
+	"mixins": [
+		"AnvilMenuMixin",
+		"CakeBlockMixin",
+		"CreeperMixin",
+		"DrownedMoveControlMixin",
+		"EntityMixin",
+		"FallingBlockEntityMixin",
+		"FireBlockMixin",
+		"FishMoveControlMixin",
+		"IItemExtensionMixin",
+		"IItemStackExtensionMixin",
+		"ItemMixin",
+		"ItemStackMixin",
+		"LivingEntityMixin",
+		"LootModifierManagerMixin",
+		"NearestAttackableTargetGoalMixin",
+		"PlayerMixin",
+		"accessor.CreeperAccessor",
+		"accessor.ExplosionAccessor",
+		"accessor.MobEffectInstanceAccessor",
+		"accessor.ServerLevelAccessor"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	},
+	"overwrites": {
+		"requireAnnotations": true
+	},
+	"client": [
+		"accessor.GuiGraphicsAccessor",
+		"client.AnvilScreenMixin",
+		"client.LocalPlayerMixin"
+	]
 }

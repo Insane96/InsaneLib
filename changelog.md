@@ -1,3 +1,6 @@
+## 2.4.17.1
+* Allow picking up items from anvil with 0 cost and don't render cost label when 0
+
 ## 2.4.17.0
 ### Technical
 * Added `CreativeTabsUtils` with methods to add items to a creative tab before or after another item, or remove an item from a creative tab
