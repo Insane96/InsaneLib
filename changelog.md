@@ -1,3 +1,7 @@
+## 2.4.17.0
+### Technical
+* Added `CreativeTabsUtils` with methods to add items to a creative tab before or after another item, or remove an item from a creative tab
+
 ## 2.4.16.0
 * Added `ILRangedAttribute`
   * Same as a `RangedAttribute`, but the `descriptionId` is calculated from the attribute id and can define a `baseId`.
