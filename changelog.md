@@ -1,3 +1,7 @@
+## 2.4.18.0
+### Technical
+* Added `ObjTag#getAllObjects`
+
 ## 2.4.17.2
 * Startup crash fix
 

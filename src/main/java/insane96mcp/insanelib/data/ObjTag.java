@@ -206,6 +206,22 @@ public class ObjTag<T> {
     }
 
     /**
+     * Returns all objects this ObjTag resolves to.
+     * <ul>
+     *   <li>If this is a direct object reference, returns a single-element list containing that object.</li>
+     *   <li>If this is a tag reference and the registry is available, returns all objects in the tag.</li>
+     *   <li>Otherwise (unresolved dynamic registry reference or missing registry), returns an empty list.</li>
+     * </ul>
+     */
+    public List<T> getAllObjects() {
+        if (this.obj != null)
+            return List.of(this.obj);
+        if (this.tag != null && this.registry != null)
+            return this.registry.getTagOrEmpty(this.tag).stream().map(Holder::value).toList();
+        return List.of();
+    }
+
+    /**
      * Deserializes a plain registry object from a JSON string element (not a tag).
      * @return the resolved object, or null if not found in the registry
      */
