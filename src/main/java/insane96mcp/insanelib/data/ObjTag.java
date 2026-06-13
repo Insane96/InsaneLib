@@ -216,8 +216,10 @@ public class ObjTag<T> {
     public List<T> getAllObjects() {
         if (this.obj != null)
             return List.of(this.obj);
-        if (this.tag != null && this.registry != null)
-            return this.registry.getTagOrEmpty(this.tag).stream().map(Holder::value).toList();
+        if (this.tag != null && this.registry != null) {
+            Optional<HolderSet.Named<T>> tagSet = this.registry.getTag(this.tag);
+			return tagSet.map(holders -> holders.stream().map(Holder::value).toList()).orElseGet(List::of);
+		}
         return List.of();
     }
 
