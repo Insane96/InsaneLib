@@ -50,21 +50,21 @@ public class ModNBTData {
     }
 
     /**
-     * Returns the data of the entity from the given location
+     * Returns the data of the entity from the given location, or null if absent
      */
     public static <T> T get(Entity entity, ResourceLocation loc, Class<T> type) {
         return get(entity.getPersistentData(), loc, type);
     }
 
     /**
-     * Returns the data of the entity's persisted data from the given location
+     * Returns the data of the entity's persisted data from the given location, or null if absent
      */
     public static <T> T getPersisted(Player player, ResourceLocation loc, Class<T> type) {
         return get(MCUtils.getOrCreatePersistedData(player), loc, type);
     }
 
     /**
-     * Returns the data of the stack from the given location
+     * Returns the data of the stack from the given location, or null if absent
      */
     public static <T> T get(ItemStack stack, ResourceLocation loc, Class<T> type) {
         CustomData customData = stack.get(DataComponents.CUSTOM_DATA);
@@ -74,10 +74,13 @@ public class ModNBTData {
     }
 
     /**
-     * Returns the data of the tag from the given location
+     * Returns the data of the tag from the given location, or null if absent
      */
     public static <T> T get(CompoundTag tag, ResourceLocation loc, Class<T> type) {
-        CompoundTag modData = getNestedCompounds(loc.getPath(), getModData(tag, loc.getNamespace()));
+        CompoundTag nsData = getModDataReadOnly(tag, loc.getNamespace());
+        if (nsData == null) return null;
+        CompoundTag modData = getNestedCompoundsReadOnly(loc.getPath(), nsData);
+        if (modData == null) return null;
         String key = getNestedKey(loc.getPath());
 
         if (type == Byte.class) return type.cast(modData.getByte(key));
@@ -145,6 +148,25 @@ public class ModNBTData {
         return modData;
     }
 
+    // Returns null instead of creating missing entries — for read-only paths
+    private static CompoundTag getModDataReadOnly(CompoundTag compound, String modId) {
+        if (compound.contains(modId))
+            return compound.getCompound(modId);
+        return null;
+    }
+
+    private static CompoundTag getNestedCompoundsReadOnly(String path, CompoundTag modData) {
+        int start = 0;
+        int end;
+        while ((end = path.indexOf('/', start)) >= 0) {
+            modData = getModDataReadOnly(modData, path.substring(start, end));
+            if (modData == null)
+                return null;
+            start = end + 1;
+        }
+        return modData;
+    }
+
     public static ListTag getList(Entity entity, ResourceLocation loc, int type) {
         return getList(entity.getPersistentData(), loc, type);
     }
@@ -159,7 +181,10 @@ public class ModNBTData {
     }
 
     public static ListTag getList(CompoundTag tag, ResourceLocation loc, int type) {
-        CompoundTag modData = getNestedCompounds(loc.getPath(), getModData(tag, loc.getNamespace()));
+        CompoundTag nsData = getModDataReadOnly(tag, loc.getNamespace());
+        if (nsData == null) return new ListTag();
+        CompoundTag modData = getNestedCompoundsReadOnly(loc.getPath(), nsData);
+        if (modData == null) return new ListTag();
         String key = getNestedKey(loc.getPath());
         return modData.getList(key, type);
     }
@@ -180,7 +205,10 @@ public class ModNBTData {
     }
 
     public static boolean contains(CompoundTag tag, ResourceLocation loc) {
-        CompoundTag modData = getNestedCompounds(loc.getPath(), getModData(tag, loc.getNamespace()));
+        CompoundTag nsData = getModDataReadOnly(tag, loc.getNamespace());
+        if (nsData == null) return false;
+        CompoundTag modData = getNestedCompoundsReadOnly(loc.getPath(), nsData);
+        if (modData == null) return false;
         String key = getNestedKey(loc.getPath());
         return modData.contains(key);
     }
