@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.23.4.5
+* Backported ModNBTData optimizations
+
 ## 1.23.4.4
 * Optimized ModNBTData path parsing to avoid regex overhead on every NBT access 
 
