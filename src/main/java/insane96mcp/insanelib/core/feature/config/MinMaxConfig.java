@@ -34,6 +34,10 @@ public class MinMaxConfig {
         return Mth.nextInt(random, (int) this.min, (int) this.max);
     }
 
+    public boolean isZero() {
+        return this.min == 0 && this.max == 0;
+    }
+
     public static class COption extends ConfigOption<MinMaxConfig> {
 
         private final ModConfigSpec.DoubleValue minConfig;
