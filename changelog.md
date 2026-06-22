@@ -1,3 +1,7 @@
+## 2.4.18.1
+### Technical
+* Optimized `ModNBTData`
+
 ## 2.4.18.0
 ### Technical
 * Added `ObjTag#getAllObjects`
