@@ -12,6 +12,8 @@ import net.minecraft.world.item.ItemStack;
 import java.util.UUID;
 
 public class ModNBTData {
+    private static final CompoundTag EMPTY_TAG = new CompoundTag();
+
     /**
      * Returns the compound NBT from the modId of the given player persisted data
      */
@@ -45,21 +47,21 @@ public class ModNBTData {
     }
 
     /**
-     * Returns the data of the entity from the given location, or null if absent
+     * Returns the data of the entity from the given location, or the type default if absent (null for reference types)
      */
     public static <T> T get(Entity entity, ResourceLocation loc, Class<T> type) {
         return get(entity.getPersistentData(), loc, type);
     }
 
     /**
-     * Returns the data of the entity's persisted data from the given location, or null if absent
+     * Returns the data of the entity's persisted data from the given location, or the type default if absent (null for reference types)
      */
     public static <T> T getPersisted(Player player, ResourceLocation loc, Class<T> type) {
         return get(MCUtils.getOrCreatePersistedData(player), loc, type);
     }
 
     /**
-     * Returns the data of the stack from the given location, or null if absent
+     * Returns the data of the stack from the given location, or the type default if absent (null for reference types)
      */
     public static <T> T get(ItemStack stack, ResourceLocation loc, Class<T> type) {
         if (stack.getTag() == null)
@@ -68,13 +70,12 @@ public class ModNBTData {
     }
 
     /**
-     * Returns the data of the tag from the given location, or null if absent
+     * Returns the data of the tag from the given location, or the type default if absent (null for reference types)
      */
     public static <T> T get(CompoundTag tag, ResourceLocation loc, Class<T> type) {
         CompoundTag nsData = getModDataReadOnly(tag, loc.getNamespace());
-        if (nsData == null) return null;
-        CompoundTag modData = getNestedCompoundsReadOnly(loc.getPath(), nsData);
-        if (modData == null) return null;
+        CompoundTag modData = nsData != null ? getNestedCompoundsReadOnly(loc.getPath(), nsData) : null;
+        if (modData == null) modData = EMPTY_TAG;
         String key = getNestedKey(loc.getPath());
 
         if (type == Byte.class) return type.cast(modData.getByte(key));

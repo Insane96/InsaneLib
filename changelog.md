@@ -1,4 +1,5 @@
-# Changelog
+## 1.23.4.6
+* Crash fix
 
 ## 1.23.4.5
 * Backported ModNBTData optimizations
