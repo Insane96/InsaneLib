@@ -1,3 +1,6 @@
+## 2.4.18.2
+* Crash fix
+
 ## 2.4.18.1
 ### Technical
 * Optimized `ModNBTData`
