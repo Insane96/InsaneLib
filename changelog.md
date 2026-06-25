@@ -1,3 +1,6 @@
+## Upcoming
+* Fixed some items modified via Item Components not stacking
+
 ## 2.4.18.2
 * Crash fix
 
