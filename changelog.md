@@ -1,3 +1,8 @@
+## 2.4.19.0
+* Added `no_ammo_consumption` NBT Tag, allowing for infinite crossbow offhand ammo
+  * Also updated the wiki: https://github.com/Insane96/InsaneLib/wiki/%5B1.21.1%5D-NBT-Data
+  * Also adds a config option to automatically apply the tag to Pillagers
+
 ## 2.4.18.3
 * Fixed some items modified via Item Components not stacking
 
