@@ -23,7 +23,7 @@ import net.neoforged.neoforge.event.tick.EntityTickEvent;
 		description = "Set and use some tags to get and set some mobs properties. E.g. cause fire explosion for mobs, or get current light level.",
 		canBeDisabled = false
 )
-public class TagsFeature extends Feature {
+public class NbtTags extends Feature {
 	public static ResourceLocation EXPLOSION_CAUSES_FIRE;
 	public static ResourceLocation EXPERIENCE_MULTIPLIER;
 	public static ResourceLocation SKY_LIGHT;

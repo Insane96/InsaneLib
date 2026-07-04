@@ -1,7 +1,7 @@
 package insane96mcp.insanelib.mixin;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
-import insane96mcp.insanelib.module.base.FixesFeature;
+import insane96mcp.insanelib.module.base.Fixes;
 import net.minecraft.core.Holder;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.attributes.Attribute;
@@ -18,7 +18,7 @@ public abstract class DrownedMoveControlMixin extends MoveControl {
 
 	@ModifyExpressionValue(method = "tick", at = @At(value = "FIELD", target = "Lnet/minecraft/world/entity/ai/attributes/Attributes;MOVEMENT_SPEED:Lnet/minecraft/core/Holder;"))
     public Holder<Attribute> insanelib$changeSwimSpeedAttribute(Holder<Attribute> original) {
-		if (!FixesFeature.shouldFixSwimmersSwimmingAttribute())
+		if (!Fixes.shouldFixSwimmersSwimmingAttribute())
 			return original;
 		return NeoForgeMod.SWIM_SPEED;
     }

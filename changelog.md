@@ -1,3 +1,8 @@
+## 2.4.20.0
+* Added a new fix for https://bugs.mojang.com/browse/MC/issues/MC-145114
+* Renamed 'Fixes feature' to 'Fixes'
+* Renamed 'Tags feature' to 'Nbt tags'
+
 ## 2.4.19.0
 * Added `no_ammo_consumption` NBT Tag, allowing for infinite crossbow offhand ammo
   * Also updated the wiki: https://github.com/Insane96/InsaneLib/wiki/%5B1.21.1%5D-NBT-Data

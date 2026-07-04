@@ -3,7 +3,7 @@ package insane96mcp.insanelib.mixin;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import insane96mcp.insanelib.core.feature.Feature;
 import insane96mcp.insanelib.event.ILEventFactory;
-import insane96mcp.insanelib.module.base.FixesFeature;
+import insane96mcp.insanelib.module.base.Fixes;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -24,9 +24,9 @@ public abstract class LivingEntityMixin extends Entity {
 
     @ModifyExpressionValue(method = "jumpFromGround", at = @At(value = "CONSTANT", args = "doubleValue=0.2"))
     private double insanelib$changeForwardJumpStrengthWhenSprinting(double original) {
-        if (!(self() instanceof Player player) || !Feature.isEnabled(FixesFeature.class) || !FixesFeature.fixAirSpeed$sprintingJumpSlowdown)
+        if (!(self() instanceof Player player) || !Feature.isEnabled(Fixes.class) || !Fixes.fixAirSpeed$sprintingJumpSlowdown)
             return original;
-        return FixesFeature.getFlyingSpeed(player, (float) original);
+        return Fixes.getFlyingSpeed(player, (float) original);
     }
 
     @Inject(method = "addEatEffect", at = @At("HEAD"), cancellable = true)

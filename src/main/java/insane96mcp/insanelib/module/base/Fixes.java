@@ -19,7 +19,7 @@ import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 
 @LoadFeature(description = "Various fixes and improvements")
-public class FixesFeature extends Feature {
+public class Fixes extends Feature {
 	private static final ResourceLocation LEADER_ZOMBIE_BONUS_ID = ResourceLocation.withDefaultNamespace("leader_zombie_bonus");
 
 	@Config(description = "If true, mobs will have their follow range fixed. https://bugs.mojang.com/browse/MC-145656. Only affects entities in `insanelib:fix_follow_range` entity type tag (all vanilla mobs by default) and entities that use the NearestAttackableTargetGoal goal.")
@@ -40,12 +40,19 @@ public class FixesFeature extends Feature {
 	@Config(description = "If true, player's sprinting jump impulse will be reduced based off slowdown (basically, when you have 0 movement speed, if this is true, you can no longer jump forward while sprinting).")
 	public static Boolean fixAirSpeed$sprintingJumpSlowdown = true;
 
+	@Config(description = "If true, https://bugs.mojang.com/browse/MC/issues/MC-145114 will be fixed.")
+	public static Boolean fixMobCrossbowFireworkShooting = true;
+
+	public static boolean shouldFixMobCrossbowFireworkShooting() {
+		return Feature.isEnabled(Fixes.class) && fixMobCrossbowFireworkShooting;
+	}
+
 	public static boolean shouldFixFollowRange() {
-		return Feature.isEnabled(FixesFeature.class) && fixFollowRange;
+		return Feature.isEnabled(Fixes.class) && fixFollowRange;
 	}
 
 	public static boolean shouldFixSwimmersSwimmingAttribute() {
-		return Feature.isEnabled(FixesFeature.class) && fixSwimmersSwimmingAttribute;
+		return Feature.isEnabled(Fixes.class) && fixSwimmersSwimmingAttribute;
 	}
 
 	@SubscribeEvent
@@ -77,7 +84,7 @@ public class FixesFeature extends Feature {
 	}
 
 	public static float getFlyingSpeed(Player player, float original) {
-		if (!Feature.isEnabled(FixesFeature.class)
+		if (!Feature.isEnabled(Fixes.class)
 				|| !fixAirSpeed$enabled)
 			return original;
 

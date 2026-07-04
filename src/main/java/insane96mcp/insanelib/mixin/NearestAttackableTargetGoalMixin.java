@@ -1,6 +1,6 @@
 package insane96mcp.insanelib.mixin;
 
-import insane96mcp.insanelib.module.base.FixesFeature;
+import insane96mcp.insanelib.module.base.Fixes;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.TargetGoal;
@@ -22,7 +22,7 @@ public abstract class NearestAttackableTargetGoalMixin extends TargetGoal {
 
     @Inject(method = "findTarget", at = @At("HEAD"))
     public void insanelib$updateFollowRange(CallbackInfo ci) {
-        if (FixesFeature.shouldFixFollowRange())
+        if (Fixes.shouldFixFollowRange())
             this.targetConditions.range(this.getFollowDistance());
     }
 }
