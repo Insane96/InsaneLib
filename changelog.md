@@ -1,3 +1,6 @@
+## 2.4.20.1
+* Fixed item components not being applied to connected clients
+
 ## 2.4.20.0
 * Added a new fix for https://bugs.mojang.com/browse/MC/issues/MC-145114
 * Renamed 'Fixes feature' to 'Fixes'

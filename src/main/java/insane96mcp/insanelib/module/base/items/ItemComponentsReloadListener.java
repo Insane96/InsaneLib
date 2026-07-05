@@ -5,6 +5,7 @@ import insane96mcp.insanelib.InsaneLib;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponentPatch;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimplePreparableReloadListener;
 import net.minecraft.util.GsonHelper;
@@ -24,6 +25,12 @@ public class ItemComponentsReloadListener extends SimplePreparableReloadListener
 
     public static List<ItemComponent> DEFINITIONS = new ArrayList<>();
     public static final Map<Item, DataComponentMap> PATCHED_COMPONENTS = new HashMap<>();
+    /**
+     * The final per-item patches computed alongside {@link #PATCHED_COMPONENTS}, keyed by item registry id.
+     * Kept separate because {@link DataComponentMap} isn't itself network-serializable, while {@link DataComponentPatch}
+     * is; this is what gets sent to clients so their {@link #PATCHED_COMPONENTS} matches the server's.
+     */
+    public static final Map<ResourceLocation, DataComponentPatch> SYNCED_PATCHES = new HashMap<>();
 
     /**
      * Register a provider to supply programmatic component patches.
@@ -52,6 +59,7 @@ public class ItemComponentsReloadListener extends SimplePreparableReloadListener
     @Override
     protected void apply(@NotNull List<ItemComponent> definitions, @NotNull ResourceManager resourceManager, @NotNull ProfilerFiller profiler) {
         PATCHED_COMPONENTS.clear();
+        SYNCED_PATCHES.clear();
         DEFINITIONS = definitions;
         InsaneLib.LOGGER.info("Loaded {} item component definitions", DEFINITIONS.size());
     }

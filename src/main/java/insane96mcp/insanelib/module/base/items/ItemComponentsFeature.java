@@ -7,6 +7,7 @@ import com.mojang.serialization.JsonOps;
 import insane96mcp.insanelib.InsaneLib;
 import insane96mcp.insanelib.core.feature.Feature;
 import insane96mcp.insanelib.core.feature.LoadFeature;
+import insane96mcp.insanelib.network.message.ItemComponentsSyncMessage;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.DataComponentType;
@@ -14,8 +15,10 @@ import net.minecraft.core.component.PatchedDataComponentMap;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.Item;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.event.OnDatapackSyncEvent;
 import net.neoforged.neoforge.event.TagsUpdatedEvent;
 
 import java.util.*;
@@ -29,6 +32,7 @@ public class ItemComponentsFeature extends Feature {
             return;
 
         ItemComponentsReloadListener.PATCHED_COMPONENTS.clear();
+        ItemComponentsReloadListener.SYNCED_PATCHES.clear();
 
         RegistryOps<JsonElement> ops = RegistryOps.create(JsonOps.INSTANCE, event.getRegistryAccess());
 
@@ -137,9 +141,24 @@ public class ItemComponentsFeature extends Feature {
             DataComponentPatch patch = buildPatch(toSet, toRemove);
             DataComponentMap patched = PatchedDataComponentMap.fromPatch(item.components(), patch);
             ItemComponentsReloadListener.PATCHED_COMPONENTS.put(item, patched);
+            ItemComponentsReloadListener.SYNCED_PATCHES.put(BuiltInRegistries.ITEM.getKey(item), patch);
         }
 
         InsaneLib.LOGGER.info("ItemComponents: applied components to {} items", affectedItems.size());
+    }
+
+    @SubscribeEvent
+    public void onDatapackSync(OnDatapackSyncEvent event) {
+        if (ItemComponentsReloadListener.SYNCED_PATCHES.isEmpty())
+            return;
+
+        if (event.getPlayer() == null) {
+            for (ServerPlayer player : event.getPlayerList().getPlayers())
+                ItemComponentsSyncMessage.sync(ItemComponentsReloadListener.SYNCED_PATCHES, player);
+        }
+        else {
+            ItemComponentsSyncMessage.sync(ItemComponentsReloadListener.SYNCED_PATCHES, event.getPlayer());
+        }
     }
 
     private static Map<DataComponentType<?>, Object> decodeComponents(Map<ResourceLocation, JsonElement> raw, RegistryOps<JsonElement> ops) {
