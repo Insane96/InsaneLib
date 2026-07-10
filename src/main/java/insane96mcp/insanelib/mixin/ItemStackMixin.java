@@ -32,9 +32,13 @@ public abstract class ItemStackMixin {
         if (override == null)
             return;
         PatchedDataComponentMap corrected = PatchedDataComponentMap.fromPatch(override, this.components.asPatch());
-        // Update the field so direct accesses (copy(), serialization, etc.) also see the patched prototype.
-        this.components = corrected;
-        cir.setReturnValue(corrected);
+        // Only swap the field when the correction actually changes something. Reassigning on every call
+        // (even when it's a no-op content-wise) hands out a fresh object identity each time, which breaks
+        // vanilla/NeoForge code (e.g. CommonHooks#onPlaceItemIntoWorld) that captures getComponents() before
+        // and after an action and expects both snapshots to refer to consistent, identity-stable state.
+        if (!corrected.equals(this.components))
+            this.components = corrected;
+        cir.setReturnValue(this.components);
     }
 
     /**

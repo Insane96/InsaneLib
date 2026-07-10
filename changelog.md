@@ -1,3 +1,6 @@
+## 2.4.20.2
+* Fixed tool durability loss being silently reverted when the tool has a patched `max_damage` (e.g. hoes tilling, axes stripping), caused by `ItemStack#getComponents` handing out a new object identity on every call
+
 ## 2.4.20.1
 * Fixed item components not being applied to connected clients
 

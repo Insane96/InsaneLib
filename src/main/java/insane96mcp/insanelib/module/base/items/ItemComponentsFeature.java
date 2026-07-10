@@ -102,6 +102,24 @@ public class ItemComponentsFeature extends Feature {
                     removeSet.add(type);
                 }
 
+                // TODO: merge_components can silently resurrect a component that a same-item definition already
+                //  removed earlier in this same pass. Below, `existingValue` falls back to `item.components().get(type)`
+                //  (the vanilla/default value) whenever the component isn't already staged in `setMap` - it never checks
+                //  `removeSet`. So given two definitions targeting the same item (e.g. one matching by item id, another
+                //  matching the same item via a tag) processed in file/priority order, if the first removes a component
+                //  and the second merges into that same component type, the merge fallback pulls the vanilla default
+                //  back in and re-adds it to `setMap`, undoing the removal with no warning logged.
+                //  Concrete repro (found in ISO): `golden_carrot.json` removed `minecraft:food` via `remove_components`,
+                //  but `raw_foods.json` targeted `#insanesurvivaloverhaul:raw_foods` (which golden_carrot was tagged
+                //  into) with a `merge_components` on `minecraft:food`. Since raw_foods.json sorted after
+                //  golden_carrot.json (same priority, later file), its merge resurrected `minecraft:food` on golden
+                //  carrot with the raw-food poison effect merged in, making it edible again. Worked around on the ISO
+                //  side by removing golden_carrot from that tag, but the underlying gap here remains: nothing stops the
+                //  next definition/tag combo from hitting the same silent resurrection.
+                //  Fix direction: check `removeSet.contains(type)` before falling back to `item.components().get(type)`
+                //  and decide the semantics - either treat it as "no existing value" (merge JSON becomes the fresh
+                //  value, removal is no longer relevant) or treat the prior removal as authoritative (skip the merge
+                //  and warn) - then remove `removeSet.remove(type)` above if the removal should win.
                 // Merge operations: deep-merge JSON into existing value (arrays concatenated, objects recursively merged)
                 for (Map.Entry<ResourceLocation, JsonElement> entry : definition.mergeComponentsRaw().entrySet()) {
                     DataComponentType<?> type = BuiltInRegistries.DATA_COMPONENT_TYPE.get(entry.getKey());
