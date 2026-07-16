@@ -16,10 +16,4 @@ public class ILDataComponents {
                     .persistent(Codec.FLOAT)
                     .networkSynchronized(ByteBufCodecs.FLOAT)
                     .build());
-
-    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> ENCHANTABILITY =
-            REGISTRY.register("enchantability", () -> DataComponentType.<Integer>builder()
-                    .persistent(Codec.INT)
-                    .networkSynchronized(ByteBufCodecs.INT)
-                    .build());
 }

@@ -6,10 +6,10 @@ import insane96mcp.insanelib.core.feature.LoadFeature;
 import insane96mcp.insanelib.core.feature.Module;
 import insane96mcp.insanelib.core.feature.config.Config;
 import insane96mcp.insanelib.mixin.accessor.ExplosionAccessor;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.monster.Pillager;
+import net.minecraft.world.entity.monster.illager.Pillager;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.LightLayer;
 import net.neoforged.bus.api.EventPriority;
@@ -24,11 +24,11 @@ import net.neoforged.neoforge.event.tick.EntityTickEvent;
 		canBeDisabled = false
 )
 public class NbtTags extends Feature {
-	public static ResourceLocation EXPLOSION_CAUSES_FIRE;
-	public static ResourceLocation EXPERIENCE_MULTIPLIER;
-	public static ResourceLocation SKY_LIGHT;
-	public static ResourceLocation BLOCK_LIGHT;
-	public static ResourceLocation NO_AMMO_CONSUMPTION;
+	public static Identifier EXPLOSION_CAUSES_FIRE;
+	public static Identifier EXPERIENCE_MULTIPLIER;
+	public static Identifier SKY_LIGHT;
+	public static Identifier BLOCK_LIGHT;
+	public static Identifier NO_AMMO_CONSUMPTION;
 
 	@Config
 	public static Boolean applyNoAmmoConsumptionToPillagers = false;
@@ -64,9 +64,9 @@ public class NbtTags extends Feature {
 
 	@SubscribeEvent
 	public void onLivingTick(EntityTickEvent.Pre event) {
-		if (event.getEntity().level().isClientSide
-				|| event.getEntity().getServer() == null
-				|| (event.getEntity().getServer().getTickCount() + event.getEntity().getId()) % 2 == 0)
+		if (event.getEntity().level().isClientSide()
+				|| event.getEntity().level().getServer() == null
+				|| (event.getEntity().level().getServer().getTickCount() + event.getEntity().getId()) % 2 == 0)
 			return;
 
 		ModNBTData.put(event.getEntity(), SKY_LIGHT, event.getEntity().level().getBrightness(LightLayer.SKY, event.getEntity().blockPosition()));

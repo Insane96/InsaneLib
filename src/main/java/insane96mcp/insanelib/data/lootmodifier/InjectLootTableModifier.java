@@ -5,7 +5,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.LootTable;
@@ -30,19 +30,19 @@ import org.jetbrains.annotations.NotNull;
 public class InjectLootTableModifier extends LootModifier {
     public static final MapCodec<InjectLootTableModifier> CODEC = RecordCodecBuilder.mapCodec(inst ->
             codecStart(inst).and(
-                    ResourceLocation.CODEC.fieldOf("loot_table").forGetter(m -> m.lootTable)
+                    Identifier.CODEC.fieldOf("loot_table").forGetter(m -> m.lootTable)
             ).apply(inst, InjectLootTableModifier::new)
     );
 
-    private final ResourceLocation lootTable;
+    private final Identifier lootTable;
 
-    public InjectLootTableModifier(LootItemCondition[] conditionsIn, ResourceLocation lootTable) {
-        super(conditionsIn);
+    public InjectLootTableModifier(LootItemCondition[] conditionsIn, int priority, Identifier lootTable) {
+        super(conditionsIn, priority);
         this.lootTable = lootTable;
     }
 
-    public InjectLootTableModifier(ResourceLocation lootTableToInjectTo, ResourceLocation lootTable) {
-        super(new LootItemCondition[]{new LootTableIdCondition.Builder(lootTableToInjectTo).build()});
+    public InjectLootTableModifier(Identifier lootTableToInjectTo, Identifier lootTable) {
+        super(new LootItemCondition[]{new LootTableIdCondition.Builder(lootTableToInjectTo).build()}, DEFAULT_PRIORITY);
         this.lootTable = lootTable;
     }
 

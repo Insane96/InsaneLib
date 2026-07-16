@@ -14,7 +14,7 @@ import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.PatchedDataComponentMap;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.RegistryOps;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.Item;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -34,7 +34,7 @@ public class ItemComponentsFeature extends Feature {
         ItemComponentsReloadListener.PATCHED_COMPONENTS.clear();
         ItemComponentsReloadListener.SYNCED_PATCHES.clear();
 
-        RegistryOps<JsonElement> ops = RegistryOps.create(JsonOps.INSTANCE, event.getRegistryAccess());
+        RegistryOps<JsonElement> ops = RegistryOps.create(JsonOps.INSTANCE, event.getRegistries());
 
         // Collect merged components per item (higher priority wins per component type)
         Map<Item, Map<DataComponentType<?>, Object>> allComponents = new HashMap<>();
@@ -43,7 +43,7 @@ public class ItemComponentsFeature extends Feature {
         // Seed with programmatic patches first (lowest priority — data pack definitions overwrite these)
         for (var provider : ItemComponentsReloadListener.PROGRAMMATIC_PROVIDERS) {
             Map<Item, DataComponentPatch> programmatic = new HashMap<>();
-            provider.accept(event.getRegistryAccess(), programmatic);
+            provider.accept(event.getRegistries(), programmatic);
 
             for (Map.Entry<Item, DataComponentPatch> entry : programmatic.entrySet()) {
                 Item item = entry.getKey();
@@ -92,8 +92,8 @@ public class ItemComponentsFeature extends Feature {
                 });
 
                 // Remove operations: remove from set map, add to removals (last wins)
-                for (ResourceLocation id : definition.removeComponents()) {
-                    DataComponentType<?> type = BuiltInRegistries.DATA_COMPONENT_TYPE.get(id);
+                for (Identifier id : definition.removeComponents()) {
+                    DataComponentType<?> type = BuiltInRegistries.DATA_COMPONENT_TYPE.getValue(id);
                     if (type == null) {
                         InsaneLib.LOGGER.warn("ItemComponents: unknown component type '{}' in remove_components, skipping", id);
                         continue;
@@ -121,8 +121,8 @@ public class ItemComponentsFeature extends Feature {
                 //  value, removal is no longer relevant) or treat the prior removal as authoritative (skip the merge
                 //  and warn) - then remove `removeSet.remove(type)` above if the removal should win.
                 // Merge operations: deep-merge JSON into existing value (arrays concatenated, objects recursively merged)
-                for (Map.Entry<ResourceLocation, JsonElement> entry : definition.mergeComponentsRaw().entrySet()) {
-                    DataComponentType<?> type = BuiltInRegistries.DATA_COMPONENT_TYPE.get(entry.getKey());
+                for (Map.Entry<Identifier, JsonElement> entry : definition.mergeComponentsRaw().entrySet()) {
+                    DataComponentType<?> type = BuiltInRegistries.DATA_COMPONENT_TYPE.getValue(entry.getKey());
                     if (type == null) {
                         InsaneLib.LOGGER.warn("ItemComponents: unknown component type '{}' in merge_components, skipping", entry.getKey());
                         continue;
@@ -179,10 +179,10 @@ public class ItemComponentsFeature extends Feature {
         }
     }
 
-    private static Map<DataComponentType<?>, Object> decodeComponents(Map<ResourceLocation, JsonElement> raw, RegistryOps<JsonElement> ops) {
+    private static Map<DataComponentType<?>, Object> decodeComponents(Map<Identifier, JsonElement> raw, RegistryOps<JsonElement> ops) {
         Map<DataComponentType<?>, Object> decoded = new LinkedHashMap<>();
-        for (Map.Entry<ResourceLocation, JsonElement> entry : raw.entrySet()) {
-            DataComponentType<?> type = BuiltInRegistries.DATA_COMPONENT_TYPE.get(entry.getKey());
+        for (Map.Entry<Identifier, JsonElement> entry : raw.entrySet()) {
+            DataComponentType<?> type = BuiltInRegistries.DATA_COMPONENT_TYPE.getValue(entry.getKey());
             if (type == null) {
                 InsaneLib.LOGGER.warn("ItemComponents: unknown data component type '{}', skipping", entry.getKey());
                 continue;

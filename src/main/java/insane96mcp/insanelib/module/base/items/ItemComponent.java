@@ -4,7 +4,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import insane96mcp.insanelib.data.ObjTag;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Item;
 
 import java.util.ArrayList;
@@ -87,28 +87,28 @@ import java.util.Map;
  * <p>When multiple definitions target the same item, they are merged — higher priority wins per component type.
  * A higher-priority remove overrides a lower-priority set, and vice versa.
  */
-public record ItemComponent(ObjTag<Item> item, Map<ResourceLocation, JsonElement> componentsRaw, Map<ResourceLocation, JsonElement> mergeComponentsRaw, List<ResourceLocation> removeComponents, int priority) {
+public record ItemComponent(ObjTag<Item> item, Map<Identifier, JsonElement> componentsRaw, Map<Identifier, JsonElement> mergeComponentsRaw, List<Identifier> removeComponents, int priority) {
 
     public static ItemComponent fromJson(JsonObject json) {
         ObjTag<Item> item = ObjTag.deserialize(json.get("item"), Registries.ITEM);
-        Map<ResourceLocation, JsonElement> componentsRaw = new LinkedHashMap<>();
+        Map<Identifier, JsonElement> componentsRaw = new LinkedHashMap<>();
         if (json.has("components")) {
             JsonObject components = json.getAsJsonObject("components");
             for (Map.Entry<String, JsonElement> entry : components.entrySet()) {
-                componentsRaw.put(ResourceLocation.parse(entry.getKey()), entry.getValue());
+                componentsRaw.put(Identifier.parse(entry.getKey()), entry.getValue());
             }
         }
-        Map<ResourceLocation, JsonElement> mergeComponentsRaw = new LinkedHashMap<>();
+        Map<Identifier, JsonElement> mergeComponentsRaw = new LinkedHashMap<>();
         if (json.has("merge_components")) {
             JsonObject mergeComponents = json.getAsJsonObject("merge_components");
             for (Map.Entry<String, JsonElement> entry : mergeComponents.entrySet()) {
-                mergeComponentsRaw.put(ResourceLocation.parse(entry.getKey()), entry.getValue());
+                mergeComponentsRaw.put(Identifier.parse(entry.getKey()), entry.getValue());
             }
         }
-        List<ResourceLocation> removeComponents = new ArrayList<>();
+        List<Identifier> removeComponents = new ArrayList<>();
         if (json.has("remove_components")) {
             for (JsonElement element : json.getAsJsonArray("remove_components")) {
-                removeComponents.add(ResourceLocation.parse(element.getAsString()));
+                removeComponents.add(Identifier.parse(element.getAsString()));
             }
         }
         int priority = json.has("priority") ? json.get("priority").getAsInt() : 0;

@@ -5,7 +5,7 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
@@ -72,11 +72,11 @@ public class LootPurgerModifier extends LootModifier {
     private Optional<TagKey<EntityType<?>>> blacklistedEntityTypeTag;
 
     public LootPurgerModifier(LootItemCondition[] conditionsIn) {
-        super(conditionsIn);
+        super(conditionsIn, DEFAULT_PRIORITY);
     }
 
-    public LootPurgerModifier(LootItemCondition[] conditionsIn, int startRange, int endRange, float multiplierAtStart, boolean applyToDamageable, Optional<TagKey<Item>> blacklistedItemsTag, Optional<TagKey<EntityType<?>>> blacklistedEntityTypeTag) {
-        super(conditionsIn);
+    public LootPurgerModifier(LootItemCondition[] conditionsIn, int priority, int startRange, int endRange, float multiplierAtStart, boolean applyToDamageable, Optional<TagKey<Item>> blacklistedItemsTag, Optional<TagKey<EntityType<?>>> blacklistedEntityTypeTag) {
+        super(conditionsIn, priority);
         this.startRange = startRange;
         this.endRange = endRange;
         this.multiplierAtStart = multiplierAtStart;
@@ -87,18 +87,18 @@ public class LootPurgerModifier extends LootModifier {
 
     @Override
     protected @NotNull ObjectArrayList<ItemStack> doApply(@NotNull ObjectArrayList<ItemStack> generatedLoot, @NotNull LootContext context) {
-        if (context.getParamOrNull(LootContextParams.ORIGIN) == null)
+        if (context.getOptionalParameter(LootContextParams.ORIGIN) == null)
             return generatedLoot;
-        if (context.getParamOrNull(LootContextParams.THIS_ENTITY) != null
+        if (context.getOptionalParameter(LootContextParams.THIS_ENTITY) != null
                 && blacklistedEntityTypeTag.isPresent()
-                && context.getParam(LootContextParams.THIS_ENTITY).getType().is(blacklistedEntityTypeTag.get())) {
+                && context.getParameter(LootContextParams.THIS_ENTITY).getType().builtInRegistryHolder().is(blacklistedEntityTypeTag.get())) {
             return generatedLoot;
         }
 
-        int spawnX = context.getLevel().getLevelData().getSpawnPos().getX();
-        int spawnZ = context.getLevel().getLevelData().getSpawnPos().getZ();
-        int x = (int) context.getParam(LootContextParams.ORIGIN).x;
-        int z = (int) context.getParam(LootContextParams.ORIGIN).z;
+        int spawnX = context.getLevel().getLevelData().getRespawnData().pos().getX();
+        int spawnZ = context.getLevel().getLevelData().getRespawnData().pos().getZ();
+        int x = (int) context.getParameter(LootContextParams.ORIGIN).x;
+        int z = (int) context.getParameter(LootContextParams.ORIGIN).z;
         int distanceFromSpawn = (int) Math.sqrt((x - spawnX) * (x - spawnX) + (z - spawnZ) * (z - spawnZ));
         int distanceFromStart = distanceFromSpawn - this.startRange;
         float multiplier;
@@ -134,7 +134,7 @@ public class LootPurgerModifier extends LootModifier {
             this.lootPurgerModifier.endRange = endRange;
         }
 
-        public Builder(ResourceLocation lootTable, int endRange) {
+        public Builder(Identifier lootTable, int endRange) {
             this(new LootItemCondition[]{LootTableIdCondition.builder(lootTable).build()}, endRange);
         }
 

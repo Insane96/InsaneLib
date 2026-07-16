@@ -16,13 +16,13 @@ import net.minecraft.core.component.TypedDataComponent;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.RegistryOps;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.item.Item;
 
 public class ILCommand {
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher, CommandBuildContext context) {
-        dispatcher.register(Commands.literal("insanelib").requires(source -> source.hasPermission(2))
+        dispatcher.register(Commands.literal("insanelib").requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
                 .then(Commands.literal("set_time_played")
                         .then(Commands.argument("players", EntityArgument.players())
                                 .then(Commands.argument("time", IntegerArgumentType.integer(0))
@@ -37,8 +37,8 @@ public class ILCommand {
                         .then(Commands.argument("item", ItemArgument.item(context))
                                 .executes(ctx -> {
                                     ItemInput input = ItemArgument.getItem(ctx, "item");
-                                    Item item = input.getItem();
-                                    ResourceLocation id = BuiltInRegistries.ITEM.getKey(item);
+                                    Item item = input.item().value();
+                                    Identifier id = BuiltInRegistries.ITEM.getKey(item);
 
                                     RegistryOps<JsonElement> ops = RegistryOps.create(JsonOps.INSTANCE, ctx.getSource().registryAccess());
                                     boolean isPatched = ItemComponentsReloadListener.PATCHED_COMPONENTS.containsKey(item);
@@ -48,7 +48,7 @@ public class ILCommand {
                                     // item.components() returns the patched map when available (via ItemMixin)
                                     DataComponentMap components = item.components();
                                     for (TypedDataComponent<?> component : components) {
-                                        ResourceLocation typeId = BuiltInRegistries.DATA_COMPONENT_TYPE.getKey(component.type());
+                                        Identifier typeId = BuiltInRegistries.DATA_COMPONENT_TYPE.getKey(component.type());
                                         String value = encodeComponent(component, ops);
                                         ctx.getSource().sendSuccess(() -> Component.literal("  " + typeId + ": " + value), false);
                                     }

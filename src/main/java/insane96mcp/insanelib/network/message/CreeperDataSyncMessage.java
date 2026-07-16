@@ -58,7 +58,7 @@ public record CreeperDataSyncMessage(int id, int maxSwell, int explosionRadius) 
     public static void syncCreeperToTrackingPlayers(Creeper creeper) {
         if (!(creeper.level() instanceof ServerLevel serverLevel)) return;
         if (serverLevel.getChunkSource() instanceof ServerChunkCache chunkCache) {
-            for (ServerPlayer player : chunkCache.chunkMap.getPlayers(new ChunkPos(creeper.blockPosition()), false)) {
+            for (ServerPlayer player : chunkCache.chunkMap.getPlayers(ChunkPos.containing(creeper.blockPosition()), false)) {
                 syncCreeperToPlayer(creeper, player);
             }
         }

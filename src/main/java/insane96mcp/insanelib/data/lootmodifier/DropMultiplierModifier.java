@@ -5,9 +5,10 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import insane96mcp.insanelib.util.MathHelper;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import net.minecraft.advancements.critereon.EntityPredicate;
-import net.minecraft.advancements.critereon.EntityTypePredicate;
+import net.minecraft.advancements.criterion.EntityPredicate;
+import net.minecraft.advancements.criterion.EntityTypePredicate;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.HolderSet;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EntityType;
@@ -71,8 +72,8 @@ public class DropMultiplierModifier extends LootModifier {
     /** If {@code true}, non-stackable items are skipped. */
     private boolean ignoreUnstackable;
 
-    public DropMultiplierModifier(LootItemCondition[] conditionsIn, Optional<Item> item, Optional<TagKey<Item>> tag, float multiplier, int amountToKeep, boolean ignoreUnstackable) {
-        super(conditionsIn);
+    public DropMultiplierModifier(LootItemCondition[] conditionsIn, int priority, Optional<Item> item, Optional<TagKey<Item>> tag, float multiplier, int amountToKeep, boolean ignoreUnstackable) {
+        super(conditionsIn, priority);
         this.item = item;
         this.tag = tag;
         this.multiplier = multiplier;
@@ -126,11 +127,11 @@ public class DropMultiplierModifier extends LootModifier {
     }
 
     public static DropMultiplierModifier newItem(LootItemCondition[] conditionsIn, Optional<Item> item, float multiplier) {
-        return new DropMultiplierModifier(conditionsIn, item, Optional.empty(), multiplier, 0, true);
+        return new DropMultiplierModifier(conditionsIn, DEFAULT_PRIORITY, item, Optional.empty(), multiplier, 0, true);
     }
 
     public static DropMultiplierModifier newTag(LootItemCondition[] conditionsIn, Optional<TagKey<Item>> tag, float multiplier) {
-        return new DropMultiplierModifier(conditionsIn, Optional.empty(), tag, multiplier, 0, true);
+        return new DropMultiplierModifier(conditionsIn, DEFAULT_PRIORITY, Optional.empty(), tag, multiplier, 0, true);
     }
 
     @Override
@@ -159,11 +160,11 @@ public class DropMultiplierModifier extends LootModifier {
         }
 
         public Builder(EntityType<?> entityType, Item item, float multiplier) {
-            this.dropMultiplierModifier = DropMultiplierModifier.newItem(new LootItemCondition[]{LootItemEntityPropertyCondition.hasProperties(LootContext.EntityTarget.THIS, new EntityPredicate.Builder().entityType(EntityTypePredicate.of(entityType)).build()).build()}, Optional.of(item), multiplier);
+            this.dropMultiplierModifier = DropMultiplierModifier.newItem(new LootItemCondition[]{LootItemEntityPropertyCondition.hasProperties(LootContext.EntityTarget.THIS, new EntityPredicate.Builder().entityType(new EntityTypePredicate(HolderSet.direct(entityType.builtInRegistryHolder()))).build()).build()}, Optional.of(item), multiplier);
         }
 
         public Builder(EntityType<?> entityType, TagKey<Item> tag, float multiplier) {
-            this.dropMultiplierModifier = DropMultiplierModifier.newTag(new LootItemCondition[]{LootItemEntityPropertyCondition.hasProperties(LootContext.EntityTarget.THIS, new EntityPredicate.Builder().entityType(EntityTypePredicate.of(entityType)).build()).build()}, Optional.of(tag), multiplier);
+            this.dropMultiplierModifier = DropMultiplierModifier.newTag(new LootItemCondition[]{LootItemEntityPropertyCondition.hasProperties(LootContext.EntityTarget.THIS, new EntityPredicate.Builder().entityType(new EntityTypePredicate(HolderSet.direct(entityType.builtInRegistryHolder()))).build()).build()}, Optional.of(tag), multiplier);
         }
 
         public Builder(Block block, Item item, float multiplier) {

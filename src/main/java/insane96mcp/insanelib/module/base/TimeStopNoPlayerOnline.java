@@ -10,7 +10,7 @@ import insane96mcp.insanelib.util.IntegratedPack;
 import net.minecraft.commands.CacheableFunction;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.functions.CommandFunction;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.ServerFunctionManager;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -43,12 +43,12 @@ public class TimeStopNoPlayerOnline extends Feature {
 
     @SubscribeEvent
     public void onPlayerLeave(PlayerEvent.PlayerLoggedOutEvent event) {
-        setTickTime(event.getEntity().getServer(), false, server -> server.getPlayerList().getPlayers().size() > 1);
+        setTickTime(event.getEntity().level().getServer(), false, server -> server.getPlayerList().getPlayers().size() > 1);
     }
 
     @SubscribeEvent
     public void onPlayerLeave(PlayerEvent.PlayerLoggedInEvent event) {
-        setTickTime(event.getEntity().getServer(), true, null);
+        setTickTime(event.getEntity().level().getServer(), true, null);
     }
 
     static int tick = 0;
@@ -74,7 +74,7 @@ public class TimeStopNoPlayerOnline extends Feature {
 
     private void executeFunction(ServerFunctionManager functions, CacheableFunction function, String id) {
         if (function == null)
-            function = new CacheableFunction(ResourceLocation.parse(id));
+            function = new CacheableFunction(Identifier.parse(id));
         Optional<CommandFunction<CommandSourceStack>> func = function.get(functions);
         if (func.isPresent())
             functions.execute(func.get(), functions.getGameLoopSender());

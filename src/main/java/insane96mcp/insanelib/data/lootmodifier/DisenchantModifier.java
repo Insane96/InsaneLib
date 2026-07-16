@@ -5,7 +5,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -47,11 +47,11 @@ public class DisenchantModifier extends LootModifier {
     private Optional<TagKey<Item>> blacklistedItemsTag;
 
     public DisenchantModifier(LootItemCondition[] conditionsIn) {
-        super(conditionsIn);
+        super(conditionsIn, DEFAULT_PRIORITY);
     }
 
-    public DisenchantModifier(LootItemCondition[] conditionsIn, Optional<TagKey<Item>> blacklistedItemsTag) {
-        super(conditionsIn);
+    public DisenchantModifier(LootItemCondition[] conditionsIn, int priority, Optional<TagKey<Item>> blacklistedItemsTag) {
+        super(conditionsIn, priority);
         this.blacklistedItemsTag = blacklistedItemsTag;
     }
 
@@ -87,7 +87,7 @@ public class DisenchantModifier extends LootModifier {
             this.disenchantModifier = new DisenchantModifier(conditionsIn);
         }
 
-        public Builder(ResourceLocation lootTable) {
+        public Builder(Identifier lootTable) {
             this(new LootItemCondition[]{LootTableIdCondition.builder(lootTable).build()});
         }
 

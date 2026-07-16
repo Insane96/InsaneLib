@@ -2,15 +2,13 @@ package insane96mcp.insanelib.data.condition;
 
 import com.google.common.collect.ImmutableSet;
 import com.mojang.serialization.MapCodec;
-import insane96mcp.insanelib.setup.ILConditions;
 import insane96mcp.insanelib.util.MCUtils;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.storage.loot.LootContext;
-import net.minecraft.world.level.storage.loot.parameters.LootContextParam;
+import net.minecraft.util.context.ContextKey;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
-import net.minecraft.world.level.storage.loot.predicates.LootItemConditionType;
 
 import java.util.Set;
 
@@ -25,31 +23,31 @@ import java.util.Set;
  *
  * @param advancement The resource location of the advancement to check.
  */
-public record KillerHasAdvancementCondition(ResourceLocation advancement) implements LootItemCondition {
+public record KillerHasAdvancementCondition(Identifier advancement) implements LootItemCondition {
 
-    public static final MapCodec<KillerHasAdvancementCondition> CODEC = ResourceLocation.CODEC
+    public static final MapCodec<KillerHasAdvancementCondition> MAP_CODEC = Identifier.CODEC
             .fieldOf("advancement")
             .xmap(KillerHasAdvancementCondition::new, KillerHasAdvancementCondition::advancement);
 
     @Override
-    public LootItemConditionType getType() {
-        return ILConditions.KILLER_HAS_ADVANCEMENT.get();
+    public MapCodec<? extends LootItemCondition> codec() {
+        return MAP_CODEC;
     }
 
     @Override
-    public Set<LootContextParam<?>> getReferencedContextParams() {
+    public Set<ContextKey<?>> getReferencedContextParams() {
         return ImmutableSet.of(LootContextParams.LAST_DAMAGE_PLAYER);
     }
 
     @Override
     public boolean test(LootContext context) {
-        if (!context.hasParam(LootContextParams.LAST_DAMAGE_PLAYER))
+        if (!context.hasParameter(LootContextParams.LAST_DAMAGE_PLAYER))
             return false;
-        ServerPlayer player = (ServerPlayer) context.getParam(LootContextParams.LAST_DAMAGE_PLAYER);
+        ServerPlayer player = (ServerPlayer) context.getParameter(LootContextParams.LAST_DAMAGE_PLAYER);
         return MCUtils.isAdvancementDone(player, this.advancement);
     }
 
-    public static LootItemCondition.Builder advancementCompleted(ResourceLocation advancement) {
+    public static LootItemCondition.Builder advancementCompleted(Identifier advancement) {
         return () -> new KillerHasAdvancementCondition(advancement);
     }
 }

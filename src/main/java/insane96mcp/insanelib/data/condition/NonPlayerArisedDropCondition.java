@@ -2,14 +2,12 @@ package insane96mcp.insanelib.data.condition;
 
 import com.google.common.collect.ImmutableSet;
 import com.mojang.serialization.MapCodec;
-import insane96mcp.insanelib.setup.ILConditions;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.storage.loot.LootContext;
-import net.minecraft.world.level.storage.loot.parameters.LootContextParam;
+import net.minecraft.util.context.ContextKey;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
-import net.minecraft.world.level.storage.loot.predicates.LootItemConditionType;
 
 import java.util.Set;
 
@@ -30,28 +28,28 @@ import java.util.Set;
  */
 public record NonPlayerArisedDropCondition() implements LootItemCondition {
 
-    public static final MapCodec<NonPlayerArisedDropCondition> CODEC = MapCodec.unit(NonPlayerArisedDropCondition::new);
+    public static final MapCodec<NonPlayerArisedDropCondition> MAP_CODEC = MapCodec.unit(NonPlayerArisedDropCondition::new);
 
     @Override
-    public LootItemConditionType getType() {
-        return ILConditions.NON_PLAYER_ARISED_DROP.get();
+    public MapCodec<? extends LootItemCondition> codec() {
+        return MAP_CODEC;
     }
 
     @Override
-    public Set<LootContextParam<?>> getReferencedContextParams() {
+    public Set<ContextKey<?>> getReferencedContextParams() {
         return ImmutableSet.of(LootContextParams.THIS_ENTITY, LootContextParams.LAST_DAMAGE_PLAYER, LootContextParams.EXPLOSION_RADIUS, LootContextParams.TOOL);
     }
 
     @Override
     public boolean test(LootContext context) {
-        if (!(context.hasParam(LootContextParams.THIS_ENTITY))
-                || !(context.getParam(LootContextParams.THIS_ENTITY) instanceof LivingEntity)
-                || context.getParam(LootContextParams.THIS_ENTITY) instanceof Player
-                || context.hasParam(LootContextParams.EXPLOSION_RADIUS)
-                || context.hasParam(LootContextParams.TOOL))
+        if (!(context.hasParameter(LootContextParams.THIS_ENTITY))
+                || !(context.getParameter(LootContextParams.THIS_ENTITY) instanceof LivingEntity)
+                || context.getParameter(LootContextParams.THIS_ENTITY) instanceof Player
+                || context.hasParameter(LootContextParams.EXPLOSION_RADIUS)
+                || context.hasParameter(LootContextParams.TOOL))
             return false;
 
-        return !context.hasParam(LootContextParams.LAST_DAMAGE_PLAYER);
+        return !context.hasParameter(LootContextParams.LAST_DAMAGE_PLAYER);
     }
 
     public static LootItemCondition.Builder builder() {

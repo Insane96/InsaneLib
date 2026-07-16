@@ -1,7 +1,7 @@
 {
 	"required": true,
 	"package": "insane96mcp.insanelib.mixin",
-	"compatibilityLevel": "JAVA_21",
+	"compatibilityLevel": "JAVA_25",
 	"mixinextras": {
 		"minVersion": "0.5.3"
 	},
@@ -16,17 +16,14 @@
 		"FireBlockMixin",
 		"FishMoveControlMixin",
 		"IItemExtensionMixin",
-		"IItemStackExtensionMixin",
 		"ItemMixin",
 		"ItemStackMixin",
 		"LivingEntityMixin",
-		"LootModifierManagerMixin",
-		"NearestAttackableTargetGoalMixin",
+		"ApplyStatusEffectsConsumeEffectMixin",
 		"PlayerMixin",
 		"ProjectileWeaponItemMixin",
 		"accessor.CreeperAccessor",
 		"accessor.ExplosionAccessor",
-		"accessor.MobEffectInstanceAccessor",
 		"accessor.ServerLevelAccessor"
 	],
 	"injectors": {
@@ -36,7 +33,6 @@
 		"requireAnnotations": true
 	},
 	"client": [
-		"accessor.GuiGraphicsAccessor",
 		"client.AnvilScreenMixin",
 		"client.LocalPlayerMixin"
 	]

@@ -3,14 +3,14 @@ package insane96mcp.insanelib.util;
 import com.ezylang.evalex.Expression;
 import com.ezylang.evalex.data.EvaluationValue;
 import insane96mcp.insanelib.InsaneLib;
-import insane96mcp.insanelib.mixin.accessor.MobEffectInstanceAccessor;
 import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.damagesource.DamageSource;
@@ -26,6 +26,7 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.food.FoodProperties;
+import net.minecraft.world.item.component.Consumable;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.alchemy.PotionContents;
@@ -36,7 +37,10 @@ import org.apache.commons.lang3.math.NumberUtils;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Collections;
 import java.util.Optional;
+import java.util.Set;
+import java.util.WeakHashMap;
 
 public class MCUtils {
 	/**
@@ -56,7 +60,7 @@ public class MCUtils {
 	 * Applies a modifier to the Living Entity. If the attribute is max_health also sets entity's health to his max health
 	 * @return true if the modifier was applied
 	 */
-	public static boolean applyModifier(LivingEntity entity, Holder<Attribute> attribute, ResourceLocation id, double amount, AttributeModifier.Operation operation, boolean permanent) {
+	public static boolean applyModifier(LivingEntity entity, Holder<Attribute> attribute, Identifier id, double amount, AttributeModifier.Operation operation, boolean permanent) {
 		return applyModifier(entity, attribute, new AttributeModifier(id, amount, operation), permanent);
 	}
 
@@ -64,7 +68,7 @@ public class MCUtils {
 	 * Applies a permanent modifier to the Living Entity. If the attribute is max_health also heals the entity to the new bonus health (if any)
 	 * @return true if the modifier was applied
 	 */
-	public static boolean applyModifier(LivingEntity entity, Holder<Attribute> attribute, ResourceLocation id, double amount, AttributeModifier.Operation operation) {
+	public static boolean applyModifier(LivingEntity entity, Holder<Attribute> attribute, Identifier id, double amount, AttributeModifier.Operation operation) {
 		return applyModifier(entity, attribute, new AttributeModifier(id, amount, operation), true);
 	}
 
@@ -96,7 +100,7 @@ public class MCUtils {
 	/**
 	 * Removes a modifier from the Living Entity if the entity has the attribute
 	 */
-    public static void removeModifier(LivingEntity entity, Holder<Attribute> attribute, ResourceLocation id) {
+    public static void removeModifier(LivingEntity entity, Holder<Attribute> attribute, Identifier id) {
         AttributeInstance attributeInstance = entity.getAttribute(attribute);
         if (attributeInstance != null)
             attributeInstance.removeModifier(id);
@@ -131,9 +135,11 @@ public class MCUtils {
 	}
 
 	public static boolean hurtIgnoreInvulnerability(LivingEntity hurtEntity, DamageSource source, float amount) {
+		if (!(hurtEntity.level() instanceof ServerLevel serverLevel))
+			return false;
 		int hurtResistantTime = hurtEntity.invulnerableTime;
 		hurtEntity.invulnerableTime = 0;
-		boolean attacked = hurtEntity.hurt(source, amount);
+		boolean attacked = hurtEntity.hurtServer(serverLevel, source, amount);
 		hurtEntity.invulnerableTime = hurtResistantTime;
 		return attacked;
 	}
@@ -142,12 +148,12 @@ public class MCUtils {
 	 * Checks if nbt1 tags are all present in and match nbt2
 	 */
 	public static boolean compareNBT(CompoundTag nbt1, CompoundTag nbt2) {
-		for (String key : nbt1.getAllKeys()) {
+		for (String key : nbt1.keySet()) {
 			if (!nbt2.contains(key))
 				return false;
 
 			if (nbt1.get(key) instanceof CompoundTag && nbt2.get(key) instanceof CompoundTag) {
-				if (!compareNBT(nbt1.getCompound(key), nbt2.getCompound(key)))
+				if (!compareNBT(nbt1.getCompoundOrEmpty(key), nbt2.getCompoundOrEmpty(key)))
 					return false;
 			}
 			//Can't be null. Looping over all the keys
@@ -160,8 +166,8 @@ public class MCUtils {
 	/**
 	 * Returns true if the player has completed the advancement
 	 */
-	public static boolean isAdvancementDone(ServerPlayer player, ResourceLocation advancementRL) {
-		AdvancementHolder advancement = player.server.getAdvancements().get(advancementRL);
+	public static boolean isAdvancementDone(ServerPlayer player, Identifier advancementRL) {
+		AdvancementHolder advancement = player.level().getServer().getAdvancements().get(advancementRL);
 		if (advancement == null)
 			return false;
 
@@ -174,7 +180,7 @@ public class MCUtils {
 
 	public static ItemStack createPotionStackFromEffectInstances(Item item, @Nullable Integer color, List<MobEffectInstance> mobEffectInstances) {
 		ItemStack itemstack = new ItemStack(item);
-		itemstack.set(DataComponents.POTION_CONTENTS, new PotionContents(Optional.empty(), Optional.ofNullable(color), mobEffectInstances));
+		itemstack.set(DataComponents.POTION_CONTENTS, new PotionContents(Optional.empty(), Optional.ofNullable(color), mobEffectInstances, Optional.empty()));
 		return itemstack;
 	}
 
@@ -201,11 +207,11 @@ public class MCUtils {
 	}
 
 	/**
-	 * Returns a spawnable Y spot for the entity at the given x, y, z. Returns level.getMinBuildHeight() - 1 when no spawn spots are found, otherwise the Y coord
+	 * Returns a spawnable Y spot for the entity at the given x, y, z. Returns level.getMinY() - 1 when no spawn spots are found, otherwise the Y coord
 	 */
 	public static int getFittingY(EntityType<?> entityType, BlockPos pos, Level level, int minRelativeY) {
 		int height = (int) Math.ceil(entityType.getHeight());
-		int fittingYPos = level.getMinBuildHeight() - 1;
+		int fittingYPos = level.getMinY() - 1;
 		for (int y = pos.getY(); y > pos.getY() - minRelativeY; y--) {
 			boolean viable = true;
 			BlockPos p = new BlockPos(pos.getX(), y, pos.getZ());
@@ -226,13 +232,28 @@ public class MCUtils {
 	}
 
 	/**
+	 * Effect instances flagged as non-curable via {@link #createEffectInstance}. Held weakly so instances can be
+	 * garbage collected normally. Since 26.1 removed NeoForge's EffectCure system, the flag is enforced by
+	 * cancelling {@link net.neoforged.neoforge.event.entity.living.MobEffectEvent.Remove} and is not persisted
+	 * across entity save/load.
+	 */
+	private static final Set<MobEffectInstance> NON_CURABLE_EFFECT_INSTANCES = Collections.newSetFromMap(new WeakHashMap<>());
+
+	/**
 	 * Creates a MobEffectInstance with the possibility to prevent it from being cured
 	 */
 	public static MobEffectInstance createEffectInstance(Holder<MobEffect> potion, int duration, int amplifier, boolean ambient, boolean showParticles, boolean showIcon, boolean canBeCured) {
 		MobEffectInstance effectInstance = new MobEffectInstance(potion, duration, amplifier, ambient, showParticles, showIcon);
 		if (!canBeCured)
-			((MobEffectInstanceAccessor) effectInstance).getCuresField().clear();
+			NON_CURABLE_EFFECT_INSTANCES.add(effectInstance);
 		return effectInstance;
+	}
+
+	/**
+	 * Returns true if the effect instance was created as non-curable via {@link #createEffectInstance}
+	 */
+	public static boolean isNonCurable(MobEffectInstance effectInstance) {
+		return NON_CURABLE_EFFECT_INSTANCES.contains(effectInstance);
 	}
 
 	public static ArrayList<MobEffectInstance> parseMobEffectsList(List<? extends String> list) {
@@ -256,12 +277,12 @@ public class MCUtils {
 			return null;
 		}
 
-		ResourceLocation effectRL = ResourceLocation.tryParse(split[0]);
+		Identifier effectRL = Identifier.tryParse(split[0]);
 		if (effectRL == null) {
 			InsaneLib.LOGGER.warn("{} mob effect is not valid", split[0]);
 			return null;
 		}
-		var effectHolder = BuiltInRegistries.MOB_EFFECT.getHolder(effectRL);
+		var effectHolder = BuiltInRegistries.MOB_EFFECT.get(effectRL);
 		if (effectHolder.isEmpty()) {
 			InsaneLib.LOGGER.warn("{} mob effect seems to not exist", split[0]);
 			return null;
@@ -294,7 +315,7 @@ public class MCUtils {
 			player.getPersistentData().put(Player.PERSISTED_NBT_TAG, tag);
 		}
 		else {
-			tag = player.getPersistentData().getCompound(Player.PERSISTED_NBT_TAG);
+			tag = player.getPersistentData().getCompoundOrEmpty(Player.PERSISTED_NBT_TAG);
 		}
 		return tag;
 	}
@@ -308,7 +329,7 @@ public class MCUtils {
 	 */
 	public static RandomSource syncedRandom(Player player) {
 		RandomSource random = player.getRandom();
-		if (player.level().isClientSide)
+		if (player.level().isClientSide())
 			random.setSeed(player.level().getGameTime() + 1);
 		else
 			random.setSeed(player.level().getGameTime());
@@ -318,28 +339,41 @@ public class MCUtils {
 	}
 
 	/**
+	 * @deprecated Use {@link #computeFoodFormula(FoodProperties, Consumable, String)} instead: eat time no longer
+	 * lives on {@link FoodProperties}, so this overload always evaluates {@code eat_seconds} as the vanilla
+	 * default of 1.6 seconds.
+	 */
+	@Deprecated
+	public static float computeFoodFormula(FoodProperties food, String formula) {
+		return computeFoodFormula(food, null, formula);
+	}
+
+	/**
 	 * Evaluates an EvalEx formula against a food item's properties.
 	 * <p>
 	 * The following variables are available in the formula:
 	 * <ul>
 	 *   <li>{@code nutrition} — the food's nutrition value</li>
 	 *   <li>{@code saturation} — the food's saturation value</li>
-	 *   <li>{@code eat_seconds} — the time in seconds it takes to eat the food</li>
+	 *   <li>{@code eat_seconds} — the time in seconds it takes to eat the food, taken from the item's
+	 *       {@link Consumable} (1.21.2+ moved eat time off the food); the vanilla default of 1.6 seconds
+	 *       is used if {@code consumable} is null</li>
 	 *   <li>{@code can_always_eat} — true if the food can be eaten even when food bar is full</li>
 	 * </ul>
 	 *
-	 * @param food    the food properties to evaluate the formula against
-	 * @param formula an EvalEx expression string
+	 * @param food       the food properties to evaluate the formula against
+	 * @param consumable the item's consumable component, used for {@code eat_seconds} (may be null)
+	 * @param formula    an EvalEx expression string
 	 * @return the result of the formula as a float, or {@code -1} if evaluation fails
 	 */
-	public static float computeFoodFormula(FoodProperties food, String formula) {
+	public static float computeFoodFormula(FoodProperties food, @Nullable Consumable consumable, String formula) {
 		Expression expression = new Expression(formula);
 		try {
 			//noinspection ConstantConditions
 			EvaluationValue result = expression
 					.with("nutrition", food.nutrition())
 					.and("saturation", food.saturation())
-					.and("eat_seconds", food.eatSeconds())
+					.and("eat_seconds", consumable != null ? consumable.consumeSeconds() : Consumable.DEFAULT_CONSUME_SECONDS)
 					.and("can_always_eat", food.canAlwaysEat())
 					.evaluate();
 			return result.getNumberValue().floatValue();

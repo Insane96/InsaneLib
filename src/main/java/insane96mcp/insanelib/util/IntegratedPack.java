@@ -5,15 +5,13 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.packs.PackLocationInfo;
 import net.minecraft.server.packs.PackSelectionConfig;
 import net.minecraft.server.packs.PackType;
-import net.minecraft.server.packs.PathPackResources;
-import net.minecraft.server.packs.repository.BuiltInPackSource;
 import net.minecraft.server.packs.repository.Pack;
 import net.minecraft.server.packs.repository.PackSource;
 import net.neoforged.fml.ModList;
 import net.neoforged.neoforge.event.AddPackFindersEvent;
+import net.neoforged.neoforge.resource.JarContentsPackResources;
 import org.jetbrains.annotations.NotNull;
 
-import java.nio.file.Path;
 import java.util.*;
 import java.util.function.BooleanSupplier;
 
@@ -100,7 +98,9 @@ public class IntegratedPack implements Comparable<IntegratedPack> {
                     || !integratedPack.shouldBeEnabled())
                 continue;
 
-            Path resourcePath = ModList.get().getModFileById(integratedPack.modId).getFile().findResource("integrated_packs/" + integratedPack.getPath());
+            var modFileContents = ModList.get().getModContainerById(integratedPack.modId).orElseThrow(
+                    () -> new IllegalArgumentException("Mod not found: " + integratedPack.modId))
+                    .getModInfo().getOwningFile().getFile().getContents();
             String packId = integratedPack.modId + ":" + integratedPack.getPath();
 
             var locationInfo = new PackLocationInfo(
@@ -118,7 +118,7 @@ public class IntegratedPack implements Comparable<IntegratedPack> {
 
             var pack = Pack.readMetaAndCreate(
                     locationInfo,
-                    BuiltInPackSource.fromName(path -> new PathPackResources(path, resourcePath)),
+                    new JarContentsPackResources.JarContentsResourcesSupplier(modFileContents, "integrated_packs/" + integratedPack.getPath()),
                     integratedPack.packType,
                     selectionConfig
             );

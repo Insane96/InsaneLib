@@ -11,7 +11,7 @@ import insane96mcp.insanelib.data.ObjTag;
 import insane96mcp.insanelib.network.message.JsonConfigSyncMessage;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.OnDatapackSyncEvent;
 import net.neoforged.neoforge.event.TagsUpdatedEvent;
@@ -116,7 +116,7 @@ public abstract class JsonFeature extends Feature {
          * The id of the {@link SyncType} that will be called on client sync
          */
         @Nullable
-        ResourceLocation syncType;
+        Identifier syncType;
         /**
          * Optional extra {@link TypeAdapterFactory} registered when the list items contain {@link ObjTag} fields.
          * Set via {@link #withRegistryFor(ResourceKey)}.
@@ -138,7 +138,7 @@ public abstract class JsonFeature extends Feature {
         }
 
         /** Enables syncing this config to clients on datapack reload. */
-        public JsonConfig<T> syncToClient(ResourceLocation syncType) {
+        public JsonConfig<T> syncToClient(Identifier syncType) {
             this.syncToClient = true;
             this.syncType = syncType;
             return this;
@@ -221,12 +221,12 @@ public abstract class JsonFeature extends Feature {
         }
     }
 
-    private static final HashMap<ResourceLocation, SyncType> SYNC_TYPE_REGISTRY = new HashMap<>();
-    public static void addSyncType(ResourceLocation id, SyncType syncType) {
+    private static final HashMap<Identifier, SyncType> SYNC_TYPE_REGISTRY = new HashMap<>();
+    public static void addSyncType(Identifier id, SyncType syncType) {
         SYNC_TYPE_REGISTRY.put(id, syncType);
     }
     @Nullable
-    public static SyncType getSyncType(ResourceLocation id) {
+    public static SyncType getSyncType(Identifier id) {
         return SYNC_TYPE_REGISTRY.get(id);
     }
 
@@ -237,7 +237,7 @@ public abstract class JsonFeature extends Feature {
     }
 
     public void onTagsUpdatedEvent(TagsUpdatedEvent event) {
-        if (event.getUpdateCause() == TagsUpdatedEvent.UpdateCause.CLIENT_PACKET_RECEIVED) {
+        if (event instanceof TagsUpdatedEvent.ClientPacketReceived) {
             for (JsonConfig<?> jsonConfig : JSON_CONFIGS) {
                 jsonConfig.onLoad(true);
             }

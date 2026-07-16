@@ -6,7 +6,7 @@ import com.google.gson.reflect.TypeToken;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.ai.attributes.Attribute;
@@ -21,7 +21,7 @@ import java.util.Optional;
  * @param attribute uses supplier due to modded attributes not being at startup
  */
 @JsonAdapter(SerializableAttributeModifier.Serializer.class)
-public record SerializableAttributeModifier(ResourceLocation id, List<EquipmentSlot> slots,
+public record SerializableAttributeModifier(Identifier id, List<EquipmentSlot> slots,
                                             Holder<Attribute> attribute, double amount,
                                             AttributeModifier.Operation operation) {
     public AttributeModifier getModifier() {
@@ -35,10 +35,10 @@ public record SerializableAttributeModifier(ResourceLocation id, List<EquipmentS
         public SerializableAttributeModifier deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
             JsonObject jObject = json.getAsJsonObject();
             String sAttribute = GsonHelper.getAsString(jObject, "attribute");
-            Optional<Holder.Reference<Attribute>> attribute = BuiltInRegistries.ATTRIBUTE.getHolder(ResourceLocation.parse(sAttribute));
+            Optional<Holder.Reference<Attribute>> attribute = BuiltInRegistries.ATTRIBUTE.get(Identifier.parse(sAttribute));
             if (attribute.isEmpty())
                 throw new JsonParseException("Invalid attribute: %s".formatted(sAttribute));
-            ResourceLocation id = ResourceLocation.parse(GsonHelper.getAsString(jObject, "id"));
+            Identifier id = Identifier.parse(GsonHelper.getAsString(jObject, "id"));
             List<EquipmentSlot> slots = new ArrayList<>();
             if (jObject.has("slot")) {
                 slots.add(EquipmentSlot.byName(jObject.get("slot").getAsString()));
@@ -77,10 +77,10 @@ public record SerializableAttributeModifier(ResourceLocation id, List<EquipmentS
     }
 
     public static SerializableAttributeModifier fromNetwork(FriendlyByteBuf byteBuf) {
-        Optional<Holder.Reference<Attribute>> attribute = BuiltInRegistries.ATTRIBUTE.getHolder(ResourceLocation.parse(byteBuf.readUtf()));
+        Optional<Holder.Reference<Attribute>> attribute = BuiltInRegistries.ATTRIBUTE.get(Identifier.parse(byteBuf.readUtf()));
         if (attribute.isEmpty())
             throw new IllegalStateException("Invalid attribute from network: %s".formatted(byteBuf.readUtf()));
-        ResourceLocation id = byteBuf.readResourceLocation();
+        Identifier id = byteBuf.readIdentifier();
         List<EquipmentSlot> slots = byteBuf.readList(byteBuf1 -> byteBuf1.readEnum(EquipmentSlot.class));
         double amount = byteBuf.readDouble();
         AttributeModifier.Operation operation = byteBuf.readEnum(AttributeModifier.Operation.class);
@@ -89,7 +89,7 @@ public record SerializableAttributeModifier(ResourceLocation id, List<EquipmentS
 
     public void toNetwork(FriendlyByteBuf byteBuf) {
         byteBuf.writeUtf(BuiltInRegistries.ATTRIBUTE.getKey(this.attribute.value()).toString());
-        byteBuf.writeResourceLocation(this.id);
+        byteBuf.writeIdentifier(this.id);
         byteBuf.writeCollection(this.slots, FriendlyByteBuf::writeEnum);
         byteBuf.writeDouble(this.amount);
         byteBuf.writeEnum(this.operation);

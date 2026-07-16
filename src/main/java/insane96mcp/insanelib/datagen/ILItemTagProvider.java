@@ -4,19 +4,15 @@ import insane96mcp.insanelib.InsaneLib;
 import insane96mcp.insanelib.setup.ILTags;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
-import net.minecraft.data.tags.ItemTagsProvider;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.level.block.Block;
-import net.neoforged.neoforge.common.data.ExistingFileHelper;
+import net.neoforged.neoforge.common.data.ItemTagsProvider;
 
-import javax.annotation.Nullable;
 import java.util.concurrent.CompletableFuture;
 
 public class ILItemTagProvider extends ItemTagsProvider {
 
-    public ILItemTagProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, CompletableFuture<TagLookup<Block>> blockTagsLookup, @Nullable ExistingFileHelper existingFileHelper) {
-        super(output, lookupProvider, blockTagsLookup, InsaneLib.MOD_ID, existingFileHelper);
+    public ILItemTagProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider) {
+        super(output, lookupProvider, InsaneLib.MOD_ID);
     }
 
     @Override
@@ -61,20 +57,11 @@ public class ILItemTagProvider extends ItemTagsProvider {
         tag(ILTags.Items.EQUIPMENT_ARMOR_NETHERITE).add(Items.NETHERITE_HELMET, Items.NETHERITE_CHESTPLATE, Items.NETHERITE_LEGGINGS, Items.NETHERITE_BOOTS);
         tag(ILTags.Items.EQUIPMENT_NETHERITE).addTag(ILTags.Items.EQUIPMENT_HAND_NETHERITE).addTag(ILTags.Items.EQUIPMENT_ARMOR_NETHERITE);
 
-        // Copper (required=false — items don't exist in vanilla 1.21.1)
-        tag(ILTags.Items.EQUIPMENT_TOOLS_COPPER)
-                .addOptional(ResourceLocation.withDefaultNamespace("copper_pickaxe"))
-                .addOptional(ResourceLocation.withDefaultNamespace("copper_axe"))
-                .addOptional(ResourceLocation.withDefaultNamespace("copper_shovel"))
-                .addOptional(ResourceLocation.withDefaultNamespace("copper_hoe"));
-        tag(ILTags.Items.EQUIPMENT_WEAPONS_COPPER)
-                .addOptional(ResourceLocation.withDefaultNamespace("copper_sword"));
+        // Copper (vanilla equipment since the Copper Age drop)
+        tag(ILTags.Items.EQUIPMENT_TOOLS_COPPER).add(Items.COPPER_PICKAXE, Items.COPPER_AXE, Items.COPPER_SHOVEL, Items.COPPER_HOE);
+        tag(ILTags.Items.EQUIPMENT_WEAPONS_COPPER).add(Items.COPPER_SWORD);
         tag(ILTags.Items.EQUIPMENT_HAND_COPPER).addTag(ILTags.Items.EQUIPMENT_TOOLS_COPPER).addTag(ILTags.Items.EQUIPMENT_WEAPONS_COPPER);
-        tag(ILTags.Items.EQUIPMENT_ARMOR_COPPER)
-                .addOptional(ResourceLocation.withDefaultNamespace("copper_helmet"))
-                .addOptional(ResourceLocation.withDefaultNamespace("copper_chestplate"))
-                .addOptional(ResourceLocation.withDefaultNamespace("copper_leggings"))
-                .addOptional(ResourceLocation.withDefaultNamespace("copper_boots"));
+        tag(ILTags.Items.EQUIPMENT_ARMOR_COPPER).add(Items.COPPER_HELMET, Items.COPPER_CHESTPLATE, Items.COPPER_LEGGINGS, Items.COPPER_BOOTS);
         tag(ILTags.Items.EQUIPMENT_COPPER).addTag(ILTags.Items.EQUIPMENT_HAND_COPPER).addTag(ILTags.Items.EQUIPMENT_ARMOR_COPPER);
 
         // Leather (armor only)

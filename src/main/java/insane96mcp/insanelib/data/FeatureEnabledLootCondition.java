@@ -3,20 +3,18 @@ package insane96mcp.insanelib.data;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import insane96mcp.insanelib.core.feature.Feature;
-import insane96mcp.insanelib.setup.ILConditions;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
-import net.minecraft.world.level.storage.loot.predicates.LootItemConditionType;
 
 public record FeatureEnabledLootCondition(String featureName) implements LootItemCondition {
 
-    public static final MapCodec<FeatureEnabledLootCondition> CODEC = Codec.STRING
+    public static final MapCodec<FeatureEnabledLootCondition> MAP_CODEC = Codec.STRING
             .fieldOf("feature")
             .xmap(FeatureEnabledLootCondition::new, FeatureEnabledLootCondition::featureName);
 
     @Override
-    public LootItemConditionType getType() {
-        return ILConditions.FEATURE_ENABLED_LOOT.get();
+    public MapCodec<? extends LootItemCondition> codec() {
+        return MAP_CODEC;
     }
 
     @Override

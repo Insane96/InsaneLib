@@ -5,13 +5,13 @@ import insane96mcp.insanelib.core.feature.LoadFeature;
 import insane96mcp.insanelib.core.feature.config.Config;
 import insane96mcp.insanelib.network.message.CreeperDataSyncMessage;
 import insane96mcp.insanelib.util.MCUtils;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.monster.Creeper;
-import net.minecraft.world.entity.monster.Zombie;
+import net.minecraft.world.entity.monster.zombie.Zombie;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -20,10 +20,7 @@ import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 
 @LoadFeature(description = "Various fixes and improvements")
 public class Fixes extends Feature {
-	private static final ResourceLocation LEADER_ZOMBIE_BONUS_ID = ResourceLocation.withDefaultNamespace("leader_zombie_bonus");
-
-	@Config(description = "If true, mobs will have their follow range fixed. https://bugs.mojang.com/browse/MC-145656. Only affects entities in `insanelib:fix_follow_range` entity type tag (all vanilla mobs by default) and entities that use the NearestAttackableTargetGoal goal.")
-	public static Boolean fixFollowRange = true;
+	private static final Identifier LEADER_ZOMBIE_BONUS_ID = Identifier.withDefaultNamespace("leader_zombie_bonus");
 
 	@Config(description = "Makes drowned and fishes use the swim speed attribute (neoforge:swim_speed) instead of movement speed.")
 	public static Boolean fixSwimmersSwimmingAttribute = true;
@@ -47,17 +44,13 @@ public class Fixes extends Feature {
 		return Feature.isEnabled(Fixes.class) && fixMobCrossbowFireworkShooting;
 	}
 
-	public static boolean shouldFixFollowRange() {
-		return Feature.isEnabled(Fixes.class) && fixFollowRange;
-	}
-
 	public static boolean shouldFixSwimmersSwimmingAttribute() {
 		return Feature.isEnabled(Fixes.class) && fixSwimmersSwimmingAttribute;
 	}
 
 	@SubscribeEvent
 	public void onStartTracking(PlayerEvent.StartTracking event) {
-		if (event.getEntity().level().isClientSide)
+		if (event.getEntity().level().isClientSide())
 			return;
 		if (!(event.getTarget() instanceof Creeper creeper))
 			return;

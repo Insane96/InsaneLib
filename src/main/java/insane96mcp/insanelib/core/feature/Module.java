@@ -1,7 +1,7 @@
 package insane96mcp.insanelib.core.feature;
 
 import insane96mcp.insanelib.InsaneLib;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.config.ModConfig;
@@ -14,7 +14,7 @@ import javax.annotation.Nullable;
 import java.util.*;
 
 public class Module {
-    static final HashMap<ResourceLocation, Module> modules = new HashMap<>();
+    static final HashMap<Identifier, Module> modules = new HashMap<>();
 
     private ModConfigSpec.ConfigValue<Boolean> enabledConfig;
 
@@ -23,7 +23,7 @@ public class Module {
     private boolean enabled;
     private boolean canBeDisabled;
 
-    private final ResourceLocation id;
+    private final Identifier id;
     private final String name;
     private String description = "";
 
@@ -33,7 +33,7 @@ public class Module {
     private static final Map<Class<? extends Feature>, Feature> loadedFeatures = new HashMap<>();
     private final Map<Class<? extends Feature>, Feature> features = new HashMap<>();
 
-    Module(ResourceLocation id, String name, ModConfig.Type modConfigType, ModConfigSpec.Builder configBuilder, IEventBus modEventBus) {
+    Module(Identifier id, String name, ModConfig.Type modConfigType, ModConfigSpec.Builder configBuilder, IEventBus modEventBus) {
         this.id = id;
         this.name = name;
         this.enabled = true;
@@ -50,11 +50,11 @@ public class Module {
     public static class Builder {
         private final Module module;
 
-        private Builder(ResourceLocation id, String name, ModConfig.Type modConfigType, ModConfigSpec.Builder configBuilder, IEventBus modEventBus) {
+        private Builder(Identifier id, String name, ModConfig.Type modConfigType, ModConfigSpec.Builder configBuilder, IEventBus modEventBus) {
             this.module = new Module(id, name, modConfigType, configBuilder, modEventBus);
         }
 
-        public static Builder create(ResourceLocation id, String name, ModConfig.Type modConfigType, ModConfigSpec.Builder configBuilder, IEventBus modEventBus) {
+        public static Builder create(Identifier id, String name, ModConfig.Type modConfigType, ModConfigSpec.Builder configBuilder, IEventBus modEventBus) {
             return new Builder(id, name, modConfigType, configBuilder, modEventBus);
         }
 
@@ -93,7 +93,7 @@ public class Module {
         return enabled;
     }
 
-    public ResourceLocation getId() {
+    public Identifier getId() {
         return this.id;
     }
 
@@ -198,7 +198,7 @@ public class Module {
                 return;
             }
         } else {
-            ResourceLocation moduleId = ResourceLocation.parse(moduleStr);
+            Identifier moduleId = Identifier.parse(moduleStr);
             synchronized (_lock) {
                 module = Module.modules.get(moduleId);
             }

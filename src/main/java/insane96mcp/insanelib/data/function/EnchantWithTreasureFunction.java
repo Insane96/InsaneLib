@@ -3,7 +3,6 @@ package insane96mcp.insanelib.data.function;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import insane96mcp.insanelib.setup.ILLootFunctions;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponents;
@@ -17,7 +16,6 @@ import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.functions.LootItemConditionalFunction;
-import net.minecraft.world.level.storage.loot.functions.LootItemFunctionType;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 
 import java.util.List;
@@ -38,7 +36,7 @@ import java.util.List;
  */
 public class EnchantWithTreasureFunction extends LootItemConditionalFunction {
 
-    public static final MapCodec<EnchantWithTreasureFunction> CODEC = RecordCodecBuilder.mapCodec(inst ->
+    public static final MapCodec<EnchantWithTreasureFunction> MAP_CODEC = RecordCodecBuilder.mapCodec(inst ->
             commonFields(inst).and(
                     inst.group(
                             Codec.BOOL.optionalFieldOf("ignore_curses", false).forGetter(f -> f.ignoreCurses),
@@ -94,7 +92,7 @@ public class EnchantWithTreasureFunction extends LootItemConditionalFunction {
     }
 
     @Override
-    public LootItemFunctionType<EnchantWithTreasureFunction> getType() {
-        return ILLootFunctions.ENCHANT_WITH_TREASURE.get();
+    public MapCodec<? extends LootItemConditionalFunction> codec() {
+        return MAP_CODEC;
     }
 }

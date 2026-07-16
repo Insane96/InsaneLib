@@ -1,6 +1,6 @@
 package insane96mcp.insanelib.util.weightedrandom;
 
-import net.minecraft.Util;
+import net.minecraft.util.Util;
 import net.minecraft.util.RandomSource;
 
 import javax.annotation.Nullable;

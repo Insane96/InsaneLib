@@ -1,24 +1,18 @@
 package insane96mcp.insanelib.util;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-import insane96mcp.insanelib.mixin.accessor.GuiGraphicsAccessor;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.resources.ResourceLocation;
-import org.lwjgl.opengl.GL11;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.resources.Identifier;
 
 public class ClientUtils {
-	public static void setRenderColor(float r, float g, float b, float alpha) {
-		RenderSystem.enableBlend();
-		RenderSystem.setShaderColor(r, g, b, alpha);
-		RenderSystem.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-	}
-
-	public static void resetRenderColor() {
-		RenderSystem.disableBlend();
-		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-	}
-
-	public static void blitVerticallyMirrored(ResourceLocation texture, GuiGraphics guiGraphics, int x, int y, int u, int v, int width, int height, int textureWidth, int textureHeight) {
-		((GuiGraphicsAccessor) guiGraphics).invokeInnerBlit(texture, x, x + width, y, y + height, 0, (u + (float)width) / (float)textureWidth, (u + 0.0F) / (float)textureWidth, (v + 0.0F) / (float)textureHeight, (v + (float)height) / (float)textureHeight);
+	/**
+	 * Blits the texture mirrored (U coordinates swapped).
+	 * <p>
+	 * Note: setRenderColor/resetRenderColor were removed in the 26.1 port — the global RenderSystem
+	 * color/blend state no longer exists in the new GPU pipeline; color is now per-draw.
+	 */
+	public static void blitVerticallyMirrored(Identifier texture, GuiGraphicsExtractor guiGraphics, int x, int y, int u, int v, int width, int height, int textureWidth, int textureHeight) {
+		guiGraphics.blit(texture, x, y, x + width, y + height,
+				(u + (float)width) / (float)textureWidth, (u + 0.0F) / (float)textureWidth,
+				(v + 0.0F) / (float)textureHeight, (v + (float)height) / (float)textureHeight);
 	}
 }

@@ -1,14 +1,16 @@
 package insane96mcp.insanelib.world.effect;
 
+import insane96mcp.insanelib.util.MCUtils;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
-import net.minecraft.world.effect.MobEffectInstance;
-import net.neoforged.neoforge.common.EffectCure;
-
-import java.util.Set;
+import net.neoforged.neoforge.event.entity.living.MobEffectEvent;
 
 /**
- * Basically a MobEffect with the possibility to set the mob effect as non-curable
+ * Basically a MobEffect with the possibility to set the mob effect as non-curable.
+ * <p>
+ * Since 26.1 removed NeoForge's EffectCure system, non-curability is enforced by cancelling
+ * {@link MobEffectEvent.Remove}. Note that unlike the old cure system this also prevents removal
+ * via commands.
  */
 public class ILMobEffect extends MobEffect {
     boolean canBeCured;
@@ -22,9 +24,20 @@ public class ILMobEffect extends MobEffect {
         this.canBeCured = canBeCured;
     }
 
-    @Override
-    public void fillEffectCures(Set<EffectCure> cures, MobEffectInstance effectInstance) {
-        if (canBeCured)
-            super.fillEffectCures(cures, effectInstance);
+    public boolean canBeCured() {
+        return this.canBeCured;
+    }
+
+    /**
+     * Registered to the game event bus by InsaneLib. Prevents removal of non-curable effects,
+     * both effect-level ({@link ILMobEffect} with {@code canBeCured = false}) and instance-level
+     * ({@link MCUtils#createEffectInstance}).
+     */
+    public static void onEffectRemove(MobEffectEvent.Remove event) {
+        if (event.getEffectInstance() == null)
+            return;
+        if ((event.getEffect().value() instanceof ILMobEffect ilMobEffect && !ilMobEffect.canBeCured())
+                || MCUtils.isNonCurable(event.getEffectInstance()))
+            event.setCanceled(true);
     }
 }

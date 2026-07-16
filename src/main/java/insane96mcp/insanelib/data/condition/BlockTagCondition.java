@@ -2,16 +2,14 @@ package insane96mcp.insanelib.data.condition;
 
 import com.google.common.collect.ImmutableSet;
 import com.mojang.serialization.MapCodec;
-import insane96mcp.insanelib.setup.ILConditions;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.storage.loot.LootContext;
-import net.minecraft.world.level.storage.loot.parameters.LootContextParam;
+import net.minecraft.util.context.ContextKey;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
-import net.minecraft.world.level.storage.loot.predicates.LootItemConditionType;
 
 import java.util.Set;
 
@@ -28,28 +26,28 @@ import java.util.Set;
  */
 public record BlockTagCondition(TagKey<Block> blockTag) implements LootItemCondition {
 
-    public static final MapCodec<BlockTagCondition> CODEC = TagKey.codec(Registries.BLOCK)
+    public static final MapCodec<BlockTagCondition> MAP_CODEC = TagKey.codec(Registries.BLOCK)
             .fieldOf("block_tag")
             .xmap(BlockTagCondition::new, BlockTagCondition::blockTag);
 
     @Override
-    public LootItemConditionType getType() {
-        return ILConditions.BLOCK_TAG_MATCH.get();
+    public MapCodec<? extends LootItemCondition> codec() {
+        return MAP_CODEC;
     }
 
     @Override
-    public Set<LootContextParam<?>> getReferencedContextParams() {
+    public Set<ContextKey<?>> getReferencedContextParams() {
         return ImmutableSet.of(LootContextParams.BLOCK_STATE);
     }
 
     @Override
     public boolean test(LootContext context) {
-        if (context.hasParam(LootContextParams.BLOCK_STATE))
-            return context.getParam(LootContextParams.BLOCK_STATE).is(this.blockTag);
+        if (context.hasParameter(LootContextParams.BLOCK_STATE))
+            return context.getParameter(LootContextParams.BLOCK_STATE).is(this.blockTag);
         return true;
     }
 
-    public static LootItemCondition.Builder builder(ResourceLocation blockTag) {
+    public static LootItemCondition.Builder builder(Identifier blockTag) {
         return () -> new BlockTagCondition(TagKey.create(Registries.BLOCK, blockTag));
     }
 }

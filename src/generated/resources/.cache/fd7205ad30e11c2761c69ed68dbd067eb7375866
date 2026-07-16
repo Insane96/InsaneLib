@@ -1,6 +1,6 @@
-// 1.21.1	2026-04-26T16:15:37.4797604	InsaneLib Item Tags
+// 26.1.2	2026-07-14T18:44:09.0395127	InsaneLib Item Tags
 c5a26a067322c2b399964ab7cff330066442dc1d data/insanelib/tags/item/equipment/armor/chainmail.json
-41919e2cdd2593022ca0caa4b3569d5a08bac47e data/insanelib/tags/item/equipment/armor/copper.json
+5421c2f36534c868efeb8f8e6dee9b4da26847ee data/insanelib/tags/item/equipment/armor/copper.json
 27e204902976d8fe13a30a245c402b63e03d3ab5 data/insanelib/tags/item/equipment/armor/diamond.json
 4a86b6a6b50a249765e637a8e93fd0e09c01b1a7 data/insanelib/tags/item/equipment/armor/golden.json
 742d0809ac433cd781625e58646a272e91f056a5 data/insanelib/tags/item/equipment/armor/iron.json
@@ -22,7 +22,7 @@ eda02d7a3131597995accc4580f895ff3ae18769 data/insanelib/tags/item/equipment/hand
 1cdb513e5f57b1abcd18bd2d35fb8f3e6c9cf5bf data/insanelib/tags/item/equipment/leather.json
 de65349aa5544d82de7799c05e19fd36f8fde1ef data/insanelib/tags/item/equipment/netherite.json
 8cd6f3b098528b3564720688d0b849e9c9bc6adf data/insanelib/tags/item/equipment/stone.json
-92a90a0cc7c82e327fc9acb9706acf023528c306 data/insanelib/tags/item/equipment/tools/copper.json
+e61dbba114e3a79ad63383c650b7b3edc1e4c4fa data/insanelib/tags/item/equipment/tools/copper.json
 7724a5544192605ed2447689b5169ed8b6007a2a data/insanelib/tags/item/equipment/tools/diamond.json
 4e33fa9a9a45afac4899839b2fa2ffdcefefea1d data/insanelib/tags/item/equipment/tools/golden.json
 26605c16dcc7845babec2be8d47b347ac1467f8b data/insanelib/tags/item/equipment/tools/iron.json
@@ -30,7 +30,7 @@ de65349aa5544d82de7799c05e19fd36f8fde1ef data/insanelib/tags/item/equipment/neth
 4aa6d341fe6e3784d7564aa8f9cc17b6e0f1d1fc data/insanelib/tags/item/equipment/tools/stone.json
 a891ecb3e749074e86a55b825e538a254299ecad data/insanelib/tags/item/equipment/tools/wooden.json
 3cddf5f652c785edefc45aadb9e1e3670505498d data/insanelib/tags/item/equipment/turtle.json
-4eef83ca2fc1d6f2eef225c53e1954db49fe947c data/insanelib/tags/item/equipment/weapons/copper.json
+7071a29b9ae8cbf63effca275c2b26c0ce2f9048 data/insanelib/tags/item/equipment/weapons/copper.json
 d92cb43ebf6382a3089fea856eaf6e66b0cf3c6a data/insanelib/tags/item/equipment/weapons/diamond.json
 9871a009afb820cac6e99b03ebe3e7b21c8ad23f data/insanelib/tags/item/equipment/weapons/golden.json
 080e48d1dfb98c840ab07b8ffbb45d4ef559fbb3 data/insanelib/tags/item/equipment/weapons/iron.json

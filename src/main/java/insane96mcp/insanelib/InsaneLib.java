@@ -13,10 +13,9 @@ import insane96mcp.insanelib.module.base.items.ItemComponentsReloadListener;
 import insane96mcp.insanelib.network.NetworkHandler;
 import insane96mcp.insanelib.setup.*;
 import insane96mcp.insanelib.util.IntegratedPack;
-import net.minecraft.Util;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.data.PackOutput;
-import net.minecraft.resources.ResourceLocation;
+import insane96mcp.insanelib.world.effect.ILMobEffect;
+import net.minecraft.util.Util;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -25,9 +24,8 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.common.data.BlockTagsProvider;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
-import net.neoforged.neoforge.event.AddReloadListenerEvent;
+import net.neoforged.neoforge.event.AddServerReloadListenersEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import org.slf4j.Logger;
 
@@ -69,15 +67,16 @@ public class InsaneLib {
         NeoForge.EVENT_BUS.addListener(this::onAddReloadListeners);
         NeoForge.EVENT_BUS.addListener(this::onRegisterCommands);
         NeoForge.EVENT_BUS.addListener(ILCriteriaTriggers::onBlockBreak);
+        NeoForge.EVENT_BUS.addListener(ILMobEffect::onEffectRemove);
     }
 
     private void onRegisterCommands(RegisterCommandsEvent event) {
         ILCommand.register(event.getDispatcher(), event.getBuildContext());
     }
 
-    private void onAddReloadListeners(AddReloadListenerEvent event) {
-        event.addListener(JsonFeatureDataReloadListener.INSTANCE);
-        event.addListener(ItemComponentsReloadListener.INSTANCE);
+    private void onAddReloadListeners(AddServerReloadListenersEvent event) {
+        event.addListener(id("json_feature_data"), JsonFeatureDataReloadListener.INSTANCE);
+        event.addListener(id("item_components"), ItemComponentsReloadListener.INSTANCE);
     }
 
     @SubscribeEvent
@@ -86,25 +85,18 @@ public class InsaneLib {
                 fmt -> fmt.setDecimalFormatSymbols(DecimalFormatSymbols.getInstance(Locale.ROOT)));
     }
 
-    public static void gatherData(GatherDataEvent event) {
-        PackOutput output = event.getGenerator().getPackOutput();
-        BlockTagsProvider blockTagsProvider = new BlockTagsProvider(output, event.getLookupProvider(), MOD_ID, event.getExistingFileHelper()) {
-            @Override
-            protected void addTags(HolderLookup.Provider provider) {}
-        };
-        event.getGenerator().addProvider(event.includeServer(), blockTagsProvider);
-        event.getGenerator().addProvider(event.includeServer(),
-                new ILItemTagProvider(output, event.getLookupProvider(), blockTagsProvider.contentsGetter(), event.getExistingFileHelper()));
+    public static void gatherData(GatherDataEvent.Client event) {
+        event.createProvider(ILItemTagProvider::new);
     }
 
     /**
-     * Creates a {@link ResourceLocation} using the provided namespace and path.
+     * Creates a {@link Identifier} using the provided namespace and path.
      *
      * @param path The specific path for the resource within the mod's namespace.
-     * @return A {@link ResourceLocation} with the mod's namespace and the given path.
+     * @return A {@link Identifier} with the mod's namespace and the given path.
      */
-    public static ResourceLocation id(String path) {
-        return ResourceLocation.fromNamespaceAndPath(MOD_ID, path);
+    public static Identifier id(String path) {
+        return Identifier.fromNamespaceAndPath(MOD_ID, path);
     }
 
     /**

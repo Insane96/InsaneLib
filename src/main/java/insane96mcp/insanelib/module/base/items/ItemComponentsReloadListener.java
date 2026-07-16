@@ -5,7 +5,7 @@ import insane96mcp.insanelib.InsaneLib;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponentPatch;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimplePreparableReloadListener;
 import net.minecraft.util.GsonHelper;
@@ -30,7 +30,7 @@ public class ItemComponentsReloadListener extends SimplePreparableReloadListener
      * Kept separate because {@link DataComponentMap} isn't itself network-serializable, while {@link DataComponentPatch}
      * is; this is what gets sent to clients so their {@link #PATCHED_COMPONENTS} matches the server's.
      */
-    public static final Map<ResourceLocation, DataComponentPatch> SYNCED_PATCHES = new HashMap<>();
+    public static final Map<Identifier, DataComponentPatch> SYNCED_PATCHES = new HashMap<>();
 
     /**
      * Register a provider to supply programmatic component patches.

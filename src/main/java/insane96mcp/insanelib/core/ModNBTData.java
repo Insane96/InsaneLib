@@ -1,17 +1,19 @@
 package insane96mcp.insanelib.core;
 
 import insane96mcp.insanelib.util.MCUtils;
+import net.minecraft.core.UUIDUtil;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.IntArrayTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.CustomData;
 
+import java.util.Optional;
 import java.util.UUID;
 
 public class ModNBTData {
@@ -43,8 +45,9 @@ public class ModNBTData {
      * Returns the compound NBT from the modId of the given compound
      */
     public static CompoundTag getModData(CompoundTag compound, String modId) {
-        if (compound.contains(modId))
-            return compound.getCompound(modId);
+        Optional<CompoundTag> existing = compound.getCompound(modId);
+        if (existing.isPresent())
+            return existing.get();
         CompoundTag tag = new CompoundTag();
         compound.put(modId, tag);
         return tag;
@@ -53,21 +56,21 @@ public class ModNBTData {
     /**
      * Returns the data of the entity from the given location, or the type default if absent (null for reference types)
      */
-    public static <T> T get(Entity entity, ResourceLocation loc, Class<T> type) {
+    public static <T> T get(Entity entity, Identifier loc, Class<T> type) {
         return get(entity.getPersistentData(), loc, type);
     }
 
     /**
      * Returns the data of the entity's persisted data from the given location, or the type default if absent (null for reference types)
      */
-    public static <T> T getPersisted(Player player, ResourceLocation loc, Class<T> type) {
+    public static <T> T getPersisted(Player player, Identifier loc, Class<T> type) {
         return get(MCUtils.getOrCreatePersistedData(player), loc, type);
     }
 
     /**
      * Returns the data of the stack from the given location, or the type default if absent (null for reference types)
      */
-    public static <T> T get(ItemStack stack, ResourceLocation loc, Class<T> type) {
+    public static <T> T get(ItemStack stack, Identifier loc, Class<T> type) {
         CustomData customData = stack.get(DataComponents.CUSTOM_DATA);
         if (customData == null || customData.isEmpty())
             return null;
@@ -77,44 +80,44 @@ public class ModNBTData {
     /**
      * Returns the data of the tag from the given location, or the type default if absent
      */
-    public static <T> T get(CompoundTag tag, ResourceLocation loc, Class<T> type) {
+    public static <T> T get(CompoundTag tag, Identifier loc, Class<T> type) {
         CompoundTag nsData = getModDataReadOnly(tag, loc.getNamespace());
         CompoundTag modData = nsData != null ? getNestedCompoundsReadOnly(loc.getPath(), nsData) : null;
         if (modData == null) modData = EMPTY_TAG;
         String key = getNestedKey(loc.getPath());
 
-        if (type == Byte.class) return type.cast(modData.getByte(key));
-        if (type == Short.class) return type.cast(modData.getShort(key));
-        if (type == Integer.class) return type.cast(modData.getInt(key));
-        if (type == Long.class) return type.cast(modData.getLong(key));
-        if (type == Float.class) return type.cast(modData.getFloat(key));
-        if (type == Double.class) return type.cast(modData.getDouble(key));
-        if (type == Boolean.class) return type.cast(modData.getBoolean(key));
-        if (type == String.class) return type.cast(modData.getString(key));
-        if (type == UUID.class) return type.cast(modData.getUUID(key));
-        if (type == CompoundTag.class) return type.cast(modData.getCompound(key));
-        if (type == int[].class) return type.cast(modData.getIntArray(key));
+        if (type == Byte.class) return type.cast(modData.getByteOr(key, (byte) 0));
+        if (type == Short.class) return type.cast(modData.getShortOr(key, (short) 0));
+        if (type == Integer.class) return type.cast(modData.getIntOr(key, 0));
+        if (type == Long.class) return type.cast(modData.getLongOr(key, 0L));
+        if (type == Float.class) return type.cast(modData.getFloatOr(key, 0f));
+        if (type == Double.class) return type.cast(modData.getDoubleOr(key, 0d));
+        if (type == Boolean.class) return type.cast(modData.getBooleanOr(key, false));
+        if (type == String.class) return type.cast(modData.getStringOr(key, ""));
+        if (type == UUID.class) return type.cast(modData.read(key, UUIDUtil.CODEC).orElse(null));
+        if (type == CompoundTag.class) return type.cast(modData.getCompoundOrEmpty(key));
+        if (type == int[].class) return type.cast(modData.getIntArray(key).orElse(new int[0]));
         if (type == ListTag.class) throw new IllegalArgumentException("Use getList overload");
 
         throw new IllegalArgumentException("Unsupported type: " + type);
     }
 
-    public static void put(Entity entity, ResourceLocation loc, Object value) {
+    public static void put(Entity entity, Identifier loc, Object value) {
         put(entity.getPersistentData(), loc, value);
     }
 
-    public static void putPersisted(Player player, ResourceLocation loc, Object value) {
+    public static void putPersisted(Player player, Identifier loc, Object value) {
         put(MCUtils.getOrCreatePersistedData(player), loc, value);
     }
 
-    public static void put(ItemStack stack, ResourceLocation loc, Object value) {
+    public static void put(ItemStack stack, Identifier loc, Object value) {
         CustomData customData = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY);
         CompoundTag tag = customData.copyTag();
         put(tag, loc, value);
         stack.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
     }
 
-    public static void put(CompoundTag tag, ResourceLocation loc, Object value) {
+    public static void put(CompoundTag tag, Identifier loc, Object value) {
         CompoundTag modData = getNestedCompounds(loc.getPath(), getModData(tag, loc.getNamespace()));
         String key = getNestedKey(loc.getPath());
 
@@ -126,7 +129,7 @@ public class ModNBTData {
         else if (value instanceof Double d) modData.putDouble(key, d);
         else if (value instanceof Boolean bool) modData.putBoolean(key, bool);
         else if (value instanceof String str) modData.putString(key, str);
-        else if (value instanceof UUID uuid) modData.putUUID(key, uuid);
+        else if (value instanceof UUID uuid) modData.store(key, UUIDUtil.CODEC, uuid);
         else if (value instanceof CompoundTag compound) modData.put(key, compound);
         else if (value instanceof int[] intArray) modData.put(key, new IntArrayTag(intArray));
         else if (value instanceof ListTag list) modData.put(key, list);
@@ -150,9 +153,7 @@ public class ModNBTData {
 
     // Returns null instead of creating missing entries — for read-only paths
     private static CompoundTag getModDataReadOnly(CompoundTag compound, String modId) {
-        if (compound.contains(modId))
-            return compound.getCompound(modId);
-        return null;
+        return compound.getCompound(modId).orElse(null);
     }
 
     private static CompoundTag getNestedCompoundsReadOnly(String path, CompoundTag modData) {
@@ -167,44 +168,44 @@ public class ModNBTData {
         return modData;
     }
 
-    public static ListTag getList(Entity entity, ResourceLocation loc, int type) {
-        return getList(entity.getPersistentData(), loc, type);
+    public static ListTag getList(Entity entity, Identifier loc) {
+        return getList(entity.getPersistentData(), loc);
     }
 
-    public static ListTag getListPersisted(Player player, ResourceLocation loc, int type) {
-        return getList(MCUtils.getOrCreatePersistedData(player), loc, type);
+    public static ListTag getListPersisted(Player player, Identifier loc) {
+        return getList(MCUtils.getOrCreatePersistedData(player), loc);
     }
 
-    public static ListTag getList(ItemStack stack, ResourceLocation loc, int type) {
+    public static ListTag getList(ItemStack stack, Identifier loc) {
         CustomData customData = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY);
-        return getList(customData.copyTag(), loc, type);
+        return getList(customData.copyTag(), loc);
     }
 
-    public static ListTag getList(CompoundTag tag, ResourceLocation loc, int type) {
+    public static ListTag getList(CompoundTag tag, Identifier loc) {
         CompoundTag nsData = getModDataReadOnly(tag, loc.getNamespace());
         if (nsData == null) return new ListTag();
         CompoundTag modData = getNestedCompoundsReadOnly(loc.getPath(), nsData);
         if (modData == null) return new ListTag();
         String key = getNestedKey(loc.getPath());
-        return modData.getList(key, type);
+        return modData.getListOrEmpty(key);
     }
 
-    public static boolean contains(Entity entity, ResourceLocation loc) {
+    public static boolean contains(Entity entity, Identifier loc) {
         return contains(entity.getPersistentData(), loc);
     }
 
-    public static boolean contains(Player player, ResourceLocation loc) {
+    public static boolean contains(Player player, Identifier loc) {
         return contains(MCUtils.getOrCreatePersistedData(player), loc);
     }
 
-    public static boolean contains(ItemStack stack, ResourceLocation loc) {
+    public static boolean contains(ItemStack stack, Identifier loc) {
         CustomData customData = stack.get(DataComponents.CUSTOM_DATA);
         if (customData == null || customData.isEmpty())
             return false;
         return contains(customData.copyTag(), loc);
     }
 
-    public static boolean contains(CompoundTag tag, ResourceLocation loc) {
+    public static boolean contains(CompoundTag tag, Identifier loc) {
         CompoundTag nsData = getModDataReadOnly(tag, loc.getNamespace());
         if (nsData == null) return false;
         CompoundTag modData = getNestedCompoundsReadOnly(loc.getPath(), nsData);
@@ -216,21 +217,21 @@ public class ModNBTData {
     /**
      * Removes the specified nbt data from the entity data
      */
-    public static void remove(Entity entity, ResourceLocation loc) {
+    public static void remove(Entity entity, Identifier loc) {
         remove(entity.getPersistentData(), loc);
     }
 
     /**
      * Removes the specified nbt data from the player's persisted data
      */
-    public static void removePersisted(Player player, ResourceLocation loc) {
+    public static void removePersisted(Player player, Identifier loc) {
         remove(MCUtils.getOrCreatePersistedData(player), loc);
     }
 
     /**
      * Removes the specified nbt data from the stack's data
      */
-    public static void remove(ItemStack stack, ResourceLocation loc) {
+    public static void remove(ItemStack stack, Identifier loc) {
         CustomData customData = stack.get(DataComponents.CUSTOM_DATA);
         if (customData == null || customData.isEmpty())
             return;
@@ -246,7 +247,7 @@ public class ModNBTData {
     /**
      * Removes the specified nbt data from the compound tag
      */
-    public static void remove(CompoundTag tag, ResourceLocation loc) {
+    public static void remove(CompoundTag tag, Identifier loc) {
         CompoundTag modData = getNestedCompounds(loc.getPath(), getModData(tag, loc.getNamespace()));
         String key = getNestedKey(loc.getPath());
         modData.remove(key);

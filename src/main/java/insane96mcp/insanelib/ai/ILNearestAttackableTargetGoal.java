@@ -1,5 +1,6 @@
 package insane96mcp.insanelib.ai;
 
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
@@ -35,7 +36,8 @@ public class ILNearestAttackableTargetGoal<T extends LivingEntity> extends Targe
 		this.targetClass = targetClassIn;
 		this.targetChance = 10;
 		this.setFlags(EnumSet.of(Flag.TARGET));
-		this.targetEntitySelector = TargetingConditions.forCombat().range(this.getFollowDistance()).selector(targetPredicate);
+		this.targetEntitySelector = TargetingConditions.forCombat().range(this.getFollowDistance())
+				.selector(targetPredicate == null ? null : (target, level) -> targetPredicate.test(target));
 	}
 
 	public boolean canUse() {
@@ -54,11 +56,14 @@ public class ILNearestAttackableTargetGoal<T extends LivingEntity> extends Targe
 
 	protected void findTarget() {
 		this.targetEntitySelector.range(this.getFollowDistance());
+		ServerLevel level = getServerLevel(this.mob);
 		if (this.targetClass != Player.class && this.targetClass != ServerPlayer.class) {
-			this.nearestTarget = this.mob.level().getNearestEntity(this.targetClass, this.targetEntitySelector, this.mob, this.mob.getX(), this.mob.getEyeY(), this.mob.getZ(), this.getTargetSearchArea(this.getFollowDistance()));
+			this.nearestTarget = level.getNearestEntity(
+					this.mob.level().getEntitiesOfClass(this.targetClass, this.getTargetSearchArea(this.getFollowDistance()), entity -> true),
+					this.targetEntitySelector, this.mob, this.mob.getX(), this.mob.getEyeY(), this.mob.getZ());
 		}
 		else {
-			this.nearestTarget = this.mob.level().getNearestPlayer(this.targetEntitySelector, this.mob, this.mob.getX(), this.mob.getEyeY(), this.mob.getZ());
+			this.nearestTarget = level.getNearestPlayer(this.targetEntitySelector, this.mob, this.mob.getX(), this.mob.getEyeY(), this.mob.getZ());
 		}
 	}
 

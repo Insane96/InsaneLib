@@ -13,7 +13,7 @@ import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
@@ -48,7 +48,7 @@ public class ObjTag<T> {
     @Nullable
     private TagKey<T> tag;
     @Nullable
-    private ResourceLocation requestedId;
+    private Identifier requestedId;
     @Nullable
     private final Registry<T> registry;
     private final ResourceKey<Registry<T>> registryKey;
@@ -69,7 +69,7 @@ public class ObjTag<T> {
     }
 
     /** For dynamic registries not present in {@link BuiltInRegistries} — direct object reference deferred by id. */
-    private ObjTag(ResourceLocation requestedId, ResourceKey<Registry<T>> registryKey) {
+    private ObjTag(Identifier requestedId, ResourceKey<Registry<T>> registryKey) {
         this.requestedId = requestedId;
         this.registry = null;
         this.registryKey = registryKey;
@@ -103,21 +103,21 @@ public class ObjTag<T> {
      */
     public static <T> ObjTag<T> of(String id, ResourceKey<Registry<T>> registry) {
         if (id.startsWith("#"))
-            return tagOf(ResourceLocation.parse(id.substring(1)), registry);
+            return tagOf(Identifier.parse(id.substring(1)), registry);
         else
-            return objOf(ResourceLocation.parse(id), registry);
+            return objOf(Identifier.parse(id), registry);
     }
 
     /**
-     * Creates an ObjTag for a direct object, resolved by {@link ResourceLocation} from a registry key.
+     * Creates an ObjTag for a direct object, resolved by {@link Identifier} from a registry key.
      */
-    public static <T> ObjTag<T> objOf(ResourceLocation id, ResourceKey<Registry<T>> registry) {
+    public static <T> ObjTag<T> objOf(Identifier id, ResourceKey<Registry<T>> registry) {
         //noinspection unchecked
-        Registry<T> reg = (Registry<T>) BuiltInRegistries.REGISTRY.get(registry.location());
+        Registry<T> reg = (Registry<T>) BuiltInRegistries.REGISTRY.getValue(registry.identifier());
         if (reg == null)
             // Dynamic registry (e.g. enchantments in 1.21.1) — defer resolution to match time
             return new ObjTag<>(id, registry);
-        T resolved = reg.containsKey(id) ? reg.get(id) : null;
+        T resolved = reg.getValue(id);
         ObjTag<T> objTag = objOf(resolved, reg);
         if (resolved == null)
             objTag.requestedId = id;
@@ -125,11 +125,11 @@ public class ObjTag<T> {
     }
 
     /**
-     * Creates an ObjTag for a tag, resolved by {@link ResourceLocation} from a registry key.
+     * Creates an ObjTag for a tag, resolved by {@link Identifier} from a registry key.
      */
-    public static <T> ObjTag<T> tagOf(ResourceLocation id, ResourceKey<Registry<T>> registry) {
+    public static <T> ObjTag<T> tagOf(Identifier id, ResourceKey<Registry<T>> registry) {
         //noinspection unchecked
-        Registry<T> reg = (Registry<T>) BuiltInRegistries.REGISTRY.get(registry.location());
+        Registry<T> reg = (Registry<T>) BuiltInRegistries.REGISTRY.getValue(registry.identifier());
         if (reg == null)
             // Dynamic registry — store tag key only, use Holder.is() at match time
             return new ObjTag<>(TagKey.create(registry, id), registry);
@@ -186,7 +186,7 @@ public class ObjTag<T> {
             InsaneLib.LOGGER.debug("Registry {} not available for tag matching on {}", this.registryKey, this.tag);
             return false;
         }
-        Optional<HolderSet.Named<T>> tag = this.registry.getTag(this.tag);
+        Optional<HolderSet.Named<T>> tag = this.registry.get(this.tag);
         if (tag.isEmpty()) {
             InsaneLib.LOGGER.debug("Tag {} not found", this.tag);
             return false;
@@ -217,7 +217,7 @@ public class ObjTag<T> {
         if (this.obj != null)
             return List.of(this.obj);
         if (this.tag != null && this.registry != null) {
-            Optional<HolderSet.Named<T>> tagSet = this.registry.getTag(this.tag);
+            Optional<HolderSet.Named<T>> tagSet = this.registry.get(this.tag);
 			return tagSet.map(holders -> holders.stream().map(Holder::value).toList()).orElseGet(List::of);
 		}
         return List.of();
@@ -232,11 +232,11 @@ public class ObjTag<T> {
         if (!jElement.isJsonPrimitive())
             throw new JsonParseException("Expected %s to be a string".formatted(jElement));
         //noinspection unchecked
-        Registry<T> reg = (Registry<T>) BuiltInRegistries.REGISTRY.get(registry.location());
+        Registry<T> reg = (Registry<T>) BuiltInRegistries.REGISTRY.getValue(registry.identifier());
         if (reg == null)
-            throw new JsonParseException("Unknown registry %s".formatted(registry.location()));
-        ResourceLocation objectId = ResourceLocation.parse(jElement.getAsString());
-        return reg.get(objectId);
+            throw new JsonParseException("Unknown registry %s".formatted(registry.identifier()));
+        Identifier objectId = Identifier.parse(jElement.getAsString());
+        return reg.getValue(objectId);
     }
 
     /**

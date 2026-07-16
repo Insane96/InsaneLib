@@ -3,7 +3,6 @@ package insane96mcp.insanelib.data.function;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import insane96mcp.insanelib.setup.ILLootFunctions;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponents;
@@ -17,7 +16,6 @@ import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.functions.LootItemConditionalFunction;
-import net.minecraft.world.level.storage.loot.functions.LootItemFunctionType;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.minecraft.world.level.storage.loot.providers.number.NumberProvider;
 import net.minecraft.world.level.storage.loot.providers.number.NumberProviders;
@@ -43,7 +41,7 @@ import java.util.List;
  */
 public class EnchantRandomlyWeightlessFunction extends LootItemConditionalFunction {
 
-    public static final MapCodec<EnchantRandomlyWeightlessFunction> CODEC = RecordCodecBuilder.mapCodec(inst ->
+    public static final MapCodec<EnchantRandomlyWeightlessFunction> MAP_CODEC = RecordCodecBuilder.mapCodec(inst ->
             commonFields(inst).and(
                     inst.group(
                             NumberProviders.CODEC.fieldOf("count").forGetter(f -> f.count),
@@ -119,7 +117,7 @@ public class EnchantRandomlyWeightlessFunction extends LootItemConditionalFuncti
     }
 
     @Override
-    public LootItemFunctionType<EnchantRandomlyWeightlessFunction> getType() {
-        return ILLootFunctions.ENCHANT_RANDOMLY_WEIGHTLESS.get();
+    public MapCodec<? extends LootItemConditionalFunction> codec() {
+        return MAP_CODEC;
     }
 }

@@ -1,3 +1,18 @@
+## 3.0.0.0
+* Ported to Minecraft 26.1.2 (NeoForge 26.1.2.78, Java 25)
+* Removed the 'Fix follow range' fix (`fixFollowRange` config): https://bugs.mojang.com/browse/MC-145656 is fixed in vanilla
+### Technical / API changes
+* `ResourceLocation` is now `Identifier` everywhere (vanilla rename)
+* Loot conditions/functions now expose `MAP_CODEC` instead of a `*Type` and implement `codec()` (vanilla loot type unrolling)
+* Global loot modifiers now support the NeoForge `priority` field; the LinkedHashMap ordering mixin was removed as ordering is handled by priority now
+* `ILMobEffect` non-curability and `MCUtils#createEffectInstance(..., canBeCured)` are now enforced by cancelling `MobEffectEvent.Remove` (NeoForge removed the EffectCure system); note this also blocks removal via commands, and the per-instance flag no longer persists across entity reloads
+* `MCUtils#computeFoodFormula`: `eat_seconds` now requires the item's `Consumable` (new overload); the old overload is deprecated and defaults to 1.6s
+* `ClientUtils#setRenderColor`/`resetRenderColor` removed (global render state no longer exists in the new GPU pipeline)
+* `AddEatEffectEvent` now fires from `ApplyStatusEffectsConsumeEffect` (the `LivingEntity#addEatEffect` method was removed by the consumable rework)
+* Removed the `insanelib:enchantability` item component and the Enchantability feature: vanilla now has the `minecraft:enchantable` component (record with an int `value`), which can be patched via the Item Components feature
+* Copper equipment tags now point to the vanilla copper tools/armor added in the Copper Age drop
+* `ModNBTData#getList`/`getListPersisted` no longer take an NBT type id parameter (lists are untyped since 1.21.5)
+
 ## 2.4.20.2
 * Fixed tool durability loss being silently reverted when the tool has a patched `max_damage` (e.g. hoes tilling, axes stripping), caused by `ItemStack#getComponents` handing out a new object identity on every call
 
