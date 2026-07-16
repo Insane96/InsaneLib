@@ -7,6 +7,7 @@ import com.mojang.serialization.JsonOps;
 import insane96mcp.insanelib.InsaneLib;
 import insane96mcp.insanelib.core.feature.Feature;
 import insane96mcp.insanelib.core.feature.LoadFeature;
+import insane96mcp.insanelib.core.feature.config.Config;
 import insane96mcp.insanelib.network.message.ItemComponentsSyncMessage;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponentPatch;
@@ -25,6 +26,12 @@ import java.util.*;
 
 @LoadFeature(description = "Allows modifying item data components via data packs", canBeDisabled = false)
 public class ItemComponentsFeature extends Feature {
+
+    @Config(description = "Vanilla limits max stack sizes to 99 for some reasons. This replaces that limit")
+    public static Integer stackLimit = 9999;
+
+    @Config(description = "Always render the item stack count at a smaller scale, even when it's 99 or below")
+    public static Boolean alwaysShrinkStackCount = false;
 
     @SubscribeEvent
     public void onTagsUpdated(TagsUpdatedEvent event) {

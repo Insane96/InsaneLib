@@ -8,8 +8,10 @@
 	"mixins": [
 		"AnvilMenuMixin",
 		"CakeBlockMixin",
+		"ContainerMixin",
 		"CreeperMixin",
 		"CrossbowItemMixin",
+		"DataComponentsMixin",
 		"DrownedMoveControlMixin",
 		"EntityMixin",
 		"FallingBlockEntityMixin",
@@ -38,6 +40,7 @@
 	"client": [
 		"accessor.GuiGraphicsAccessor",
 		"client.AnvilScreenMixin",
+		"client.GuiGraphicsMixin",
 		"client.LocalPlayerMixin"
 	]
 }

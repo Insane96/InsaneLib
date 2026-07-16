@@ -1,6 +1,8 @@
 package insane96mcp.insanelib.mixin;
 
+import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import insane96mcp.insanelib.event.ILEventFactory;
+import insane96mcp.insanelib.module.base.items.ItemComponentsFeature;
 import insane96mcp.insanelib.module.base.items.ItemComponentsReloadListener;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.PatchedDataComponentMap;
@@ -25,6 +27,11 @@ import java.util.function.Consumer;
 public abstract class ItemStackMixin {
     @Mutable @Shadow @Final PatchedDataComponentMap components;
     @Shadow public abstract Item getItem();
+
+    @ModifyExpressionValue(method = "lambda$static$3", at = @At(value = "CONSTANT", args = "intValue=99"))
+    private static int insanelib$maxCountRange(int original) {
+        return ItemComponentsFeature.stackLimit;
+    }
 
     @Inject(method = "getComponents", at = @At("HEAD"), cancellable = true)
     private void onGetComponents(CallbackInfoReturnable<DataComponentMap> cir) {
