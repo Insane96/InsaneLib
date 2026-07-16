@@ -1,3 +1,7 @@
+## 2.4.21.0
+* `stackLimit` config option (Item Components) now actually works, allowing item stacks bigger than vanilla's 99 limit
+  * Added an `alwaysShrinkStackCount` config option to shrink the item count text when it's bigger than 99, or always
+
 ## 2.4.20.2
 * Fixed tool durability loss being silently reverted when the tool has a patched `max_damage` (e.g. hoes tilling, axes stripping), caused by `ItemStack#getComponents` handing out a new object identity on every call
 
