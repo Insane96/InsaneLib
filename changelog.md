@@ -1,107 +1,110 @@
-## 2.4.21.0
+# 2.4.21.1
+* Fixed items losing their real data components (and gaining `Items.AIR`'s) when they transiently pass through an empty (count 0) `ItemStack` state, such as during `Inventory#add` on a previously empty slot. This most visibly broke music discs, which would silently lose `jukebox_playable` and become unusable in jukeboxes
+
+# 2.4.21.0
 * `stackLimit` config option (Item Components) now actually works, allowing item stacks bigger than vanilla's 99 limit
   * Added an `alwaysShrinkStackCount` config option to shrink the item count text when it's bigger than 99, or always
 
-## 2.4.20.2
+# 2.4.20.2
 * Fixed tool durability loss being silently reverted when the tool has a patched `max_damage` (e.g. hoes tilling, axes stripping), caused by `ItemStack#getComponents` handing out a new object identity on every call
 
-## 2.4.20.1
+# 2.4.20.1
 * Fixed item components not being applied to connected clients
 
-## 2.4.20.0
+# 2.4.20.0
 * Added a new fix for https://bugs.mojang.com/browse/MC/issues/MC-145114
 * Renamed 'Fixes feature' to 'Fixes'
 * Renamed 'Tags feature' to 'Nbt tags'
 
-## 2.4.19.0
+# 2.4.19.0
 * Added `no_ammo_consumption` NBT Tag, allowing for infinite crossbow offhand ammo
   * Also updated the wiki: https://github.com/Insane96/InsaneLib/wiki/%5B1.21.1%5D-NBT-Data
   * Also adds a config option to automatically apply the tag to Pillagers
 
-## 2.4.18.3
+# 2.4.18.3
 * Fixed some items modified via Item Components not stacking
 
-## 2.4.18.2
+# 2.4.18.2
 * Crash fix
 
-## 2.4.18.1
-### Technical
+# 2.4.18.1
+## Technical
 * Optimized `ModNBTData`
 
-## 2.4.18.0
-### Technical
+# 2.4.18.0
+## Technical
 * Added `ObjTag#getAllObjects`
 
-## 2.4.17.2
+# 2.4.17.2
 * Startup crash fix
 
-## 2.4.17.1
+# 2.4.17.1
 * Allow picking up items from anvil with 0 cost and don't render cost label when 0
 
-## 2.4.17.0
-### Technical
+# 2.4.17.0
+## Technical
 * Added `CreativeTabsUtils` with methods to add items to a creative tab before or after another item, or remove an item from a creative tab
 
-## 2.4.16.0
+# 2.4.16.0
 * Added `ILRangedAttribute`
   * Same as a `RangedAttribute`, but the `descriptionId` is calculated from the attribute id and can define a `baseId`.
 
-## 2.4.15.1
+# 2.4.15.1
 * Fixed Item components' programmatic providers overwriting each-other
 
-## 2.4.15.0
+# 2.4.15.0
 * Fixed a NeoForge bug that caused `global_loot_modifiers.json` to not respect the order of the loot modifiers
 
-## 2.4.14.1
+# 2.4.14.1
 * Added copper equipment item tags and fixed wooden and golden being wood and gold
 
-## 2.4.14.0
+# 2.4.14.0
 * Added GetMaxDamageEvent to modify item's max damage
 * Added Item Tags for equipment by material
 
-## 2.4.13.1
+# 2.4.13.1
 * Fixed Integrated resource packs not being enabled by default
 
-## 2.4.13.0-beta
+# 2.4.13.0-beta
 * Added `block_broken` advancement trigger
 * `insanelib:enchant_with_treasure`
   * Renamed `allow_curses` and `allow_treasure` to `ignore_curses` and `ignore_treasures`
 
-## 2.4.12.2-beta
+# 2.4.12.2-beta
 * Crash fix
 
-## 2.4.12.1-beta
+# 2.4.12.1-beta
 * Crash fix
 
-## 2.4.12.0-beta
-### Technical
+# 2.4.12.0-beta
+## Technical
 * Added `SerializableMobEffectInstance`
 
-## 2.4.11.0-beta
+# 2.4.11.0-beta
 * Added `insanelib:enchantability` item component
 
-## 2.4.10.0-beta
+# 2.4.10.0-beta
 * Added `merge_components` array for item_components
   * Arrays are concatenated, objects are recursively merged, and primitives are overridden.  
     This is useful for adding entries to a list component (e.g. appending attribute modifiers) without discarding the item's existing values
 
-## 2.4.9.3-beta
+# 2.4.9.3-beta
 * Optimized ModNBTData path parsing to avoid regex overhead on every NBT access
 
-## 2.4.9.2-beta
-### Technical
+# 2.4.9.2-beta
+## Technical
 * Allow `ObjTag` to use dynamic registries
 
-## 2.4.9.1-beta
-### Technical
+# 2.4.9.1-beta
+## Technical
 * Added `JsonFeature#loadAndReadJson` overloads for specifying the registry
 
-## 2.4.9.0-beta
-### Technical
+# 2.4.9.0-beta
+## Technical
 * Added back json utilities (`ILGsonHelper` and validators)
 
-## 2.4.8.0-beta
-### Technical
+# 2.4.8.0-beta
+## Technical
 * Added loot modifiers:
   * `insanelib:replace_loot` — replaces items in a loot table with another item, optionally copying components (durability, enchantments) and scaling the count
     ```json
@@ -189,82 +192,82 @@
     { "condition": "insanelib:non_player_arised_drop" }
     ```
 
-## 2.4.7.1-beta
-### Technical
+# 2.4.7.1-beta
+## Technical
 * Fixed self() methods not being @Unique
 
-## 2.4.7.0-beta
-### Technical
+# 2.4.7.0-beta
+## Technical
 * Added `ItemComponentsReloadListener.PROGRAMMATIC_PROVIDERS` to change stacks programmatically
 
-## 2.4.6.2-beta
-### Technical
+# 2.4.6.2-beta
+## Technical
 * Attached sources in the .jar
 
-## 2.4.6.1-beta
-### Technical
+# 2.4.6.1-beta
+## Technical
 * Changed MCUtils.computeFoodFormula variables
   * Removed effectiveness
   * Renamed hunger to nutrition
 
-## 2.4.6.0-beta
-### Technical
+# 2.4.6.0-beta
+## Technical
 * Added back `InsaneLib.ONE_DECIMAL_FORMATTER`
 
-## 2.4.5.0-beta
-### Technical
+# 2.4.5.0-beta
+## Technical
 * Added `MCUtils.computeFoodFormula` using EvalEx
 * Added back all the events
 
-## 2.4.4.0-beta
-### Technical
+# 2.4.4.0-beta
+## Technical
 * Added back `feature_enabled` neoforge condition and loot condition
 
-## 2.4.3.0-beta
-### Technical
+# 2.4.3.0-beta
+## Technical
 * Added back `PlayerUseItemMovSpeedEvent` and `PlayerSprintEvent`
 
-## 2.4.2.0-beta
+# 2.4.2.0-beta
 * Moved Attack Speed Based Invincibility feature to ISO
 
-## 2.4.1.1-beta
-### Technical
+# 2.4.1.1-beta
+## Technical
 * Fixed concurrent modification exception
 
-## 2.4.1.0-beta
-### Technical
+# 2.4.1.0-beta
+## Technical
 * Ported back `ClientUtils`
 
-## 2.4.0.1-beta
+# 2.4.0.1-beta
 * Attack invincibility frames are now reduced by 10%
 * Fixed invincibility frames not shown on entities if damage was not from an entity or from non-weapon
 
-## 2.4.0.0-beta
+# 2.4.0.0-beta
 * Added insanelib:knockback_multiplier data component
   * 0~1 that can reduce the knockback of an item
 
-## 2.3.1.1-beta
+# 2.3.1.1-beta
 * Fixed invincibility feature erroring when installed server side only
 
-## 2.3.1.0-beta
+# 2.3.1.0-beta
 * Added config option to limit invincibility frames to only faster attack speeds
 
-## 2.3.0.0-beta
+# 2.3.0.0-beta
 * Added Attack Speed Based Invincibility feature
   * Makes attack change invincibility frames based off attack speed, so faster attacks will give less invincibility frames and vice versa
   * If installed on the client, they will actually see the red invincibility frames correctly based off attack speed
 
-## 2.2.2.0-beta
+# 2.2.2.0-beta
 * Added back `/insanelib` command, but, more importantly, added a new subcommand get_data_components
   * With `/insanelib get_data_components <item>` you can get a list of all the data components that are currently applied to the item
 
-## 2.2.1.0-beta
+# 2.2.1.0-beta
 * Renamed Item Definitions to Item components (the data pack folder has also changed to `item_components`) 
   * Added `remove_components`, a list of components to remove from the item
   * Added `priority`, integer value. When multiple json target the same item, components are merged — higher priority wins per component type.
 * A higher-priority remove overrides a lower-priority set, and vice versa.
 
-## 2.2.0.0-beta
+# 2.2.0.0-beta
 * Added Item Definitions feature
   * Use data packs to change items' data components  
   E.g. in `data/<namespace>/item_definitions/strong_diamond_sword.json` will make diamond swords have 50 Attack Damage and 2000 durability
@@ -288,35 +291,35 @@
   }
   ```
 
-## 2.1.3.0-beta
+# 2.1.3.0-beta
 * Ported Push Resistance attribute from Enhanced AI
 
-## 2.1.2.5-beta
+# 2.1.2.5-beta
 * Crash fix when saving a parsed effect instance
 
-## 2.1.2.4-beta
+# 2.1.2.4-beta
 * Fix Network messages again
 
-## 2.1.2.3-beta
+# 2.1.2.3-beta
 * Fix Network messages being sent to clients with no mod installed
 
-## 2.1.2.2-beta
+# 2.1.2.2-beta
 * Fix ObjTag resolving unknown registry entries as fallback objects
 
-## 2.1.2.1-beta
+# 2.1.2.1-beta
 * Fixed missing `ObjTagValue.LIST_TYPE`
 
-## 2.1.2.0-beta
+# 2.1.2.0-beta
 * Added back `IdTagValue` as `ObjTagValue`
 * Added `ObjTag#asHolder`
 
-## 2.1.1.0-beta
+# 2.1.1.0-beta
 * Added `MCUtils.createPotionStackFromEffectInstances`
 
-## 2.1.0.1-beta
+# 2.1.0.1-beta
 * Fixed startup crash
 
-## 2.1.0.0-beta
+# 2.1.0.0-beta
 * Modules now require Resource Location as identifier
 * You can now use `ILModConfig` to prevent having to create a config class each mod
   * In the mod class
@@ -342,29 +345,29 @@
     Features in single module mods can now omit the module parameter in `@LoadFeature`
 * Ported more MCUtils functions
 
-## 2.0.4.0-beta
+# 2.0.4.0-beta
 * Ported Better Falling Blocks
 
-## 2.0.3.0-alpha
+# 2.0.3.0-alpha
 * Added Fix Swimmers Swimming Attribute, making Drowned and Fishes use the neoforge swimming speed attribute instead of the vanilla movement speed
 
-## 2.0.2.1-alpha
+# 2.0.2.1-alpha
 * Player attributes are now empty by default
 
-## 2.0.2.0-alpha
+# 2.0.2.0-alpha
 * Added Player Attributes feature
   * Directly from Insane's Survival Overhaul, change players attributes with a json in the config folder.
   * By default, it will slightly reduce movement speed and block reach
 * Added back JsonFeature (needed for Player Attributes)
 
-## 2.0.1.0-alpha
+# 2.0.1.0-alpha
 * Added back MessageCreeperDataSync 
   * Creeper data is now automatically synced client-side (if the mod is installed on the client).
 
-## 2.0.0.5-alpha
+# 2.0.0.5-alpha
 * Fixed "Fix Air Speed.Sprinting Jump Slowdown" being ignored
 
-## 2.0.0.4-alpha
+# 2.0.0.4-alpha
 Port to 1.21.1
 
 This version contains most of the player features (missing Better Falling Blocks) + everything needed to make MPR work.

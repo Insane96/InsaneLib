@@ -27,6 +27,7 @@ import java.util.function.Consumer;
 public abstract class ItemStackMixin {
     @Mutable @Shadow @Final PatchedDataComponentMap components;
     @Shadow public abstract Item getItem();
+    @Shadow public abstract boolean isEmpty();
 
     @ModifyExpressionValue(method = "lambda$static$3", at = @At(value = "CONSTANT", args = "intValue=99"))
     private static int insanelib$maxCountRange(int original) {
@@ -35,6 +36,13 @@ public abstract class ItemStackMixin {
 
     @Inject(method = "getComponents", at = @At("HEAD"), cancellable = true)
     private void onGetComponents(CallbackInfoReturnable<DataComponentMap> cir) {
+        // getItem() masks the real item as Items.AIR while the stack is transiently empty (e.g. count 0
+        // during Inventory#addResource's placeholder-then-grow pattern). Without this guard, PATCHED_COMPONENTS
+        // would be looked up for Items.AIR instead of the stack's real item, and if AIR itself has an override
+        // (e.g. from a stack-size multiplier feature that doesn't exclude it), that override gets permanently
+        // written into this.components - corrupting the real item even after its count becomes non-zero again.
+        if (this.isEmpty())
+            return;
         DataComponentMap override = ItemComponentsReloadListener.PATCHED_COMPONENTS.get(getItem());
         if (override == null)
             return;
