@@ -1,3 +1,6 @@
+# 2.4.21.2
+* Bump for local maven publish
+
 # 2.4.21.1
 * Fixed items losing their real data components (and gaining `Items.AIR`'s) when they transiently pass through an empty (count 0) `ItemStack` state, such as during `Inventory#add` on a previously empty slot. This most visibly broke music discs, which would silently lose `jukebox_playable` and become unusable in jukeboxes
 
