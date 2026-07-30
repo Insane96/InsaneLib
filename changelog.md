@@ -1,3 +1,7 @@
+# 2.4.21.3
+* Fixed `insanelib:knockback_multiplier` (and any other `LivingKnockBackEvent` listener resolving the attacker via `getLastHurtByMob()`) picking the wrong, or no, attacker on sweep attack hits, since vanilla applies sweep knockback before the `hurt` call that updates `getLastHurtByMob()` for that hit
+  * Added `CurrentAttacker` util, tracking the live attacker for the duration of each knockback call in `Player#attack`
+
 # 2.4.21.2
 * Bump for local maven publish
 

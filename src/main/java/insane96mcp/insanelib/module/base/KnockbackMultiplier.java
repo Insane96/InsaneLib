@@ -3,6 +3,7 @@ package insane96mcp.insanelib.module.base;
 import insane96mcp.insanelib.core.feature.Feature;
 import insane96mcp.insanelib.core.feature.LoadFeature;
 import insane96mcp.insanelib.setup.ILDataComponents;
+import insane96mcp.insanelib.util.CurrentAttacker;
 import net.minecraft.world.entity.LivingEntity;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.event.entity.living.LivingKnockBackEvent;
@@ -11,7 +12,7 @@ import net.neoforged.neoforge.event.entity.living.LivingKnockBackEvent;
 public class KnockbackMultiplier extends Feature {
     @SubscribeEvent
     public void onLivingKnockback(LivingKnockBackEvent event) {
-        LivingEntity attacker = event.getEntity().getLastHurtByMob();
+        LivingEntity attacker = CurrentAttacker.resolve(event.getEntity());
         if (attacker == null)
             return;
         Float multiplier = attacker.getMainHandItem().get(ILDataComponents.KNOCKBACK_MULTIPLIER.get());
