@@ -1,3 +1,19 @@
+# 2.4.22.0
+* Added loot pool injections (`data/<namespace>/loot_pool_injections/*.json`): injects an item entry into an existing, named pool of a target loot table, so it competes for selection using the pool's own weighted roll alongside its original entries. Pools are auto-named by NeoForge (`main` if the loot table has a single pool, `pool0`/`pool1`/... otherwise) if they don't have names specified in the loot table (vanilla loot tables don't have names, so follow the previously mentioned pattern)
+  ```json
+  {
+    "loot_table": "minecraft:chests/simple_dungeon",
+    "pool": "main",
+    "entry": {
+      "type": "minecraft:item",
+      "name": "minecraft:heart_of_the_sea",
+      "weight": 5,
+      "conditions": [{ "condition": "minecraft:random_chance", "chance": 0.05 }]
+    }
+  }
+  ```
+* Removed `insanelib:inject_loot_table` — NeoForge's own `neoforge:add_table` does the same thing (and, unlike this one, also splits the result across stacks bigger than the max stack size). Same `conditions`, same loot table value, just rename the `loot_table` field to `table`
+
 # 2.4.21.3
 * Fixed `insanelib:knockback_multiplier` (and any other `LivingKnockBackEvent` listener resolving the attacker via `getLastHurtByMob()`) picking the wrong, or no, attacker on sweep attack hits, since vanilla applies sweep knockback before the `hurt` call that updates `getLastHurtByMob()` for that hit
   * Added `CurrentAttacker` util, tracking the live attacker for the duration of each knockback call in `Player#attack`
