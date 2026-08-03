@@ -15,9 +15,6 @@ public class ILGlobalLootModifiers {
     public static final DeferredHolder<MapCodec<? extends IGlobalLootModifier>, MapCodec<ReplaceLootModifier>> REPLACE_LOOT =
             REGISTRY.register("replace_loot", () -> ReplaceLootModifier.CODEC);
 
-    public static final DeferredHolder<MapCodec<? extends IGlobalLootModifier>, MapCodec<InjectLootTableModifier>> INJECT_LOOT_TABLE =
-            REGISTRY.register("inject_loot_table", () -> InjectLootTableModifier.CODEC);
-
     public static final DeferredHolder<MapCodec<? extends IGlobalLootModifier>, MapCodec<DropMultiplierModifier>> DROP_MULTIPLIER =
             REGISTRY.register("drop_multiplier", () -> DropMultiplierModifier.CODEC);
 
