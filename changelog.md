@@ -1,3 +1,6 @@
+# 2.4.23.0
+* Added `InCombat` base feature (moved from IguanaTweaksReborn): tracks the last time an entity dealt or took damage via a data key, so other mods can query `InCombat.isInCombat(livingEntity, seconds)`
+
 # 2.4.22.0
 * Added loot pool injections (`data/<namespace>/loot_pool_injections/*.json`): injects an item entry into an existing, named pool of a target loot table, so it competes for selection using the pool's own weighted roll alongside its original entries. Pools are auto-named by NeoForge (`main` if the loot table has a single pool, `pool0`/`pool1`/... otherwise) if they don't have names specified in the loot table (vanilla loot tables don't have names, so follow the previously mentioned pattern)
   ```json
