@@ -77,7 +77,6 @@ public abstract class JsonFeature extends Feature {
 
     private static <T> void loadAndReadJson(String json, List<T> list, final List<T> defaultList, Type listType, @Nullable TypeAdapterFactory adapterFactory) {
         Gson gson = InsaneLib.createGson(adapterFactory);
-        list.clear();
         List<T> listRead;
         try {
             listRead = gson.fromJson(json, listType);
@@ -85,7 +84,9 @@ public abstract class JsonFeature extends Feature {
         catch (Exception e) {
             listRead = new ArrayList<>(defaultList);
         }
+        List<T> oldEntries = new ArrayList<>(list);
         list.addAll(listRead);
+        list.removeAll(oldEntries);
     }
 
     public static class JsonConfig<T> {
@@ -174,10 +175,11 @@ public abstract class JsonFeature extends Feature {
                 }
             }
 
-            this.list.clear();
+            List<T> oldEntries = new ArrayList<>(this.list);
             try (FileReader fileReader = new FileReader(file)) {
                 List<T> listRead = gson.fromJson(fileReader, listType);
                 this.list.addAll(listRead);
+                this.list.removeAll(oldEntries);
             }
             catch (JsonSyntaxException e) {
                 InsaneLib.LOGGER.error("Parsing error loading Json {}: {}", FilenameUtils.removeExtension(file.getName()), e.getMessage());

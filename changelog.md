@@ -1,3 +1,6 @@
+# 2.4.23.1
+* Fixed a rare `ConcurrentModificationException` in `JsonFeature`-based configs synced to client: `loadAndReadJson` (network sync) and `JsonConfig#loadAndReadFile` (file/reload) no longer `clear()` the list before repopulating it, which could race with another thread iterating the same list (e.g. singleplayer, where the client-side sync handler and the server tick thread share the same static list). They now add the new entries and remove the old ones instead, so the list is never left in a transient empty state
+
 # 2.4.23.0
 * Added `InCombat` base feature (moved from IguanaTweaksReborn): tracks the last time an entity dealt or took damage via a data key, so other mods can query `InCombat.isInCombat(livingEntity, seconds)`
 
