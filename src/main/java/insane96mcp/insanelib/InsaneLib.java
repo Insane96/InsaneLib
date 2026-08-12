@@ -9,6 +9,7 @@ import insane96mcp.insanelib.data.AttributeModifierOperationSerializer;
 import insane96mcp.insanelib.data.JsonFeatureDataReloadListener;
 import insane96mcp.insanelib.data.poolinjection.PoolInjectionReloadListener;
 import insane96mcp.insanelib.datagen.ILItemTagProvider;
+import insane96mcp.insanelib.module.base.MobDetectionRange;
 import insane96mcp.insanelib.module.base.PushResistance;
 import insane96mcp.insanelib.module.base.items.ItemComponentsReloadListener;
 import insane96mcp.insanelib.network.NetworkHandler;
@@ -66,6 +67,7 @@ public class InsaneLib {
         eventBus.addListener(IntegratedPack::onAddPackFinders);
         eventBus.addListener(NetworkHandler::register);
         eventBus.addListener(PushResistance::attribute);
+        eventBus.addListener(MobDetectionRange::attribute);
         eventBus.addListener(InsaneLib::gatherData);
         NeoForge.EVENT_BUS.addListener(this::onAddReloadListeners);
         NeoForge.EVENT_BUS.addListener(this::onRegisterCommands);
