@@ -30,6 +30,8 @@ public class ItemComponentsFeature extends Feature {
     @Config(description = "Vanilla limits max stack sizes to 99 for some reasons. This replaces that limit")
     public static Integer stackLimit = 9999;
 
+    @Config
+    public static Boolean disableShrinkStackCount = false;
     @Config(description = "Always render the item stack count at a smaller scale, even when it's 99 or below")
     public static Boolean alwaysShrinkStackCount = false;
 

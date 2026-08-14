@@ -1,3 +1,6 @@
+# 2.4.25.0
+* Added `Disable shrink in stack count` config option to `ItemComponents` feature
+
 # 2.4.24.0
 * Added `insanelib:mob_detection_range` attribute (0~1) to players, which reduces in percentage the range at which mobs can detect/see them. Implemented by hooking `LivingEvent.LivingVisibilityEvent` with `LOWEST` priority (so it modifies the final visibility value) and multiplying it by `1 - attributeValue`
 
