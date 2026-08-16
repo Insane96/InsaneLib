@@ -1,8 +1,8 @@
+# 2.4.26.0
+* Added `insanelib:mob_detection_range` attribute (-Double.MAX_VALUE~1, default 0) to living entities, reducing (negative values) or increasing (positive values) in percentage how far other entities can detect/see them
+
 # 2.4.25.0
 * Added `Disable shrink in stack count` config option to `ItemComponents` feature
-
-# 2.4.24.0
-* Added `insanelib:mob_detection_range` attribute (0~1) to players, which reduces in percentage the range at which mobs can detect/see them. Implemented by hooking `LivingEvent.LivingVisibilityEvent` with `LOWEST` priority (so it modifies the final visibility value) and multiplying it by `1 - attributeValue`
 
 # 2.4.23.1
 * Fixed a rare `ConcurrentModificationException` in `JsonFeature`-based configs synced to client: `loadAndReadJson` (network sync) and `JsonConfig#loadAndReadFile` (file/reload) no longer `clear()` the list before repopulating it, which could race with another thread iterating the same list (e.g. singleplayer, where the client-side sync handler and the server tick thread share the same static list). They now add the new entries and remove the old ones instead, so the list is never left in a transient empty state

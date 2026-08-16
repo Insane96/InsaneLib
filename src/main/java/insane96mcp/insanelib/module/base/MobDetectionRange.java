@@ -11,11 +11,13 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.event.entity.EntityAttributeModificationEvent;
 import net.neoforged.neoforge.event.entity.living.LivingEvent;
 
-@LoadFeature(description = "Adds a new `insanelib:mob_detection_range` attribute to players (0~1), that reduces in percentage the range at which mobs can detect/see them. Hooks into LivingVisibilityEvent with LOWEST priority so it modifies the final visibility value.")
+@LoadFeature(description = "Adds a new `insanelib:mob_detection_range` attribute to living entities (-Double.MAX_VALUE~1, default 0), that reduces (negative values) or increases (positive values) in percentage the range at which other entities can detect/see them. Hooks into LivingVisibilityEvent with LOWEST priority so it modifies the final visibility value.")
 public class MobDetectionRange extends Feature {
     public static void attribute(EntityAttributeModificationEvent event) {
-        if (!event.has(EntityType.PLAYER, ILAttributes.MOB_DETECTION_RANGE))
-            event.add(EntityType.PLAYER, ILAttributes.MOB_DETECTION_RANGE);
+        for (EntityType<? extends LivingEntity> entityType : event.getTypes()) {
+            if (!event.has(entityType, ILAttributes.MOB_DETECTION_RANGE))
+                event.add(entityType, ILAttributes.MOB_DETECTION_RANGE);
+        }
     }
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
@@ -28,10 +30,10 @@ public class MobDetectionRange extends Feature {
         if (attributeInstance == null)
             return;
 
-        double reduction = target.getAttributeValue(ILAttributes.MOB_DETECTION_RANGE);
-        if (reduction <= 0d)
+        double value = target.getAttributeValue(ILAttributes.MOB_DETECTION_RANGE);
+        if (value == 0d)
             return;
 
-        event.modifyVisibility(1d - reduction);
+        event.modifyVisibility(1d + value);
     }
 }
