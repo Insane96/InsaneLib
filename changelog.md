@@ -1,3 +1,6 @@
+# 2.4.27.1
+* Fixed `insanelib:mob_detection_range` attribute modifiers showing as a flat value (e.g. `+0.4`) instead of a percentage (`+40%`) in item tooltips
+
 # 2.4.27.0
 * Added `ItemTooltips` base feature (moved from Insane Survival Overhaul): items in the `insanelib:has_tooltip` item tag get a tooltip matching their vanilla name + `.tooltip` (e.g. `item.minecraft.arrow.tooltip`); items in the new `insanelib:has_hidden_tooltip` tag get the same, but only shown while holding SHIFT
 
