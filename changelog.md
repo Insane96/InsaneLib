@@ -1,3 +1,6 @@
+# 2.4.27.0
+* Added `ItemTooltips` base feature (moved from Insane Survival Overhaul): items in the `insanelib:has_tooltip` item tag get a tooltip matching their vanilla name + `.tooltip` (e.g. `item.minecraft.arrow.tooltip`); items in the new `insanelib:has_hidden_tooltip` tag get the same, but only shown while holding SHIFT
+
 # 2.4.26.0
 * Added `insanelib:mob_detection_range` attribute (-Double.MAX_VALUE~1, default 0) to living entities, reducing (negative values) or increasing (positive values) in percentage how far other entities can detect/see them
 
