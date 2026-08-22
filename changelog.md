@@ -1,3 +1,6 @@
+# 2.4.27.2
+* Fixed missing better falling blocks default blacklist
+
 # 2.4.27.1
 * Fixed `insanelib:mob_detection_range` attribute modifiers showing as a flat value (e.g. `+0.4`) instead of a percentage (`+40%`) in item tooltips
 

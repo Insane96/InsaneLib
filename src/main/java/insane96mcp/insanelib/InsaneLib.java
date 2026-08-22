@@ -8,6 +8,7 @@ import insane96mcp.insanelib.command.ILCommand;
 import insane96mcp.insanelib.data.AttributeModifierOperationSerializer;
 import insane96mcp.insanelib.data.JsonFeatureDataReloadListener;
 import insane96mcp.insanelib.data.poolinjection.PoolInjectionReloadListener;
+import insane96mcp.insanelib.datagen.ILBlockTagProvider;
 import insane96mcp.insanelib.datagen.ILItemTagProvider;
 import insane96mcp.insanelib.module.base.MobDetectionRange;
 import insane96mcp.insanelib.module.base.PushResistance;
@@ -16,7 +17,6 @@ import insane96mcp.insanelib.network.NetworkHandler;
 import insane96mcp.insanelib.setup.*;
 import insane96mcp.insanelib.util.IntegratedPack;
 import net.minecraft.Util;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
@@ -27,7 +27,6 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.common.data.BlockTagsProvider;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
 import net.neoforged.neoforge.event.AddReloadListenerEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
@@ -93,10 +92,7 @@ public class InsaneLib {
 
     public static void gatherData(GatherDataEvent event) {
         PackOutput output = event.getGenerator().getPackOutput();
-        BlockTagsProvider blockTagsProvider = new BlockTagsProvider(output, event.getLookupProvider(), MOD_ID, event.getExistingFileHelper()) {
-            @Override
-            protected void addTags(HolderLookup.Provider provider) {}
-        };
+        ILBlockTagProvider blockTagsProvider = new ILBlockTagProvider(output, event.getLookupProvider(), event.getExistingFileHelper());
         event.getGenerator().addProvider(event.includeServer(), blockTagsProvider);
         event.getGenerator().addProvider(event.includeServer(),
                 new ILItemTagProvider(output, event.getLookupProvider(), blockTagsProvider.contentsGetter(), event.getExistingFileHelper()));
