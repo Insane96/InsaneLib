@@ -1,3 +1,6 @@
+# 2.4.28.0
+* Added Creative Removal (moved from Insane Survival Overhaul): items in the `insanelib:creative_removal` item tag are removed from creative mode tabs, even if added by other mods
+
 # 2.4.27.2
 * Fixed missing better falling blocks default blacklist
 

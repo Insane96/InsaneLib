@@ -67,6 +67,9 @@ public class ILTags {
         public static final TagKey<Item> EQUIPMENT_ARMOR_TURTLE = tag("equipment/armor/turtle");
         public static final TagKey<Item> EQUIPMENT_TURTLE = tag("equipment/turtle");
 
+        // Items in this tag are removed from creative mode tabs, even if added by other mods
+        public static final TagKey<Item> CREATIVE_REMOVAL = tag("creative_removal");
+
         private static TagKey<Item> tag(String path) {
             return TagKey.create(Registries.ITEM, InsaneLib.id(path));
         }

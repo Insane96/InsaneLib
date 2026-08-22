@@ -15,17 +15,20 @@ import insane96mcp.insanelib.module.base.PushResistance;
 import insane96mcp.insanelib.module.base.items.ItemComponentsReloadListener;
 import insane96mcp.insanelib.network.NetworkHandler;
 import insane96mcp.insanelib.setup.*;
+import insane96mcp.insanelib.util.CreativeTabsUtils;
 import insane96mcp.insanelib.util.IntegratedPack;
 import net.minecraft.Util;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
 import net.neoforged.neoforge.event.AddReloadListenerEvent;
@@ -68,6 +71,11 @@ public class InsaneLib {
         eventBus.addListener(PushResistance::attribute);
         eventBus.addListener(MobDetectionRange::attribute);
         eventBus.addListener(InsaneLib::gatherData);
+
+        if (FMLLoader.getDist().isClient()) {
+            eventBus.addListener(EventPriority.LOWEST, CreativeTabsUtils::removeCreativeRemovalTaggedItems);
+        }
+
         NeoForge.EVENT_BUS.addListener(this::onAddReloadListeners);
         NeoForge.EVENT_BUS.addListener(this::onRegisterCommands);
         NeoForge.EVENT_BUS.addListener(ILCriteriaTriggers::onBlockBreak);
