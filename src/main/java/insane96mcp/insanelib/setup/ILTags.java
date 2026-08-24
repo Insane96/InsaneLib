@@ -3,9 +3,19 @@ package insane96mcp.insanelib.setup;
 import insane96mcp.insanelib.InsaneLib;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.tags.TagKey;
+import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.item.Item;
 
 public class ILTags {
+
+    public static class DamageTypes {
+        // Damage sources whose damage type is in this tag will not grant invincibility frames (hurt cooldown) to the entity they damage
+        public static final TagKey<DamageType> NO_INVINCIBILITY_FRAMES = tag("no_invincibility_frames");
+
+        private static TagKey<DamageType> tag(String path) {
+            return TagKey.create(Registries.DAMAGE_TYPE, InsaneLib.id(path));
+        }
+    }
 
     public static class Items {
         // Wooden

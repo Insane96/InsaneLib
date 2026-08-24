@@ -1,3 +1,6 @@
+# 2.4.29.0
+* Added `insanelib:no_invincibility_frames` damage type tag: damage sources whose damage type is in this tag will not grant invincibility frames (hurt cooldown) to the entity they damage. Fires the new `NoInvincibilityFramesEvent` when this happens
+
 # 2.4.28.0
 * Added Creative Removal (moved from Insane Survival Overhaul): items in the `insanelib:creative_removal` item tag are removed from creative mode tabs, even if added by other mods
 
