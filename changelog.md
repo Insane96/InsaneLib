@@ -4,6 +4,7 @@
 * `insanelib:creative_removal` 
   * No longer requires a world restart to take effect after being updated: it's now reapplied automatically on `/reload` (and on any other tag reload)
   * Better matches items (e.g. Storage Drawers' Detached Drawer having custom components)
+* Fixed `insanelib:has_hidden_tooltip` showing the same tooltip as `insanelib:has_tooltip` instead of its own `.tooltip.hidden` translation key; items can now be in both tags to get both tooltips
 
 # 2.4.29.0
 * Added `insanelib:no_invincibility_frames` damage type tag: damage sources whose damage type is in this tag will not grant invincibility frames (hurt cooldown) to the entity they damage. Fires the new `NoInvincibilityFramesEvent` when this happens
