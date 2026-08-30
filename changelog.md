@@ -1,4 +1,4 @@
-# Upcoming
+# 2.4.30.0
 * Added `insanelib:recipe_removal`
   * New item tag removing any recipe which output matches the items in the tag
 * `insanelib:creative_removal` 
