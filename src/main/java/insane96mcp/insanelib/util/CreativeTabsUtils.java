@@ -51,7 +51,24 @@ public class CreativeTabsUtils {
 	public static void removeCreativeRemovalTaggedItems(BuildCreativeModeTabContentsEvent event) {
 		BuiltInRegistries.ITEM.getTag(ILTags.Items.CREATIVE_REMOVAL).ifPresent(holders -> {
 			for (Holder<Item> holder : holders) {
-				remove(event, holder.value());
+				Item item = holder.value();
+				// Match by item type only (not exact ItemStack/components): some items (e.g. Storage Drawers'
+				// Detached Drawer) attach non-empty data components to their default instance, which would never
+				// equal the bare ItemStack built by remove(Item), silently failing to remove them from the tab.
+				// BuildCreativeModeTabContentsEvent has no removeIf, so collect matches first (its entry sets are
+				// unmodifiable views) then remove each one.
+				List<ItemStack> matches = new ArrayList<>();
+				for (ItemStack stack : event.getParentEntries()) {
+					if (stack.is(item))
+						matches.add(stack);
+				}
+				for (ItemStack stack : event.getSearchEntries()) {
+					if (stack.is(item))
+						matches.add(stack);
+				}
+				for (ItemStack stack : matches) {
+					event.remove(stack, CreativeModeTab.TabVisibility.PARENT_AND_SEARCH_TABS);
+				}
 			}
 		});
 	}
