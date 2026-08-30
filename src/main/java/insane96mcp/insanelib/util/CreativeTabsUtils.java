@@ -1,6 +1,6 @@
 package insane96mcp.insanelib.util;
 
-import insane96mcp.insanelib.InsaneLib;
+import insane96mcp.insanelib.mixin.client.CreativeModeTabsAccessor;
 import insane96mcp.insanelib.setup.ILTags;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
@@ -14,31 +14,11 @@ import net.minecraft.world.level.ItemLike;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.event.TagsUpdatedEvent;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
 public class CreativeTabsUtils {
-	/**
-	 * Vanilla ({@link CreativeModeTab.ItemDisplayParameters#needsUpdate}) only rebuilds creative tab contents when
-	 * the {@link net.minecraft.core.HolderLookup.Provider} reference changes, which never happens on {@code /reload}
-	 * since the registry access object is reused. Reflection lets us clear the cache so the next rebuild runs
-	 * regardless, making tag-based removals apply immediately instead of requiring a world rejoin.
-	 */
-	private static final Field CACHED_PARAMETERS_FIELD;
-
-	static {
-		Field field;
-		try {
-			field = CreativeModeTabs.class.getDeclaredField("CACHED_PARAMETERS");
-			field.setAccessible(true);
-		} catch (ReflectiveOperationException e) {
-			InsaneLib.LOGGER.error("Failed to access CreativeModeTabs#CACHED_PARAMETERS, creative tabs won't refresh on tag reload", e);
-			field = null;
-		}
-		CACHED_PARAMETERS_FIELD = field;
-	}
 	public static void addBefore(BuildCreativeModeTabContentsEvent event, Item before, ItemLike itemToAdd) {
 		addBefore(event, before, new ItemStack(itemToAdd));
 	}
@@ -101,24 +81,19 @@ public class CreativeTabsUtils {
 	}
 
 	/**
-	 * Forces creative mode tabs to rebuild whenever tags are (re)loaded, so {@code /reload} re-applies
-	 * {@link #removeCreativeRemovalTaggedItems} without needing to rejoin the world.
+	 * Vanilla ({@link CreativeModeTab.ItemDisplayParameters#needsUpdate}) only rebuilds creative tab contents when
+	 * the {@link net.minecraft.core.HolderLookup.Provider} reference changes, which never happens on {@code /reload}
+	 * since the registry access object is reused. Clearing the cache (via {@link CreativeModeTabsAccessor}) forces
+	 * the next rebuild to run regardless, so {@link #removeCreativeRemovalTaggedItems} re-applies immediately
+	 * instead of requiring a world rejoin.
 	 */
 	public static void onTagsUpdated(TagsUpdatedEvent event) {
-		if (CACHED_PARAMETERS_FIELD == null)
-			return;
-
 		Minecraft minecraft = Minecraft.getInstance();
 		LocalPlayer player = minecraft.player;
 		if (player == null || player.connection == null)
 			return;
 
-		try {
-			CACHED_PARAMETERS_FIELD.set(null, null);
-		} catch (ReflectiveOperationException e) {
-			InsaneLib.LOGGER.error("Failed to reset CreativeModeTabs#CACHED_PARAMETERS", e);
-			return;
-		}
+		CreativeModeTabsAccessor.setCachedParameters(null);
 
 		boolean hasPermissions = player.canUseGameMasterBlocks() && minecraft.options.operatorItemsTab().get();
 		CreativeModeTabs.tryRebuildTabContents(player.connection.enabledFeatures(), hasPermissions, player.level().registryAccess());

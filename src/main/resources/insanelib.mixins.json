@@ -40,6 +40,7 @@
 	"client": [
 		"accessor.GuiGraphicsAccessor",
 		"client.AnvilScreenMixin",
+		"client.CreativeModeTabsAccessor",
 		"client.GuiGraphicsMixin",
 		"client.LocalPlayerMixin"
 	]
