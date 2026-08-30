@@ -17,6 +17,7 @@ import insane96mcp.insanelib.network.NetworkHandler;
 import insane96mcp.insanelib.setup.*;
 import insane96mcp.insanelib.util.CreativeTabsUtils;
 import insane96mcp.insanelib.util.IntegratedPack;
+import insane96mcp.insanelib.util.RecipeRemovalUtils;
 import net.minecraft.Util;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
@@ -74,12 +75,15 @@ public class InsaneLib {
 
         if (FMLLoader.getDist().isClient()) {
             eventBus.addListener(EventPriority.LOWEST, CreativeTabsUtils::removeCreativeRemovalTaggedItems);
+            NeoForge.EVENT_BUS.addListener(CreativeTabsUtils::onTagsUpdated);
         }
 
         NeoForge.EVENT_BUS.addListener(this::onAddReloadListeners);
         NeoForge.EVENT_BUS.addListener(this::onRegisterCommands);
         NeoForge.EVENT_BUS.addListener(ILCriteriaTriggers::onBlockBreak);
         NeoForge.EVENT_BUS.addListener(PoolInjectionReloadListener::onLootTableLoad);
+        NeoForge.EVENT_BUS.addListener(RecipeRemovalUtils::removeRecipeRemovalTaggedRecipes);
+        NeoForge.EVENT_BUS.addListener(RecipeRemovalUtils::onServerAboutToStart);
     }
 
     private void onRegisterCommands(RegisterCommandsEvent event) {

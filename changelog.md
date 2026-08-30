@@ -1,8 +1,15 @@
+# Upcoming
+* Added `insanelib:recipe_removal`
+  * New item tag removing any recipe which output matches the items in the tag
+* `insanelib:creative_removal` 
+  * No longer requires a world restart to take effect after being updated: it's now reapplied automatically on `/reload` (and on any other tag reload)
+  * Better matches items (e.g. Storage Drawers' Detached Drawer having custom components)
+
 # 2.4.29.0
 * Added `insanelib:no_invincibility_frames` damage type tag: damage sources whose damage type is in this tag will not grant invincibility frames (hurt cooldown) to the entity they damage. Fires the new `NoInvincibilityFramesEvent` when this happens
 
 # 2.4.28.0
-* Added Creative Removal (moved from Insane Survival Overhaul): items in the `insanelib:creative_removal` item tag are removed from creative mode tabs, even if added by other mods
+* Added Creative Removal (moved from Insane Survival Overhaul): items in the `insanelib:creative_removal` item tag are removed from creative mode tabs. Updating this tag requires a world restart. 
 
 # 2.4.27.2
 * Fixed missing better falling blocks default blacklist

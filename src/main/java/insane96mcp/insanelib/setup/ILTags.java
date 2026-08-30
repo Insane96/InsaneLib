@@ -80,6 +80,9 @@ public class ILTags {
         // Items in this tag are removed from creative mode tabs, even if added by other mods
         public static final TagKey<Item> CREATIVE_REMOVAL = tag("creative_removal");
 
+        // Recipes whose result is an item in this tag are removed from the recipe manager, even if added by other mods
+        public static final TagKey<Item> RECIPE_REMOVAL = tag("recipe_removal");
+
         private static TagKey<Item> tag(String path) {
             return TagKey.create(Registries.ITEM, InsaneLib.id(path));
         }
