@@ -1,4 +1,4 @@
-# Upcoming
+# 2.4.31.0
 * Added missing lang for the `insanelib:mob_detection_range` and `insanelib:push_resistance` attributes
 * Fixed a vanilla bug that made experience from the Grindstone always pop out from the top of the block instead of the side it's actually attached to (floor, ceiling, or the wall it's facing)
 
