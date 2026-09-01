@@ -1,3 +1,6 @@
+# Upcoming
+* Added missing lang for the `insanelib:mob_detection_range` and `insanelib:push_resistance` attributes
+
 # 2.4.30.0
 * Added `insanelib:recipe_removal`
   * New item tag removing any recipe which output matches the items in the tag
