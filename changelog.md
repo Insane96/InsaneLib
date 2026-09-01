@@ -1,8 +1,10 @@
 # Upcoming
 * Added missing lang for the `insanelib:mob_detection_range` and `insanelib:push_resistance` attributes
+* Fixed a vanilla bug that made experience from the Grindstone always pop out from the top of the block instead of the side it's actually attached to (floor, ceiling, or the wall it's facing)
 
 ## Technical
 * Fixed ModNBTData method checking for persisted data named `contains` instead of `containsPersisted`
+* Added `MCUtils#getGrindstoneOutputPos(Level, BlockPos)`, returning the position facing the side a grindstone is attached to
 
 # 2.4.30.0
 * Added `insanelib:recipe_removal`

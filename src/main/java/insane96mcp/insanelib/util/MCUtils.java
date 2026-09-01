@@ -6,6 +6,7 @@ import insane96mcp.insanelib.InsaneLib;
 import insane96mcp.insanelib.mixin.accessor.MobEffectInstanceAccessor;
 import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -31,6 +32,10 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.GrindstoneBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.AttachFace;
+import net.minecraft.world.phys.Vec3;
 import org.apache.commons.lang3.math.NumberUtils;
 
 import javax.annotation.Nullable;
@@ -282,6 +287,24 @@ public class MCUtils {
 		int amplifier = Integer.parseInt(split[2]);
 
 		return new MobEffectInstance(effectHolder.get(), duration, amplifier);
+	}
+
+	/**
+	 * Position facing the side the grindstone is attached to (floor, ceiling, or the wall it's facing),
+	 * so items/xp popped from it come out of the correct side instead of always from the top.
+	 */
+	public static Vec3 getGrindstoneOutputPos(Level level, BlockPos pos) {
+		Vec3 center = Vec3.atCenterOf(pos);
+		BlockState state = level.getBlockState(pos);
+		if (!state.hasProperty(GrindstoneBlock.FACE) || !state.hasProperty(GrindstoneBlock.FACING))
+			return center;
+		AttachFace face = state.getValue(GrindstoneBlock.FACE);
+		Direction direction = state.getValue(GrindstoneBlock.FACING);
+		if (face == AttachFace.CEILING)
+			return center.relative(Direction.DOWN, 0.6f);
+		if (face == AttachFace.FLOOR)
+			return center.relative(Direction.UP, 0.6f);
+		return center.relative(direction, 0.6f);
 	}
 
 	/**
