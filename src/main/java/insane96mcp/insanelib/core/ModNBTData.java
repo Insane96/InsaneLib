@@ -193,7 +193,7 @@ public class ModNBTData {
         return contains(entity.getPersistentData(), loc);
     }
 
-    public static boolean contains(Player player, ResourceLocation loc) {
+    public static boolean containsPersisted(Player player, ResourceLocation loc) {
         return contains(MCUtils.getOrCreatePersistedData(player), loc);
     }
 
