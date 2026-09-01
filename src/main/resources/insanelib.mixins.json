@@ -8,6 +8,7 @@
 	"mixins": [
 		"AnvilMenuMixin",
 		"CakeBlockMixin",
+		"CommonHooksMixin",
 		"ContainerMixin",
 		"CreeperMixin",
 		"CrossbowItemMixin",
