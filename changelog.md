@@ -1,3 +1,6 @@
+# 2.4.32.0
+* Added Sound Overrides feature, allowing to override fuse and explosion sounds via NBT. Fuse sound can be overridden by setting the NBT tag 'NeoForgeData.insanelib.sound_overrides.fuse_sound' on the entity. Explosion sound can be overridden by setting the NBT tag 'NeoForgeData.insanelib.sound_overrides.explosion_sound' on the entity.
+
 # 2.4.31.0
 * Added missing lang for the `insanelib:mob_detection_range` and `insanelib:push_resistance` attributes
 * Fixed a vanilla bug that made experience from the Grindstone always pop out from the top of the block instead of the side it's actually attached to (floor, ceiling, or the wall it's facing)

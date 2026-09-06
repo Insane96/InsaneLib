@@ -1,7 +1,10 @@
 package insane96mcp.insanelib.mixin;
 
+import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
+import insane96mcp.insanelib.module.SoundOverrides;
 import insane96mcp.insanelib.network.message.CreeperDataSyncMessage;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.monster.Creeper;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -21,5 +24,10 @@ public abstract class CreeperMixin {
         if (self().level().isClientSide)
             return;
         CreeperDataSyncMessage.syncCreeperToTrackingPlayers(self());
+    }
+
+    @ModifyExpressionValue(method = "tick", at = @At(value = "FIELD", target = "Lnet/minecraft/sounds/SoundEvents;CREEPER_PRIMED:Lnet/minecraft/sounds/SoundEvent;"))
+    private SoundEvent insanelib$fuseSound(SoundEvent original) {
+        return SoundOverrides.getFuseSound(self(), original);
     }
 }

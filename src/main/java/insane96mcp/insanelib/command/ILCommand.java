@@ -3,22 +3,32 @@ package insane96mcp.insanelib.command;
 import com.google.gson.JsonElement;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.serialization.JsonOps;
+import insane96mcp.insanelib.module.SoundOverrides;
 import insane96mcp.insanelib.module.base.items.ItemComponentsReloadListener;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
+import net.minecraft.commands.arguments.ResourceLocationArgument;
 import net.minecraft.commands.arguments.item.ItemArgument;
 import net.minecraft.commands.arguments.item.ItemInput;
+import net.minecraft.commands.synchronization.SuggestionProviders;
+import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.TypedDataComponent;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.stats.Stats;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.Item;
+
+import java.util.Collection;
+import java.util.function.BiConsumer;
 
 public class ILCommand {
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher, CommandBuildContext context) {
@@ -53,7 +63,27 @@ public class ILCommand {
                                         ctx.getSource().sendSuccess(() -> Component.literal("  " + typeId + ": " + value), false);
                                     }
                                     return 1;
-                                }))));
+                                })))
+                .then(Commands.literal("set_sound")
+                        .then(soundOverrideCommand("explosion", SoundOverrides::setExplosionSound))
+                        .then(soundOverrideCommand("fuse", SoundOverrides::setFuseSound))));
+    }
+
+    private static LiteralArgumentBuilder<CommandSourceStack> soundOverrideCommand(String name, BiConsumer<Entity, Holder<SoundEvent>> setter) {
+        return Commands.literal(name)
+                .then(Commands.argument("targets", EntityArgument.entities())
+                        .then(Commands.argument("sound", ResourceLocationArgument.id())
+                                .suggests(SuggestionProviders.AVAILABLE_SOUNDS)
+                                .executes(ctx -> {
+                                    ResourceLocation soundId = ResourceLocationArgument.getId(ctx, "sound");
+                                    Holder<SoundEvent> soundEvent = Holder.direct(SoundEvent.createVariableRangeEvent(soundId));
+                                    Collection<? extends Entity> targets = EntityArgument.getEntities(ctx, "targets");
+                                    for (Entity entity : targets) {
+                                        setter.accept(entity, soundEvent);
+                                    }
+                                    ctx.getSource().sendSuccess(() -> Component.literal("Set " + name + " sound to " + soundId + " for " + targets.size() + " entities"), true);
+                                    return targets.size();
+                                })));
     }
 
     private static <T> String encodeComponent(TypedDataComponent<T> component, RegistryOps<JsonElement> ops) {
