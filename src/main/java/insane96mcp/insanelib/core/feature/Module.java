@@ -6,6 +6,7 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.config.ModConfigEvent;
+import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.common.ModConfigSpec;
 import net.neoforged.neoforgespi.language.ModFileScanData;
 import org.objectweb.asm.Type;
@@ -190,14 +191,17 @@ public class Module {
             }
             if (modModules.size() == 1) {
                 module = modModules.getFirst();
-            } else if (modModules.isEmpty()) {
+            }
+            else if (modModules.isEmpty()) {
                 InsaneLib.LOGGER.warn("No module found for mod {}", modId);
                 return;
-            } else {
+            }
+            else {
                 InsaneLib.LOGGER.warn("@LoadFeature on {} must specify 'module' — multiple modules registered for mod {}", annotationData.clazz().getClassName(), modId);
                 return;
             }
-        } else {
+        }
+        else {
             ResourceLocation moduleId = ResourceLocation.parse(moduleStr);
             synchronized (_lock) {
                 module = Module.modules.get(moduleId);
@@ -207,7 +211,8 @@ public class Module {
                 return;
             }
         }
-        if (module.modConfigType != modConfigType)
+        if (module.modConfigType != modConfigType
+                || (FMLEnvironment.dist.isDedicatedServer() && module.modConfigType == ModConfig.Type.CLIENT))
             return;
 
         Type type = annotationData.clazz();

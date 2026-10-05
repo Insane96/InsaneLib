@@ -1,3 +1,6 @@
+# 2.4.33.1
+* Client modules are no longer loaded on server side
+
 # 2.4.33.0
 * Removed Sound Overrides feature. Seemed a smart thing but to make it work properly would require too much work.
 
