@@ -1,4 +1,4 @@
-# Upcoming
+# 3.0.0.0-beta
 * Ported to Minecraft 26.1.2 (NeoForge 26.1.2.116, Java 25)
 
 ## Data Pack / Modpack creators
