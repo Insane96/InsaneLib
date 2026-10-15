@@ -11,6 +11,8 @@
   * NeoForge now loads every file in `data/<namespace>/loot_modifiers/` and no longer uses `global_loot_modifiers.json`; the order is given by `priority`
 * `insanelib:recipe_removal` now checks the result shown by the recipe (recipe book display). Recipes without a display (e.g. special recipes) are never removed
 * Fixed loot pool injections (`loot_pool_injections`) not being applied when the world is loaded (they only worked after a `/reload`, using the injections of the previous load)
+* Fixed `merge_components` in `item_components` re-adding a component removed by a previous definition for the same item (e.g. one targeting the item and one targeting a tag containing it). A removed component now counts as absent: the merge json alone becomes the new value, and if it's not a valid component the removal is kept and an error is logged
+* Fixed a `merge_components` that fails to decode also undoing a previous removal of that component
 * Fixed `insanelib:enchant_with_treasure` and `insanelib:enchant_randomly_weightless` loot functions not enchanting books
 * Items in the copper `insanelib:equipment/*` tags are now the vanilla copper tools and armor
 * Time Stop No Player Online
