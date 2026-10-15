@@ -7,9 +7,11 @@ import insane96mcp.insanelib.module.base.betterfallingblocks.BetterFallingBlockE
 import insane96mcp.insanelib.module.base.betterfallingblocks.BetterFallingBlocks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.game.ClientboundBlockUpdatePacket;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.ProblemReporter;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MoverType;
@@ -18,13 +20,15 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.DirectionalPlaceContext;
 import net.minecraft.world.level.ClipContext;
-import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.gamerules.GameRules;
 import net.minecraft.world.level.material.Fluids;
+import net.minecraft.world.level.storage.TagValueInput;
+import net.minecraft.world.level.storage.TagValueOutput;
 import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.BlockHitResult;
@@ -138,7 +142,7 @@ public abstract class FallingBlockEntityMixin extends Entity implements BetterFa
 
     @Unique
     private void insanelib$handleServerSideLogic() {
-        if (this.level().isClientSide)
+        if (this.level().isClientSide())
             return;
 
         BlockPos blockPos = this.blockPosition();
@@ -178,11 +182,11 @@ public abstract class FallingBlockEntityMixin extends Entity implements BetterFa
     @Unique
     private void insanelib$handleFalling(BlockPos blockPos) {
         Block block = this.blockState.getBlock();
-        boolean isOutsideWorld = blockPos.getY() <= this.level().getMinBuildHeight() || blockPos.getY() > this.level().getMaxBuildHeight();
+        boolean isOutsideWorld = blockPos.getY() <= this.level().getMinY() || blockPos.getY() > this.level().getMaxY();
 
         if ((this.time > MAX_TIME_OUTSIDE_WORLD && isOutsideWorld) || this.time > ABSOLUTE_MAX_TIME) {
-            if (this.dropItem && this.level().getGameRules().getBoolean(GameRules.RULE_DOENTITYDROPS)) {
-                this.spawnAtLocation(block);
+            if (this.dropItem && ((ServerLevel) this.level()).getGameRules().get(GameRules.ENTITY_DROPS)) {
+                this.spawnAtLocation((ServerLevel) this.level(), block);
             }
             this.discard();
         }
@@ -346,7 +350,7 @@ public abstract class FallingBlockEntityMixin extends Entity implements BetterFa
     private void insanelib$handleSuccessfulPlacement(BlockState stateOn, Block block, BlockPos pos) {
         ServerLevel serverLevel = (ServerLevel)this.level();
         Block.updateFromNeighbourShapes(this.blockState, this.level(), pos);
-        serverLevel.getChunkSource().chunkMap.broadcast(this, new ClientboundBlockUpdatePacket(pos, this.level().getBlockState(pos)));
+        serverLevel.getChunkSource().chunkMap.sendToTrackingPlayers(this, new ClientboundBlockUpdatePacket(pos, this.level().getBlockState(pos)));
         this.discard();
 
         if (block instanceof Fallable fallable) {
@@ -367,13 +371,13 @@ public abstract class FallingBlockEntityMixin extends Entity implements BetterFa
             return;
         }
 
-        CompoundTag compoundTag = blockEntity.saveWithoutMetadata(this.level().registryAccess());
-        for (String key : this.blockData.getAllKeys()) {
-            compoundTag.put(key, this.blockData.get(key).copy());
-        }
-
-        try {
-            blockEntity.loadWithComponents(compoundTag, this.level().registryAccess());
+        try (ProblemReporter.ScopedCollector reporter = new ProblemReporter.ScopedCollector(blockEntity.problemPath(), InsaneLib.LOGGER)) {
+            RegistryAccess registryAccess = this.level().registryAccess();
+            TagValueOutput output = TagValueOutput.createWithContext(reporter, registryAccess);
+            blockEntity.saveWithoutMetadata(output);
+            CompoundTag merged = output.buildResult();
+            this.blockData.forEach((name, tag) -> merged.put(name, tag.copy()));
+            blockEntity.loadWithComponents(TagValueInput.create(reporter, registryAccess, merged));
         } catch (Exception exception) {
             InsaneLib.LOGGER.error("Failed to load block entity from falling block", exception);
         }
@@ -383,10 +387,10 @@ public abstract class FallingBlockEntityMixin extends Entity implements BetterFa
 
     @Unique
     private void insanelib$handleFailedPlacement(Block block, BlockPos pos) {
-        if (this.dropItem && this.level().getGameRules().getBoolean(GameRules.RULE_DOENTITYDROPS)) {
+        if (this.dropItem && ((ServerLevel) this.level()).getGameRules().get(GameRules.ENTITY_DROPS)) {
             this.discard();
             this.callOnBrokenAfterFall(block, pos);
-            this.spawnAtLocation(block);
+            this.spawnAtLocation((ServerLevel) this.level(), block);
         }
     }
 

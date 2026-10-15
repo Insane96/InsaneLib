@@ -1,24 +1,19 @@
 package insane96mcp.insanelib.util;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import insane96mcp.insanelib.mixin.accessor.GuiGraphicsAccessor;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.resources.ResourceLocation;
-import org.lwjgl.opengl.GL11;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.resources.Identifier;
 
 public class ClientUtils {
-	public static void setRenderColor(float r, float g, float b, float alpha) {
-		RenderSystem.enableBlend();
-		RenderSystem.setShaderColor(r, g, b, alpha);
-		RenderSystem.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+	public static void blitVerticallyMirrored(Identifier texture, GuiGraphicsExtractor guiGraphics, int x, int y, int u, int v, int width, int height, int textureWidth, int textureHeight) {
+		blitVerticallyMirrored(texture, guiGraphics, x, y, u, v, width, height, textureWidth, textureHeight, -1);
 	}
 
-	public static void resetRenderColor() {
-		RenderSystem.disableBlend();
-		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-	}
-
-	public static void blitVerticallyMirrored(ResourceLocation texture, GuiGraphics guiGraphics, int x, int y, int u, int v, int width, int height, int textureWidth, int textureHeight) {
-		((GuiGraphicsAccessor) guiGraphics).invokeInnerBlit(texture, x, x + width, y, y + height, 0, (u + (float)width) / (float)textureWidth, (u + 0.0F) / (float)textureWidth, (v + 0.0F) / (float)textureHeight, (v + (float)height) / (float)textureHeight);
+	/**
+	 * Same as {@link #blitVerticallyMirrored(Identifier, GuiGraphicsExtractor, int, int, int, int, int, int, int, int)} but tinted with the given ARGB color
+	 */
+	public static void blitVerticallyMirrored(Identifier texture, GuiGraphicsExtractor guiGraphics, int x, int y, int u, int v, int width, int height, int textureWidth, int textureHeight, int color) {
+		((GuiGraphicsAccessor) guiGraphics).invokeInnerBlit(RenderPipelines.GUI_TEXTURED, texture, x, x + width, y, y + height, (u + (float)width) / (float)textureWidth, (u + 0.0F) / (float)textureWidth, (v + 0.0F) / (float)textureHeight, (v + (float)height) / (float)textureHeight, color);
 	}
 }

@@ -15,7 +15,8 @@ public class NoInvincibilityFrames extends Feature {
         if (!event.getSource().is(ILTags.DamageTypes.NO_INVINCIBILITY_FRAMES))
             return;
 
-        event.setInvulnerabilityTicks(0);
+        // NeoForge requires at least 1 tick. Vanilla only blocks damage while invulnerableTime > 10, so 1 means no invincibility frames
+        event.setInvulnerabilityTicks(1);
         NeoForge.EVENT_BUS.post(new NoInvincibilityFramesEvent(event.getEntity(), event.getSource()));
     }
 }

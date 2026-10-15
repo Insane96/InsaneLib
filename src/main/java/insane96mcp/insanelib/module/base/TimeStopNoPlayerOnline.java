@@ -10,13 +10,14 @@ import insane96mcp.insanelib.util.IntegratedPack;
 import net.minecraft.commands.CacheableFunction;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.functions.CommandFunction;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.ServerFunctionManager;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModList;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.server.ServerStartedEvent;
+import net.neoforged.neoforge.event.server.ServerStoppedEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
 
 import javax.annotation.Nullable;
@@ -43,13 +44,18 @@ public class TimeStopNoPlayerOnline extends Feature {
 
     @SubscribeEvent
     public void onPlayerLeave(PlayerEvent.PlayerLoggedOutEvent event) {
-        setTickTime(event.getEntity().getServer(), false, server -> server.getPlayerList().getPlayers().size() > 1);
+        setTickTime(event.getEntity().level().getServer(), false, server -> server.getPlayerList().getPlayers().size() > 1);
     }
 
     @SubscribeEvent
     public void onPlayerLeave(PlayerEvent.PlayerLoggedInEvent event) {
-        setTickTime(event.getEntity().getServer(), true, null);
+        setTickTime(event.getEntity().level().getServer(), true, null);
     }
+
+    /**
+     * If true, world clocks (day time) don't advance. Checked by {@link insane96mcp.insanelib.mixin.ServerClockManagerMixin}
+     */
+    public static boolean clocksStopped = false;
 
     static int tick = 0;
     public static CacheableFunction STOP = null;
@@ -74,7 +80,7 @@ public class TimeStopNoPlayerOnline extends Feature {
 
     private void executeFunction(ServerFunctionManager functions, CacheableFunction function, String id) {
         if (function == null)
-            function = new CacheableFunction(ResourceLocation.parse(id));
+            function = new CacheableFunction(Identifier.parse(id));
         Optional<CommandFunction<CommandSourceStack>> func = function.get(functions);
         if (func.isPresent())
             functions.execute(func.get(), functions.getGameLoopSender());
@@ -87,11 +93,19 @@ public class TimeStopNoPlayerOnline extends Feature {
         setTickTime(event.getServer(), false, null);
     }
 
+    @SubscribeEvent
+    public void onServerStopped(ServerStoppedEvent event) {
+        clocksStopped = false;
+    }
+
     public void setTickTime(@Nullable MinecraftServer server, boolean tickTime, @Nullable Predicate<MinecraftServer> extraConditions) {
         if (!this.isEnabled()
                 || server == null
                 || (extraConditions != null && extraConditions.test(server)))
             return;
+        // Game time
         ((ServerLevelAccessor) server.overworld()).setTickTime(tickTime);
+        // Day time (world clocks), see ServerClockManagerMixin
+        clocksStopped = !tickTime;
     }
 }

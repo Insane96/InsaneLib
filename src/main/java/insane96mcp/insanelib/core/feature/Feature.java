@@ -3,7 +3,7 @@ package insane96mcp.insanelib.core.feature;
 import insane96mcp.insanelib.InsaneLib;
 import insane96mcp.insanelib.core.feature.config.*;
 import insane96mcp.insanelib.data.ObjTag;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.event.config.ModConfigEvent;
 import net.neoforged.neoforge.common.ModConfigSpec;
@@ -302,7 +302,7 @@ public class Feature {
         return dataKeyPath;
     }
 
-    public ResourceLocation createDataKey(String key) {
-        return ResourceLocation.fromNamespaceAndPath(this.module.getId().getNamespace(), this.getDataKeyPath() + "/" + key);
+    public Identifier createDataKey(String key) {
+        return Identifier.fromNamespaceAndPath(this.module.getId().getNamespace(), this.getDataKeyPath() + "/" + key);
     }
 }

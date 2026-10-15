@@ -10,7 +10,7 @@ import net.neoforged.neoforge.common.NeoForgeMod;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
-@Mixin(targets = "net.minecraft.world.entity.animal.AbstractFish$FishMoveControl")
+@Mixin(targets = "net.minecraft.world.entity.animal.fish.AbstractFish$FishMoveControl")
 public abstract class FishMoveControlMixin extends MoveControl {
 	public FishMoveControlMixin(Mob pMob) {
 		super(pMob);

@@ -10,7 +10,7 @@ import net.neoforged.neoforge.common.NeoForgeMod;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
-@Mixin(targets = "net.minecraft.world.entity.monster.Drowned$DrownedMoveControl")
+@Mixin(targets = "net.minecraft.world.entity.monster.zombie.Drowned$DrownedMoveControl")
 public abstract class DrownedMoveControlMixin extends MoveControl {
 	public DrownedMoveControlMixin(Mob pMob) {
 		super(pMob);

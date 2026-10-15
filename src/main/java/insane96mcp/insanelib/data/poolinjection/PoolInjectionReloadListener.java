@@ -4,18 +4,15 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.serialization.JsonOps;
 import insane96mcp.insanelib.InsaneLib;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.RegistryOps;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
-import net.minecraft.server.packs.resources.SimplePreparableReloadListener;
 import net.minecraft.util.GsonHelper;
-import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.level.storage.loot.LootPool;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.entries.LootPoolEntries;
 import net.minecraft.world.level.storage.loot.entries.LootPoolEntryContainer;
 import net.neoforged.neoforge.event.LootTableLoadEvent;
-import org.jetbrains.annotations.NotNull;
 
 import java.io.InputStreamReader;
 import java.util.ArrayList;
@@ -36,24 +33,23 @@ import java.util.List;
  *   }
  * }
  * }</pre>
+ * Injections are loaded by {@link insane96mcp.insanelib.mixin.ReloadableServerRegistriesMixin} right before loot tables
+ * are loaded, since loot tables are loaded before the reload listeners.
  * On {@link LootTableLoadEvent}, the target pool is re-encoded to JSON, the entry is appended to its
  * {@code "entries"} array, and the pool is decoded again and swapped back in via
  * {@link LootTable#removePool(String)}/{@link LootTable#addPool(LootPool)}. This makes the injected entry
  * compete for selection using the same weighted roll as the pool's original entries.
  */
-public class PoolInjectionReloadListener extends SimplePreparableReloadListener<List<PoolInjection>> {
-    public static final PoolInjectionReloadListener INSTANCE = new PoolInjectionReloadListener();
-
+public class PoolInjectionReloadListener {
     public static List<PoolInjection> INJECTIONS = new ArrayList<>();
 
-    @Override
-    protected @NotNull List<PoolInjection> prepare(@NotNull ResourceManager resourceManager, @NotNull ProfilerFiller profiler) {
+    public static void load(ResourceManager resourceManager) {
         List<PoolInjection> injections = new ArrayList<>();
         resourceManager.listResources("loot_pool_injections", path -> path.getPath().endsWith(".json"))
                 .forEach((location, resource) -> {
                     try (InputStreamReader reader = new InputStreamReader(resource.open())) {
                         JsonObject json = GsonHelper.parse(reader);
-                        ResourceLocation lootTable = ResourceLocation.parse(GsonHelper.getAsString(json, "loot_table"));
+                        Identifier lootTable = Identifier.parse(GsonHelper.getAsString(json, "loot_table"));
                         String pool = GsonHelper.getAsString(json, "pool");
                         JsonObject entry = GsonHelper.getAsJsonObject(json, "entry");
                         injections.add(new PoolInjection(lootTable, pool, entry));
@@ -61,11 +57,6 @@ public class PoolInjectionReloadListener extends SimplePreparableReloadListener<
                         InsaneLib.LOGGER.error("Failed to load loot pool injection {}: {}", location, e.getMessage());
                     }
                 });
-        return injections;
-    }
-
-    @Override
-    protected void apply(@NotNull List<PoolInjection> injections, @NotNull ResourceManager resourceManager, @NotNull ProfilerFiller profiler) {
         INJECTIONS = injections;
         InsaneLib.LOGGER.info("Loaded {} loot pool injections", INJECTIONS.size());
     }

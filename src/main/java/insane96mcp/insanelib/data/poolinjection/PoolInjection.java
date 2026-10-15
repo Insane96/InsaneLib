@@ -1,7 +1,7 @@
 package insane96mcp.insanelib.data.poolinjection;
 
 import com.google.gson.JsonObject;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 /**
  * A request to inject a loot pool entry into an existing, named pool of a target loot table.
@@ -13,5 +13,5 @@ import net.minecraft.resources.ResourceLocation;
  * available from {@link net.neoforged.neoforge.event.LootTableLoadEvent#getRegistries()}, since registry
  * access isn't available yet when the injection JSON files are first read.
  */
-public record PoolInjection(ResourceLocation lootTable, String pool, JsonObject entry) {
+public record PoolInjection(Identifier lootTable, String pool, JsonObject entry) {
 }

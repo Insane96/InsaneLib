@@ -25,7 +25,7 @@ jobs:                                     #The place where you actually tell the
         uses: actions/setup-java@v5
         with:
           distribution: "temurin"
-          java-version: 21
+          java-version: 25
 
       - name: Make Gradle Wrapper Executable
         if: ${{ runner.os != 'Windows' }}

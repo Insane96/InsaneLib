@@ -5,7 +5,7 @@ import com.google.gson.*;
 import com.google.gson.annotations.JsonAdapter;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -71,12 +71,12 @@ public class SerializableMobEffectInstance {
 		public SerializableMobEffectInstance deserialize(JsonElement json, java.lang.reflect.Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
 			JsonObject jObject = json.getAsJsonObject();
 			String sId = GsonHelper.getAsString(jObject, "id", "");
-			ResourceLocation id = ResourceLocation.tryParse(sId);
+			Identifier id = Identifier.tryParse(sId);
 
 			if (id == null) {
 				throw new JsonParseException("Invalid id: %s".formatted(sId));
 			}
-			var holderOpt = BuiltInRegistries.MOB_EFFECT.getHolder(id);
+			var holderOpt = BuiltInRegistries.MOB_EFFECT.get(id);
 			if (holderOpt.isEmpty()) {
 				throw new JsonParseException("%s is not a known mob_effect".formatted(id));
 			}

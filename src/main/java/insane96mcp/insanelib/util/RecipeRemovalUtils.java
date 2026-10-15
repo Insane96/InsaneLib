@@ -4,61 +4,41 @@ import insane96mcp.insanelib.InsaneLib;
 import insane96mcp.insanelib.setup.ILTags;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.context.ContextMap;
 import net.minecraft.world.item.crafting.RecipeHolder;
-import net.minecraft.world.item.crafting.RecipeManager;
-import net.neoforged.neoforge.event.TagsUpdatedEvent;
-import net.neoforged.neoforge.event.server.ServerAboutToStartEvent;
-import net.neoforged.neoforge.server.ServerLifecycleHooks;
+import net.minecraft.world.item.crafting.RecipeMap;
+import net.minecraft.world.item.crafting.display.RecipeDisplay;
+import net.minecraft.world.item.crafting.display.SlotDisplayContext;
 
 import java.util.List;
 
 public class RecipeRemovalUtils {
 	/**
-	 * Handles the very first resource load of a server (dedicated or integrated). At this point
-	 * {@link TagsUpdatedEvent} has already fired once from {@code WorldLoader.load()}, but before this event that
-	 * fired it, {@link ServerLifecycleHooks#getCurrentServer()} is still null since the {@link MinecraftServer}
-	 * hasn't been constructed yet, so {@link #removeRecipeRemovalTaggedRecipes(TagsUpdatedEvent)} silently skips it.
-	 * {@link ServerAboutToStartEvent} instead hands us the server directly, already with recipes and tags loaded.
+	 * Returns a copy of the given {@link RecipeMap} without every recipe whose result item is in the
+	 * {@link ILTags.Items#RECIPE_REMOVAL} tag, even if the recipe was added by another mod or data pack.
+	 * Called from {@link insane96mcp.insanelib.mixin.RecipeManagerMixin} right before the recipe manager finalizes
+	 * its recipes, which happens both on server start and on every {@code /reload}, after item tags have been bound.
+	 * The result is read from the recipe's {@link RecipeDisplay}s, so recipes without displays are always kept.
+	 *
+	 * @return the filtered map, or the same instance if nothing was removed
 	 */
-	public static void onServerAboutToStart(ServerAboutToStartEvent event) {
-		MinecraftServer server = event.getServer();
-		removeTaggedRecipes(server.getRecipeManager(), server.registryAccess());
-	}
+	public static RecipeMap removeTaggedRecipes(RecipeMap recipes, HolderLookup.Provider registries) {
+		if (BuiltInRegistries.ITEM.get(ILTags.Items.RECIPE_REMOVAL).isEmpty())
+			return recipes;
 
-	/**
-	 * Handles every subsequent reload (e.g. {@code /reload}) once the server is already running.
-	 * Runs on {@link TagsUpdatedEvent} once the resource reload (recipes included) has fully completed, only for the
-	 * cause that means the server's own data actually changed (not the client just receiving a tag packet).
-	 */
-	public static void removeRecipeRemovalTaggedRecipes(TagsUpdatedEvent event) {
-		if (event.getUpdateCause() != TagsUpdatedEvent.UpdateCause.SERVER_DATA_LOAD)
-			return;
-
-		MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
-		if (server == null)
-			return;
-
-		removeTaggedRecipes(server.getRecipeManager(), event.getRegistryAccess());
-	}
-
-	/**
-	 * Removes every recipe whose result item is in the {@link ILTags.Items#RECIPE_REMOVAL} tag from the given
-	 * {@link RecipeManager}, even if the recipe was added by another mod or data pack.
-	 */
-	private static void removeTaggedRecipes(RecipeManager recipeManager, HolderLookup.Provider registries) {
-		if (BuiltInRegistries.ITEM.getTag(ILTags.Items.RECIPE_REMOVAL).isEmpty())
-			return;
-
-		List<RecipeHolder<?>> allRecipes = List.copyOf(recipeManager.getRecipes());
+		ContextMap context = new ContextMap.Builder()
+				.withParameter(SlotDisplayContext.REGISTRIES, registries)
+				.create(SlotDisplayContext.CONTEXT);
+		List<RecipeHolder<?>> allRecipes = List.copyOf(recipes.values());
 		List<RecipeHolder<?>> keptRecipes = allRecipes.stream()
-				.filter(holder -> !holder.value().getResultItem(registries).is(ILTags.Items.RECIPE_REMOVAL))
+				.filter(holder -> holder.value().display().stream()
+						.noneMatch(display -> display.result().resolveForFirstStack(context).is(ILTags.Items.RECIPE_REMOVAL)))
 				.toList();
 
 		if (keptRecipes.size() == allRecipes.size())
-			return;
+			return recipes;
 
-		recipeManager.replaceRecipes(keptRecipes);
 		InsaneLib.LOGGER.info("RecipeRemoval: removed {} recipe(s) producing tagged items", allRecipes.size() - keptRecipes.size());
+		return RecipeMap.create(keptRecipes);
 	}
 }

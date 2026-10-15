@@ -3,7 +3,6 @@ package insane96mcp.insanelib.data.function;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import insane96mcp.insanelib.setup.ILLootFunctions;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponents;
@@ -17,7 +16,6 @@ import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.functions.LootItemConditionalFunction;
-import net.minecraft.world.level.storage.loot.functions.LootItemFunctionType;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 
 import java.util.List;
@@ -63,7 +61,7 @@ public class EnchantWithTreasureFunction extends LootItemConditionalFunction {
         RandomSource random = context.getRandom();
         HolderLookup.RegistryLookup<Enchantment> lookup = context.getLevel().registryAccess().lookupOrThrow(Registries.ENCHANTMENT);
         List<Holder.Reference<Enchantment>> list = lookup.listElements()
-                .filter(holder -> stack.supportsEnchantment(holder)
+                .filter(holder -> (stack.is(Items.BOOK) || stack.supportsEnchantment(holder))
                         && holder.is(EnchantmentTags.TREASURE)
                         && (!holder.is(EnchantmentTags.CURSE) || !this.ignoreCurses)
                         && (holder.is(EnchantmentTags.CURSE) || !this.ignoreTreasures))
@@ -94,7 +92,7 @@ public class EnchantWithTreasureFunction extends LootItemConditionalFunction {
     }
 
     @Override
-    public LootItemFunctionType<EnchantWithTreasureFunction> getType() {
-        return ILLootFunctions.ENCHANT_WITH_TREASURE.get();
+    public MapCodec<EnchantWithTreasureFunction> codec() {
+        return CODEC;
     }
 }

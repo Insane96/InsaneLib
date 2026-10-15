@@ -4,14 +4,14 @@ import insane96mcp.insanelib.core.ModNBTData;
 import insane96mcp.insanelib.core.feature.Feature;
 import insane96mcp.insanelib.core.feature.LoadFeature;
 import insane96mcp.insanelib.core.feature.Module;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.LivingEntity;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 
 @LoadFeature(canBeDisabled = false)
 public class InCombat extends Feature {
-	public static ResourceLocation LAST_TIMESTAMP;
+	public static Identifier LAST_TIMESTAMP;
 
 	@Override
 	public void init(Module module, boolean enabledByDefault, boolean canBeDisabled) {

@@ -1,7 +1,7 @@
 package insane96mcp.insanelib.util;
 
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.ai.attributes.RangedAttribute;
 
 import javax.annotation.Nullable;
@@ -11,14 +11,14 @@ import javax.annotation.Nullable;
  */
 public class ILRangedAttribute extends RangedAttribute {
 	@Nullable
-	private final ResourceLocation baseId;
+	private final Identifier baseId;
 	private String descriptionId;
 
 	public ILRangedAttribute(double defaultValue, double min, double max) {
 		this(defaultValue, min, max, null);
 	}
 
-	public ILRangedAttribute(double defaultValue, double min, double max, ResourceLocation baseId) {
+	public ILRangedAttribute(double defaultValue, double min, double max, Identifier baseId) {
 		super("", defaultValue, min, max);
 		this.baseId = baseId;
 	}
@@ -37,7 +37,7 @@ public class ILRangedAttribute extends RangedAttribute {
 
 	@Override
 	@Nullable
-	public ResourceLocation getBaseId() {
+	public Identifier getBaseId() {
 		return this.baseId;
 	}
 }

@@ -56,7 +56,7 @@ public class CreativeTabsUtils {
 	 * Must be registered at {@code EventPriority.LOWEST} so it also catches items added by other mods.
 	 */
 	public static void removeCreativeRemovalTaggedItems(BuildCreativeModeTabContentsEvent event) {
-		BuiltInRegistries.ITEM.getTag(ILTags.Items.CREATIVE_REMOVAL).ifPresent(holders -> {
+		BuiltInRegistries.ITEM.get(ILTags.Items.CREATIVE_REMOVAL).ifPresent(holders -> {
 			for (Holder<Item> holder : holders) {
 				Item item = holder.value();
 				// Match by item type only (not exact ItemStack/components): some items (e.g. Storage Drawers'

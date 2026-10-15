@@ -3,7 +3,6 @@ package insane96mcp.insanelib.data.function;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import insane96mcp.insanelib.setup.ILLootFunctions;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponents;
@@ -17,7 +16,6 @@ import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.functions.LootItemConditionalFunction;
-import net.minecraft.world.level.storage.loot.functions.LootItemFunctionType;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.minecraft.world.level.storage.loot.providers.number.NumberProvider;
 import net.minecraft.world.level.storage.loot.providers.number.NumberProviders;
@@ -73,7 +71,7 @@ public class EnchantRandomlyWeightlessFunction extends LootItemConditionalFuncti
         int amount = this.count.getInt(context);
         HolderLookup.RegistryLookup<Enchantment> lookup = context.getLevel().registryAccess().lookupOrThrow(Registries.ENCHANTMENT);
         List<Holder.Reference<Enchantment>> eligibleEnchantments = new ArrayList<>(lookup.listElements()
-                .filter(holder -> stack.supportsEnchantment(holder)
+                .filter(holder -> (stack.is(Items.BOOK) || stack.supportsEnchantment(holder))
                         && (!holder.is(EnchantmentTags.TREASURE) || this.treasure))
                 .toList());
 
@@ -119,7 +117,7 @@ public class EnchantRandomlyWeightlessFunction extends LootItemConditionalFuncti
     }
 
     @Override
-    public LootItemFunctionType<EnchantRandomlyWeightlessFunction> getType() {
-        return ILLootFunctions.ENCHANT_RANDOMLY_WEIGHTLESS.get();
+    public MapCodec<EnchantRandomlyWeightlessFunction> codec() {
+        return CODEC;
     }
 }

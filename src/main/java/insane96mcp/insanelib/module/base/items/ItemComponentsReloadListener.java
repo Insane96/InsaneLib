@@ -2,10 +2,10 @@ package insane96mcp.insanelib.module.base.items;
 
 import com.google.gson.JsonObject;
 import insane96mcp.insanelib.InsaneLib;
-import net.minecraft.core.RegistryAccess;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponentPatch;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimplePreparableReloadListener;
 import net.minecraft.util.GsonHelper;
@@ -30,16 +30,21 @@ public class ItemComponentsReloadListener extends SimplePreparableReloadListener
      * Kept separate because {@link DataComponentMap} isn't itself network-serializable, while {@link DataComponentPatch}
      * is; this is what gets sent to clients so their {@link #PATCHED_COMPONENTS} matches the server's.
      */
-    public static final Map<ResourceLocation, DataComponentPatch> SYNCED_PATCHES = new HashMap<>();
+    public static final Map<Identifier, DataComponentPatch> SYNCED_PATCHES = new HashMap<>();
 
     /**
      * Register a provider to supply programmatic component patches.
      * Providers are called on each reload before data pack definitions are applied,
      * so data pack entries always take priority over programmatic ones.
-     * The consumer receives the current {@link RegistryAccess} and a mutable map
+     * The consumer receives the current registries ({@link HolderLookup.Provider}) and a mutable map
      * to populate with {@link DataComponentPatch} entries per item.
      */
-    public static final List<BiConsumer<RegistryAccess, Map<Item, DataComponentPatch>>> PROGRAMMATIC_PROVIDERS = new ArrayList<>();
+    public static final List<BiConsumer<HolderLookup.Provider, Map<Item, DataComponentPatch>>> PROGRAMMATIC_PROVIDERS = new ArrayList<>();
+
+    /**
+     * The registries of the last data reload, used to decode the components once they're bound to the items.
+     */
+    public static HolderLookup.Provider registries;
 
     @Override
     protected @NotNull List<ItemComponent> prepare(@NotNull ResourceManager resourceManager, @NotNull ProfilerFiller profiler) {
@@ -61,6 +66,7 @@ public class ItemComponentsReloadListener extends SimplePreparableReloadListener
         PATCHED_COMPONENTS.clear();
         SYNCED_PATCHES.clear();
         DEFINITIONS = definitions;
+        registries = this.getRegistryLookup();
         InsaneLib.LOGGER.info("Loaded {} item component definitions", DEFINITIONS.size());
     }
 }

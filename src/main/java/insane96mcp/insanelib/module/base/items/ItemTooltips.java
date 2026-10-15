@@ -9,8 +9,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
@@ -20,7 +18,6 @@ public class ItemTooltips extends Feature {
 	public static final TagKey<Item> HAS_TOOLTIP = tag("has_tooltip");
 	public static final TagKey<Item> HAS_HIDDEN_TOOLTIP = tag("has_hidden_tooltip");
 
-	@OnlyIn(Dist.CLIENT)
 	@SubscribeEvent(priority = EventPriority.LOWEST)
 	public void onItemTooltips(ItemTooltipEvent event) {
 		if (!this.isEnabled())

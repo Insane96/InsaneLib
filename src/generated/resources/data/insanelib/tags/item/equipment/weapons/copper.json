@@ -1,8 +1,5 @@
 {
   "values": [
-    {
-      "id": "minecraft:copper_sword",
-      "required": false
-    }
+    "minecraft:copper_sword"
   ]
 }

@@ -6,7 +6,8 @@ import net.neoforged.bus.api.Event;
 
 /**
  * This event is triggered when the game calculates the movement speed multiplier for a player using an item.
- * The default movement speed modifier can be adjusted for specific items or player conditions by modifying the event's speed modifier.
+ * The starting value is the one from the item's {@code minecraft:use_effects} component ({@link #VANILLA_SPEED_MODIFIER} if absent).
+ * The movement speed modifier can be adjusted for specific items or player conditions by modifying the event's speed modifier.
  *
  * This event is fired on the NeoForge event bus and is client-side only.
  *
@@ -15,13 +16,14 @@ import net.neoforged.bus.api.Event;
 public class PlayerUseItemMovSpeedEvent extends Event {
     public static final float VANILLA_SPEED_MODIFIER = 0.2f;
     private final LocalPlayer player;
-    private float speedModifier = VANILLA_SPEED_MODIFIER;
+    private float speedModifier;
     private final ItemStack useItem;
 
-    public PlayerUseItemMovSpeedEvent(LocalPlayer player, ItemStack useItem) {
+    public PlayerUseItemMovSpeedEvent(LocalPlayer player, ItemStack useItem, float speedModifier) {
         super();
         this.player = player;
         this.useItem = useItem;
+        this.speedModifier = speedModifier;
     }
 
     public LocalPlayer getPlayer() {

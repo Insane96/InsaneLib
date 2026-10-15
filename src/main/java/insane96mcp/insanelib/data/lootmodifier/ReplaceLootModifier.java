@@ -5,14 +5,15 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import insane96mcp.insanelib.util.MathHelper;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import net.minecraft.advancements.critereon.EntityPredicate;
-import net.minecraft.advancements.critereon.EntityTypePredicate;
+import net.minecraft.advancements.criterion.EntityPredicate;
+import net.minecraft.advancements.criterion.EntityTypePredicate;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemInstance;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.Enchantments;
@@ -52,8 +53,9 @@ import java.util.List;
  */
 public class ReplaceLootModifier extends LootModifier {
     public static final MapCodec<ReplaceLootModifier> CODEC = RecordCodecBuilder.mapCodec(inst ->
-            codecStart(inst).and(
                     inst.group(
+                            LOOT_CONDITIONS_CODEC.fieldOf("conditions").forGetter(m -> m.conditions),
+                            Codec.INT.optionalFieldOf("priority", IGlobalLootModifier.DEFAULT_PRIORITY).forGetter(m -> m.priority),
                             BuiltInRegistries.ITEM.byNameCodec().fieldOf("item_to_replace").forGetter(m -> m.itemToReplace),
                             BuiltInRegistries.ITEM.byNameCodec().fieldOf("new_item").forGetter(m -> m.newItem),
                             Codec.INT.optionalFieldOf("amount_to_replace", -1).forGetter(m -> m.amountToReplace),
@@ -61,7 +63,7 @@ public class ReplaceLootModifier extends LootModifier {
                             Codec.list(Codec.FLOAT).optionalFieldOf("multipliers", List.of(1f)).forGetter(m -> m.multipliers),
                             Codec.BOOL.optionalFieldOf("keep_durability", false).forGetter(m -> m.keepDurability),
                             Codec.BOOL.optionalFieldOf("chests_only", false).forGetter(m -> m.chestsOnly)
-                    )).apply(inst, ReplaceLootModifier::new)
+                    ).apply(inst, ReplaceLootModifier::new)
     );
 
     /** Item to replace. */
@@ -89,11 +91,11 @@ public class ReplaceLootModifier extends LootModifier {
     private boolean chestsOnly;
 
     public ReplaceLootModifier(LootItemCondition[] conditionsIn, Item itemToReplace, Item newItem) {
-        this(conditionsIn, itemToReplace, newItem, -1, List.of(1f), List.of(1f), false, false);
+        this(conditionsIn, IGlobalLootModifier.DEFAULT_PRIORITY, itemToReplace, newItem, -1, List.of(1f), List.of(1f), false, false);
     }
 
-    public ReplaceLootModifier(LootItemCondition[] conditionsIn, Item itemToReplace, Item newItem, int amountToReplace, List<Float> chances, List<Float> multipliers, boolean keepDurability, boolean chestsOnly) {
-        super(conditionsIn);
+    public ReplaceLootModifier(LootItemCondition[] conditionsIn, int priority, Item itemToReplace, Item newItem, int amountToReplace, List<Float> chances, List<Float> multipliers, boolean keepDurability, boolean chestsOnly) {
+        super(conditionsIn, priority);
         this.itemToReplace = itemToReplace;
         this.newItem = newItem;
         this.amountToReplace = amountToReplace;
@@ -116,7 +118,7 @@ public class ReplaceLootModifier extends LootModifier {
         List<ItemStack> toAdd = new ArrayList<>();
         generatedLoot.stream().filter(stack -> stack.getItem().equals(itemToReplace))
                 .forEach(stack -> {
-                    ItemStack toolStack = context.getParamOrNull(LootContextParams.TOOL);
+                    ItemInstance toolStack = context.getOptionalParameter(LootContextParams.TOOL);
                     int fortuneLvl = toolStack != null ? toolStack.getEnchantmentLevel(fortune) : 0;
                     float chance = this.chances.get(Math.min(fortuneLvl, this.chances.size() - 1));
                     if (context.getRandom().nextDouble() >= chance)
@@ -180,7 +182,7 @@ public class ReplaceLootModifier extends LootModifier {
 
         public Builder(EntityType<?> entityType, Item itemToReplace, Item newItem) {
             replaceLootModifier = new ReplaceLootModifier(
-                    new LootItemCondition[]{LootItemEntityPropertyCondition.hasProperties(LootContext.EntityTarget.THIS, new EntityPredicate.Builder().entityType(EntityTypePredicate.of(entityType)).build()).build()},
+                    new LootItemCondition[]{LootItemEntityPropertyCondition.hasProperties(LootContext.EntityTarget.THIS, EntityPredicate.Builder.entity().entityType(EntityTypePredicate.of(BuiltInRegistries.ENTITY_TYPE, entityType)).build()).build()},
                     itemToReplace, newItem);
         }
 

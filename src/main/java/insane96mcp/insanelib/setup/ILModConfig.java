@@ -1,7 +1,7 @@
 package insane96mcp.insanelib.setup;
 
 import insane96mcp.insanelib.core.feature.Module;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.neoforge.common.ModConfigSpec;
@@ -39,7 +39,7 @@ public class ILModConfig {
      * Single-module constructor. Automatically creates a module with the given id and name —
      * no separate Modules class needed.
      */
-    public ILModConfig(ResourceLocation moduleId, String moduleName, ModConfig.Type type,
+    public ILModConfig(Identifier moduleId, String moduleName, ModConfig.Type type,
                        IEventBus modEventBus, ClassLoader classLoader) {
         this.builder = new ModConfigSpec.Builder();
         this.spec = this.builder.configure(b -> {

@@ -54,15 +54,15 @@ public class ILEventFactory {
         return event.getAmount();
     }
 
-    public static boolean onAddEatEffect(LivingEntity livingEntity, FoodProperties foodProperties)
+    public static boolean onAddEatEffect(LivingEntity livingEntity, FoodProperties foodProperties, ItemStack stack)
     {
-        AddEatEffectEvent event = new AddEatEffectEvent(livingEntity, foodProperties);
+        AddEatEffectEvent event = new AddEatEffectEvent(livingEntity, foodProperties, stack);
         NeoForge.EVENT_BUS.post(event);
         return event.isCanceled();
     }
 
-    public static float onUseItemMovementSpeedModifier(LocalPlayer player, ItemStack useItem) {
-        PlayerUseItemMovSpeedEvent event = new PlayerUseItemMovSpeedEvent(player, useItem);
+    public static float onUseItemMovementSpeedModifier(LocalPlayer player, ItemStack useItem, float speedModifier) {
+        PlayerUseItemMovSpeedEvent event = new PlayerUseItemMovSpeedEvent(player, useItem, speedModifier);
         NeoForge.EVENT_BUS.post(event);
         return event.getSpeedModifier();
     }

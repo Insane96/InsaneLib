@@ -1,30 +1,48 @@
-# eclipse
-bin
-*.launch
-.settings
-.metadata
-.classpath
-.project
+### Gradle ###
+.gradle
+build/
+!gradle/wrapper/gradle-wrapper.jar
+!**/src/**/build/
 
-# idea
-out
-*.ipr
+### IntelliJ IDEA ###
+.idea/
 *.iws
 *.iml
-.idea
+*.ipr
+out/
+!**/src/**/out/
+.run/
 
-# gradle
-build
-.gradle
-
-# other
+### Eclipse ###
+.apt_generated
+.classpath
+.eclipse/
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+bin/
+!**/src/**/bin/
+*.launch
+.metadata
 eclipse
-run
-run-server
-runs
-run-data
 
-repo
+### VS Code ###
+.vscode/
 
-# claude code
+### Mac OS ###
+.DS_Store
+
+### Minecraft Modding ###
+run/
+!**/src/**/run/
+run-server/
+runs/
+run-data/
+**/src/generated/**/.cache/
+repo/
+!**/src/**/repo/
+
+### Claude Code ###
 .claude

@@ -26,12 +26,12 @@ public class PlayerMixin {
 
     /**
      * Tracks {@code this} as the in-progress attacker for the duration of each {@code LivingEntity#knockback}
-     * call triggered by {@code attack(Entity)}, covering both the direct hit and every hit in the sweep attack
+     * call triggered by an attack ({@code causeExtraKnockback} and {@code doSweepAttack}), covering both the direct hit and every hit in the sweep attack
      * loop. This lets listeners of {@code LivingKnockBackEvent} resolve the real attacker via
      * {@link CurrentAttacker#resolve(LivingEntity)} even for sweep hits, where vanilla calls knockback before
      * hurt (so getLastHurtByMob() isn't updated yet when the event fires).
      */
-    @WrapOperation(method = "attack", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;knockback(DDD)V"))
+    @WrapOperation(method = {"causeExtraKnockback", "doSweepAttack(Lnet/minecraft/world/entity/Entity;FLnet/minecraft/world/damagesource/DamageSource;FLnet/minecraft/world/phys/AABB;)V"}, at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;knockback(DDD)V"))
     private void insanelib$trackAttackerForKnockback(LivingEntity target, double strength, double x, double z, Operation<Void> original) {
         LivingEntity previous = CurrentAttacker.get();
         CurrentAttacker.set((Player) (Object) this);

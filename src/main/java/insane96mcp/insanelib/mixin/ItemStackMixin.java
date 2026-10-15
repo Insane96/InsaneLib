@@ -29,7 +29,7 @@ public abstract class ItemStackMixin {
     @Shadow public abstract Item getItem();
     @Shadow public abstract boolean isEmpty();
 
-    @ModifyExpressionValue(method = "lambda$static$3", at = @At(value = "CONSTANT", args = "intValue=99"))
+    @ModifyExpressionValue(method = "lambda$static$1", at = @At(value = "CONSTANT", args = "intValue=99"))
     private static int insanelib$maxCountRange(int original) {
         return ItemComponentsFeature.stackLimit;
     }
@@ -78,6 +78,6 @@ public abstract class ItemStackMixin {
 
     @ModifyVariable(at = @At(value = "STORE", ordinal = 0), method = "hurtAndBreak(ILnet/minecraft/server/level/ServerLevel;Lnet/minecraft/world/entity/LivingEntity;Ljava/util/function/Consumer;)V", ordinal = 0, argsOnly = true)
     public int onHurtAmount(int amount, int pAmount, ServerLevel level, @Nullable LivingEntity livingEntity, Consumer<Item> consumer) {
-        return ILEventFactory.getHurtAmount((ItemStack) (Object) this, amount, level.random, livingEntity);
+        return ILEventFactory.getHurtAmount((ItemStack) (Object) this, amount, level.getRandom(), livingEntity);
     }
 }

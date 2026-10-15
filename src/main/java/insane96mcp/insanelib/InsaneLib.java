@@ -17,10 +17,8 @@ import insane96mcp.insanelib.network.NetworkHandler;
 import insane96mcp.insanelib.setup.*;
 import insane96mcp.insanelib.util.CreativeTabsUtils;
 import insane96mcp.insanelib.util.IntegratedPack;
-import insane96mcp.insanelib.util.RecipeRemovalUtils;
-import net.minecraft.Util;
-import net.minecraft.data.PackOutput;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
+import net.minecraft.util.Util;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.IEventBus;
@@ -29,10 +27,10 @@ import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
-import net.neoforged.fml.loading.FMLLoader;
+import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
-import net.neoforged.neoforge.event.AddReloadListenerEvent;
+import net.neoforged.neoforge.event.AddServerReloadListenersEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import org.slf4j.Logger;
 
@@ -73,7 +71,7 @@ public class InsaneLib {
         eventBus.addListener(MobDetectionRange::attribute);
         eventBus.addListener(InsaneLib::gatherData);
 
-        if (FMLLoader.getDist().isClient()) {
+        if (FMLEnvironment.getDist().isClient()) {
             eventBus.addListener(EventPriority.LOWEST, CreativeTabsUtils::removeCreativeRemovalTaggedItems);
             NeoForge.EVENT_BUS.addListener(CreativeTabsUtils::onTagsUpdated);
         }
@@ -82,18 +80,15 @@ public class InsaneLib {
         NeoForge.EVENT_BUS.addListener(this::onRegisterCommands);
         NeoForge.EVENT_BUS.addListener(ILCriteriaTriggers::onBlockBreak);
         NeoForge.EVENT_BUS.addListener(PoolInjectionReloadListener::onLootTableLoad);
-        NeoForge.EVENT_BUS.addListener(RecipeRemovalUtils::removeRecipeRemovalTaggedRecipes);
-        NeoForge.EVENT_BUS.addListener(RecipeRemovalUtils::onServerAboutToStart);
     }
 
     private void onRegisterCommands(RegisterCommandsEvent event) {
         ILCommand.register(event.getDispatcher(), event.getBuildContext());
     }
 
-    private void onAddReloadListeners(AddReloadListenerEvent event) {
-        event.addListener(JsonFeatureDataReloadListener.INSTANCE);
-        event.addListener(ItemComponentsReloadListener.INSTANCE);
-        event.addListener(PoolInjectionReloadListener.INSTANCE);
+    private void onAddReloadListeners(AddServerReloadListenersEvent event) {
+        event.addListener(id("json_feature_data"), JsonFeatureDataReloadListener.INSTANCE);
+        event.addListener(id("item_components"), ItemComponentsReloadListener.INSTANCE);
     }
 
     @SubscribeEvent
@@ -102,22 +97,19 @@ public class InsaneLib {
                 fmt -> fmt.setDecimalFormatSymbols(DecimalFormatSymbols.getInstance(Locale.ROOT)));
     }
 
-    public static void gatherData(GatherDataEvent event) {
-        PackOutput output = event.getGenerator().getPackOutput();
-        ILBlockTagProvider blockTagsProvider = new ILBlockTagProvider(output, event.getLookupProvider(), event.getExistingFileHelper());
-        event.getGenerator().addProvider(event.includeServer(), blockTagsProvider);
-        event.getGenerator().addProvider(event.includeServer(),
-                new ILItemTagProvider(output, event.getLookupProvider(), blockTagsProvider.contentsGetter(), event.getExistingFileHelper()));
+    public static void gatherData(GatherDataEvent.Client event) {
+        event.createProvider(ILBlockTagProvider::new);
+        event.createProvider(ILItemTagProvider::new);
     }
 
     /**
-     * Creates a {@link ResourceLocation} using the provided namespace and path.
+     * Creates a {@link Identifier} using the provided namespace and path.
      *
      * @param path The specific path for the resource within the mod's namespace.
-     * @return A {@link ResourceLocation} with the mod's namespace and the given path.
+     * @return A {@link Identifier} with the mod's namespace and the given path.
      */
-    public static ResourceLocation id(String path) {
-        return ResourceLocation.fromNamespaceAndPath(MOD_ID, path);
+    public static Identifier id(String path) {
+        return Identifier.fromNamespaceAndPath(MOD_ID, path);
     }
 
     /**
