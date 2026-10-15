@@ -40,7 +40,7 @@ import java.util.List;
  * {@link LootTable#removePool(String)}/{@link LootTable#addPool(LootPool)}. This makes the injected entry
  * compete for selection using the same weighted roll as the pool's original entries.
  */
-public class PoolInjectionReloadListener {
+public class PoolInjectionLoader {
     public static List<PoolInjection> INJECTIONS = new ArrayList<>();
 
     public static void load(ResourceManager resourceManager) {

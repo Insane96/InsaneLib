@@ -41,5 +41,5 @@
 * `ExplosionAccessor` now targets `ServerExplosion`
 * `ILBlockTagProvider` and `ILItemTagProvider` no longer take an `ExistingFileHelper`; data generation now uses `GatherDataEvent.Client`
 * `ModNBTData#getList` ignores the type parameter, since lists no longer have a fixed type
-* `PoolInjectionReloadListener` is no longer a reload listener: injections are loaded by `ReloadableServerRegistriesMixin` (`PoolInjectionReloadListener#load(ResourceManager)`) right before loot tables, since loot tables are loaded before reload listeners
+* `PoolInjectionReloadListener` has been renamed to `PoolInjectionLoader` and is no longer a reload listener: injections are loaded by `ReloadableServerRegistriesMixin` (`PoolInjectionLoader#load(ResourceManager)`) right before loot tables, since loot tables are loaded before reload listeners
 * Removed `LootModifierManagerMixin` (NeoForge now sorts loot modifiers by priority)

@@ -7,7 +7,7 @@ import com.mojang.logging.LogUtils;
 import insane96mcp.insanelib.command.ILCommand;
 import insane96mcp.insanelib.data.AttributeModifierOperationSerializer;
 import insane96mcp.insanelib.data.JsonFeatureDataReloadListener;
-import insane96mcp.insanelib.data.poolinjection.PoolInjectionReloadListener;
+import insane96mcp.insanelib.data.poolinjection.PoolInjectionLoader;
 import insane96mcp.insanelib.datagen.ILBlockTagProvider;
 import insane96mcp.insanelib.datagen.ILItemTagProvider;
 import insane96mcp.insanelib.module.base.MobDetectionRange;
@@ -79,7 +79,7 @@ public class InsaneLib {
         NeoForge.EVENT_BUS.addListener(this::onAddReloadListeners);
         NeoForge.EVENT_BUS.addListener(this::onRegisterCommands);
         NeoForge.EVENT_BUS.addListener(ILCriteriaTriggers::onBlockBreak);
-        NeoForge.EVENT_BUS.addListener(PoolInjectionReloadListener::onLootTableLoad);
+        NeoForge.EVENT_BUS.addListener(PoolInjectionLoader::onLootTableLoad);
     }
 
     private void onRegisterCommands(RegisterCommandsEvent event) {

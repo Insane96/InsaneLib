@@ -1,6 +1,6 @@
 package insane96mcp.insanelib.mixin;
 
-import insane96mcp.insanelib.data.poolinjection.PoolInjectionReloadListener;
+import insane96mcp.insanelib.data.poolinjection.PoolInjectionLoader;
 import net.minecraft.core.LayeredRegistryAccess;
 import net.minecraft.core.Registry;
 import net.minecraft.server.RegistryLayer;
@@ -22,6 +22,6 @@ public class ReloadableServerRegistriesMixin {
      */
     @Inject(method = "reload", at = @At("HEAD"))
     private static void insanelib$loadPoolInjections(LayeredRegistryAccess<RegistryLayer> context, List<Registry.PendingTags<?>> updatedContextTags, ResourceManager manager, Executor executor, CallbackInfoReturnable<CompletableFuture<ReloadableServerRegistries.LoadResult>> cir) {
-        PoolInjectionReloadListener.load(manager);
+        PoolInjectionLoader.load(manager);
     }
 }
