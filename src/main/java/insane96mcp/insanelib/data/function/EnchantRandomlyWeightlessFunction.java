@@ -73,7 +73,7 @@ public class EnchantRandomlyWeightlessFunction extends LootItemConditionalFuncti
         int amount = this.count.getInt(context);
         HolderLookup.RegistryLookup<Enchantment> lookup = context.getLevel().registryAccess().lookupOrThrow(Registries.ENCHANTMENT);
         List<Holder.Reference<Enchantment>> eligibleEnchantments = new ArrayList<>(lookup.listElements()
-                .filter(holder -> stack.supportsEnchantment(holder)
+                .filter(holder -> (stack.is(Items.BOOK) || stack.supportsEnchantment(holder))
                         && (!holder.is(EnchantmentTags.TREASURE) || this.treasure))
                 .toList());
 

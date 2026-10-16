@@ -27,6 +27,7 @@
 		"NearestAttackableTargetGoalMixin",
 		"PlayerMixin",
 		"ProjectileWeaponItemMixin",
+		"ReloadableServerRegistriesMixin",
 		"accessor.CreeperAccessor",
 		"accessor.ExplosionAccessor",
 		"accessor.MobEffectInstanceAccessor",

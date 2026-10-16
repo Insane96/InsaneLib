@@ -35,9 +35,13 @@ public class ItemComponentsFeature extends Feature {
     @Config(description = "Always render the item stack count at a smaller scale, even when it's 99 or below")
     public static Boolean alwaysShrinkStackCount = false;
 
+    /**
+     * Only the server computes the patches; remote clients receive them through {@link ItemComponentsSyncMessage}.
+     * Clients must not touch them here: on /reload the tags packet is received after the sync message.
+     */
     @SubscribeEvent
     public void onTagsUpdated(TagsUpdatedEvent event) {
-        if (!event.shouldUpdateStaticData())
+        if (event.getUpdateCause() != TagsUpdatedEvent.UpdateCause.SERVER_DATA_LOAD)
             return;
 
         ItemComponentsReloadListener.PATCHED_COMPONENTS.clear();
@@ -111,24 +115,6 @@ public class ItemComponentsFeature extends Feature {
                     removeSet.add(type);
                 }
 
-                // TODO: merge_components can silently resurrect a component that a same-item definition already
-                //  removed earlier in this same pass. Below, `existingValue` falls back to `item.components().get(type)`
-                //  (the vanilla/default value) whenever the component isn't already staged in `setMap` - it never checks
-                //  `removeSet`. So given two definitions targeting the same item (e.g. one matching by item id, another
-                //  matching the same item via a tag) processed in file/priority order, if the first removes a component
-                //  and the second merges into that same component type, the merge fallback pulls the vanilla default
-                //  back in and re-adds it to `setMap`, undoing the removal with no warning logged.
-                //  Concrete repro (found in ISO): `golden_carrot.json` removed `minecraft:food` via `remove_components`,
-                //  but `raw_foods.json` targeted `#insanesurvivaloverhaul:raw_foods` (which golden_carrot was tagged
-                //  into) with a `merge_components` on `minecraft:food`. Since raw_foods.json sorted after
-                //  golden_carrot.json (same priority, later file), its merge resurrected `minecraft:food` on golden
-                //  carrot with the raw-food poison effect merged in, making it edible again. Worked around on the ISO
-                //  side by removing golden_carrot from that tag, but the underlying gap here remains: nothing stops the
-                //  next definition/tag combo from hitting the same silent resurrection.
-                //  Fix direction: check `removeSet.contains(type)` before falling back to `item.components().get(type)`
-                //  and decide the semantics - either treat it as "no existing value" (merge JSON becomes the fresh
-                //  value, removal is no longer relevant) or treat the prior removal as authoritative (skip the merge
-                //  and warn) - then remove `removeSet.remove(type)` above if the removal should win.
                 // Merge operations: deep-merge JSON into existing value (arrays concatenated, objects recursively merged)
                 for (Map.Entry<ResourceLocation, JsonElement> entry : definition.mergeComponentsRaw().entrySet()) {
                     DataComponentType<?> type = BuiltInRegistries.DATA_COMPONENT_TYPE.get(entry.getKey());
@@ -140,18 +126,17 @@ public class ItemComponentsFeature extends Feature {
                         InsaneLib.LOGGER.warn("ItemComponents: component type '{}' in merge_components is transient (no codec), skipping", entry.getKey());
                         continue;
                     }
-                    removeSet.remove(type);
-                    Object existingValue = setMap.containsKey(type) ? setMap.get(type) : item.components().get(type);
+                    // A component removed by a previous definition counts as absent: the merge json alone becomes the new value
+                    boolean removed = removeSet.contains(type);
+                    Object existingValue = setMap.containsKey(type) ? setMap.get(type) : removed ? null : item.components().get(type);
                     try {
-                        if (existingValue == null) {
-                            setMap.put(type, decodeComponent(type, entry.getValue(), ops));
-                        } else {
-                            JsonElement existingJson = encodeComponent(type, existingValue, ops);
-                            JsonElement merged = deepMerge(existingJson, entry.getValue());
-                            setMap.put(type, decodeComponent(type, merged, ops));
-                        }
+                        Object value = existingValue == null
+                                ? decodeComponent(type, entry.getValue(), ops)
+                                : decodeComponent(type, deepMerge(encodeComponent(type, existingValue, ops), entry.getValue()), ops);
+                        removeSet.remove(type);
+                        setMap.put(type, value);
                     } catch (Exception e) {
-                        InsaneLib.LOGGER.error("ItemComponents: failed to merge component '{}': {}", entry.getKey(), e.getMessage());
+                        InsaneLib.LOGGER.error("ItemComponents: failed to merge component '{}' for item {}{}: {}", entry.getKey(), BuiltInRegistries.ITEM.getKey(item), removed ? " (component kept removed)" : "", e.getMessage());
                     }
                 }
             }
@@ -176,9 +161,7 @@ public class ItemComponentsFeature extends Feature {
 
     @SubscribeEvent
     public void onDatapackSync(OnDatapackSyncEvent event) {
-        if (ItemComponentsReloadListener.SYNCED_PATCHES.isEmpty())
-            return;
-
+        // Sent even when empty, so clients drop the patches of a previous server/reload
         if (event.getPlayer() == null) {
             for (ServerPlayer player : event.getPlayerList().getPlayers())
                 ItemComponentsSyncMessage.sync(ItemComponentsReloadListener.SYNCED_PATCHES, player);

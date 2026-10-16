@@ -1,3 +1,14 @@
+# 2.4.33.2
+* Fixed loot pool injections (`loot_pool_injections`) not being applied when the world is loaded or on dedicated servers (they only worked after a `/reload`, using the injections of the previous load)
+* Fixed `merge_components` in `item_components` re-adding a component removed by a previous definition for the same item (e.g. one targeting the item and one targeting a tag containing it). A removed component now counts as absent: the merge json alone becomes the new value, and if it's not a valid component the removal is kept and an error is logged
+* Fixed a `merge_components` that fails to decode also undoing a previous removal of that component
+* Fixed `item_components` patches being lost by clients on dedicated servers / LAN after a `/reload`
+* Fixed `insanelib:enchant_with_treasure` and `insanelib:enchant_randomly_weightless` loot functions not enchanting books
+
+## Technical
+* `PoolInjectionReloadListener` is now `PoolInjectionLoader` and is no longer a reload listener: injections are loaded right before loot tables via `ReloadableServerRegistriesMixin`
+* `item_components` patches are now computed only on the server (`TagsUpdatedEvent` with `SERVER_DATA_LOAD`); `ItemComponentsSyncMessage` is now always sent, even when there are no patches
+
 # 2.4.33.1
 * Client modules are no longer loaded on server side
 

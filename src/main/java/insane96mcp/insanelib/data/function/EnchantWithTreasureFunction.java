@@ -63,7 +63,7 @@ public class EnchantWithTreasureFunction extends LootItemConditionalFunction {
         RandomSource random = context.getRandom();
         HolderLookup.RegistryLookup<Enchantment> lookup = context.getLevel().registryAccess().lookupOrThrow(Registries.ENCHANTMENT);
         List<Holder.Reference<Enchantment>> list = lookup.listElements()
-                .filter(holder -> stack.supportsEnchantment(holder)
+                .filter(holder -> (stack.is(Items.BOOK) || stack.supportsEnchantment(holder))
                         && holder.is(EnchantmentTags.TREASURE)
                         && (!holder.is(EnchantmentTags.CURSE) || !this.ignoreCurses)
                         && (holder.is(EnchantmentTags.CURSE) || !this.ignoreTreasures))
