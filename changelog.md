@@ -1,3 +1,11 @@
+# 2.4.34.0
+## Technical
+* `ILModConfig` can now be used with `ModConfig.Type.SERVER` configs
+  * Fixed `Cannot get config value before config is loaded` crash when a SERVER config gets unloaded (server stopping, leaving a singleplayer world). `ModConfigEvent.Unloading` is now ignored and `@Config` fields keep the last values read
+  * `ConfigOption#set` (and `Blacklist`, `MinMaxConfig`, `DifficultyBasedConfig`, `ObjTag` options) and `Feature#setEnabledConfig` now do nothing and log a warning if the config is not loaded instead of throwing
+  * When the server reloads a SERVER config because its file changed, the config is now synced again to connected clients (NeoForge syncs it only on login) and operators get a chat message
+* Added `ConfigUtils#isLoaded` and `ConfigUtils#canSet`
+
 # 2.4.33.2
 * Fixed loot pool injections (`loot_pool_injections`) not being applied when the world is loaded or on dedicated servers (they only worked after a `/reload`, using the injections of the previous load)
 * Fixed `merge_components` in `item_components` re-adding a component removed by a previous definition for the same item (e.g. one targeting the item and one targeting a tag containing it). A removed component now counts as absent: the merge json alone becomes the new value, and if it's not a valid component the removal is kept and an error is logged
@@ -6,7 +14,7 @@
 * Fixed `insanelib:enchant_with_treasure` and `insanelib:enchant_randomly_weightless` loot functions not enchanting books
 
 ## Technical
-* `PoolInjectionReloadListener` is now `PoolInjectionLoader` and is no longer a reload listener: injections are loaded right before loot tables via `ReloadableServerRegistriesMixin`
+* `PoolInjectionReloadListener` is now `PoolInjectionLoader` and iss no longer a reload listener: injections are loaded right before loot tables via `ReloadableServerRegistriesMixin`
 * `item_components` patches are now computed only on the server (`TagsUpdatedEvent` with `SERVER_DATA_LOAD`); `ItemComponentsSyncMessage` is now always sent, even when there are no patches
 
 # 2.4.33.1

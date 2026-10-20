@@ -28,3 +28,6 @@ repo
 
 # claude code
 .claude
+
+# Claude reports
+report_*.md

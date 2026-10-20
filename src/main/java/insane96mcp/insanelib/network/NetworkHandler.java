@@ -3,6 +3,7 @@ package insane96mcp.insanelib.network;
 import insane96mcp.insanelib.network.message.CreeperDataSyncMessage;
 import insane96mcp.insanelib.network.message.ItemComponentsSyncMessage;
 import insane96mcp.insanelib.network.message.JsonConfigSyncMessage;
+import insane96mcp.insanelib.network.message.ServerConfigSyncMessage;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
@@ -14,5 +15,6 @@ public class NetworkHandler {
         registrar.playToClient(CreeperDataSyncMessage.TYPE, CreeperDataSyncMessage.STREAM_CODEC, CreeperDataSyncMessage::handle);
         registrar.playToClient(JsonConfigSyncMessage.TYPE, JsonConfigSyncMessage.STREAM_CODEC, JsonConfigSyncMessage::handle);
         registrar.playToClient(ItemComponentsSyncMessage.TYPE, ItemComponentsSyncMessage.STREAM_CODEC, ItemComponentsSyncMessage::handle);
+        registrar.playToClient(ServerConfigSyncMessage.TYPE, ServerConfigSyncMessage.STREAM_CODEC, ServerConfigSyncMessage::handle);
     }
 }

@@ -7,6 +7,7 @@ import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import insane96mcp.insanelib.InsaneLib;
 import insane96mcp.insanelib.core.feature.config.ConfigOption;
+import insane96mcp.insanelib.core.feature.config.ConfigUtils;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
@@ -310,6 +311,8 @@ public class ObjTag<T> {
         public void set(Object value) {
             @SuppressWarnings("unchecked")
             ObjTag<T> objTag = (ObjTag<T>) value;
+            if (!ConfigUtils.canSet(this.valueConfig, this.getName()))
+                return;
             this.valueConfig.set(objTag.toSerializedString());
         }
 

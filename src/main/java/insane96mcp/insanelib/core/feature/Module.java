@@ -121,7 +121,9 @@ public class Module {
     }
 
     public void readConfig(final ModConfigEvent event) {
-        if (event.getConfig().getType() != this.modConfigType
+        // SERVER configs get unloaded when the server stops; the values can no longer be read, so the last ones read are kept
+        if (event instanceof ModConfigEvent.Unloading
+                || event.getConfig().getType() != this.modConfigType
                 || !event.getConfig().getModId().equals(this.modId))
             return;
 

@@ -102,6 +102,8 @@ public class Feature {
             InsaneLib.LOGGER.warn("Could not set enabled {} feature. The config option is null", this.name);
             return;
         }
+        if (!ConfigUtils.canSet(this.enabledConfig, "Enable " + this.name))
+            return;
         this.enabledConfig.set(enabled);
     }
 

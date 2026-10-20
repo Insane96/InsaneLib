@@ -103,6 +103,8 @@ public class Blacklist<T> {
         public void set(Object value) {
             @SuppressWarnings("unchecked")
             Blacklist<T> blacklist = (Blacklist<T>) value;
+            if (!ConfigUtils.canSet(this.listConfig, this.name))
+                return;
             this.listConfig.set(blacklist.getAsStringList());
             this.listAsWhitelistConfig.set(blacklist.asWhitelist);
         }
