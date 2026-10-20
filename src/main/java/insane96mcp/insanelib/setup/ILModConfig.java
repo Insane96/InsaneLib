@@ -5,11 +5,16 @@ import insane96mcp.insanelib.network.message.ServerConfigSyncMessage;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.ModContainer;
+import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.config.ModConfigEvent;
 import net.neoforged.neoforge.common.ModConfigSpec;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
 
+import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.Set;
 import java.util.function.BiConsumer;
 
 /**
@@ -58,6 +63,8 @@ import java.util.function.BiConsumer;
  * </ul>
  */
 public class ILModConfig {
+    private static final Set<ModContainer> MOD_CONTAINERS = Collections.synchronizedSet(new LinkedHashSet<>());
+
     public final ModConfigSpec.Builder builder;
     public final ModConfigSpec spec;
 
@@ -76,6 +83,7 @@ public class ILModConfig {
             return b;
         }).getRight();
         this.registerServerConfigSync(type, modEventBus);
+        trackActiveModContainer();
     }
 
     /**
@@ -91,6 +99,23 @@ public class ILModConfig {
             return b;
         }).getRight();
         this.registerServerConfigSync(type, modEventBus);
+        trackActiveModContainer();
+    }
+
+    /**
+     * Mods that created an ILModConfig, used to automatically register the config screen
+     */
+    public static Set<ModContainer> getModContainers() {
+        synchronized (MOD_CONTAINERS) {
+            return Set.copyOf(MOD_CONTAINERS);
+        }
+    }
+
+    private static void trackActiveModContainer() {
+        // Falls back to the minecraft container when not called while constructing a mod
+        ModContainer container = ModLoadingContext.get().getActiveContainer();
+        if (!container.getModId().equals("minecraft"))
+            MOD_CONTAINERS.add(container);
     }
 
     private void registerServerConfigSync(ModConfig.Type type, IEventBus modEventBus) {

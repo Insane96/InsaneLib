@@ -1,3 +1,9 @@
+# 2.4.35.0
+* Mods using `ILModConfig` (InsaneLib included) now automatically get a config screen (NeoForge's `ConfigurationScreen`) in the Mods list (basically all my mods), unless they register their own. Entries without a translation show their config name instead of the raw translation key
+* Better Falling Blocks can now be disabled
+* Fixed falling blocks not going through portals when Better Falling Blocks is enabled
+* Moved "Fix Dupe Exploit" from Better Falling Blocks to Fixes ("Fix Falling Block Dupe"). It now also works when Better Falling Blocks is disabled (vanilla falling blocks going through an End portal)
+
 # 2.4.34.0
 ## Technical
 * `ILModConfig` can now be used with `ModConfig.Type.SERVER` configs

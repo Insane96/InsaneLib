@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.TypeAdapterFactory;
 import com.mojang.logging.LogUtils;
+import insane96mcp.insanelib.client.ILConfigScreen;
 import insane96mcp.insanelib.command.ILCommand;
 import insane96mcp.insanelib.data.AttributeModifierOperationSerializer;
 import insane96mcp.insanelib.data.JsonFeatureDataReloadListener;
@@ -75,6 +76,7 @@ public class InsaneLib {
 
         if (FMLLoader.getDist().isClient()) {
             eventBus.addListener(EventPriority.LOWEST, CreativeTabsUtils::removeCreativeRemovalTaggedItems);
+            eventBus.addListener(ILConfigScreen::registerForILMods);
             NeoForge.EVENT_BUS.addListener(CreativeTabsUtils::onTagsUpdated);
         }
 
