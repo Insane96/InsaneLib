@@ -1,4 +1,7 @@
 # Upcoming
+* Item Components' "Stack Limit" config option has been replaced by "Increase Stack Limit" (true by default), which raises the vanilla limit of 99 to 2147483647. Requires a Minecraft restart
+  * Previously the configured value was ignored by the item and component codecs, which always used 9999 since they are built before the config is loaded
+  * Item counts over 999 now show as 1k, 1m, 1b
 * Fixed `insanelib:drop_multiplier` loot modifier deleting unstackable items (e.g. tools and armor) matching the item/tag from the loot when `ignore_unstackable` is true (the default). They are now left untouched as intended
 * Fixed `insanelib:loot_purger` loot modifier
   * With `start_range` > 0 the start range was subtracted twice, purging all the loot right after `start_range` and reaching 0 only at `start_range + end_range` instead of `end_range`

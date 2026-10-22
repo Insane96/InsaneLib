@@ -1,6 +1,8 @@
 package insane96mcp.insanelib.mixin;
 
-import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import com.mojang.serialization.Codec;
 import insane96mcp.insanelib.event.ILEventFactory;
 import insane96mcp.insanelib.mixin.accessor.PatchedDataComponentMapAccessor;
 import insane96mcp.insanelib.module.base.items.ItemComponentsFeature;
@@ -30,9 +32,9 @@ public abstract class ItemStackMixin {
     @Shadow public abstract Item getItem();
     @Shadow public abstract boolean isEmpty();
 
-    @ModifyExpressionValue(method = "lambda$static$3", at = @At(value = "CONSTANT", args = "intValue=99"))
-    private static int insanelib$maxCountRange(int original) {
-        return ItemComponentsFeature.stackLimit;
+    @WrapOperation(method = "lambda$static$3", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/ExtraCodecs;intRange(II)Lcom/mojang/serialization/Codec;"))
+    private static Codec<Integer> insanelib$maxCountRange(int min, int max, Operation<Codec<Integer>> original) {
+        return ItemComponentsFeature.stackSizeCodec(min);
     }
 
     @Inject(method = "getComponents", at = @At("HEAD"), cancellable = true)

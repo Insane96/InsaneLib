@@ -3,6 +3,8 @@ package insane96mcp.insanelib.module.base.items;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
 import com.mojang.serialization.JsonOps;
 import insane96mcp.insanelib.InsaneLib;
 import insane96mcp.insanelib.core.feature.Feature;
@@ -19,21 +21,51 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.Item;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.event.config.ModConfigEvent;
 import net.neoforged.neoforge.event.OnDatapackSyncEvent;
 import net.neoforged.neoforge.event.TagsUpdatedEvent;
 
+import javax.annotation.Nullable;
 import java.util.*;
 
 @LoadFeature(description = "Allows modifying item data components via data packs", canBeDisabled = false)
 public class ItemComponentsFeature extends Feature {
 
-    @Config(description = "Vanilla limits max stack sizes to 99 for some reasons. This replaces that limit")
-    public static Integer stackLimit = 9999;
-
-    @Config
-    public static Boolean disableShrinkStackCount = false;
+    @Config(description = "Vanilla limits max stack sizes to 99 for some reasons. This increases that limit to max integer value (2147483647). For items with stack > 99 the number showing the count is shrunk. Items with count > 999 will show 1k, 1m, 1b. Requires MC restart.")
+    public static Boolean increaseStackLimit = true;
     @Config(description = "Always render the item stack count at a smaller scale, even when it's 99 or below")
     public static Boolean alwaysShrinkStackCount = false;
+    @Config
+    public static Boolean disableShrinkStackCount = false;
+
+    /**
+     * {@link #increaseStackLimit} as read the first time the config is loaded. Changing it while the game is running
+     * isn't supported, as stacks over the new limit would fail to be saved and loaded.
+     */
+    @Nullable
+    private static Boolean stackLimitIncreased = null;
+
+    @Override
+    public void readConfig(ModConfigEvent event) {
+        super.readConfig(event);
+        if (stackLimitIncreased == null)
+            stackLimitIncreased = increaseStackLimit;
+    }
+
+    public static int getStackLimit() {
+        boolean increased = stackLimitIncreased != null ? stackLimitIncreased : increaseStackLimit;
+        return increased ? Integer.MAX_VALUE : Item.ABSOLUTE_MAX_STACK_SIZE;
+    }
+
+    /**
+     * Replaces vanilla's {@code ExtraCodecs.intRange(min, 99)}. The max is checked on each decode/encode instead of being
+     * baked in the codec, as the codecs are built while bootstrapping Minecraft, before the config is loaded.
+     */
+    public static Codec<Integer> stackSizeCodec(int min) {
+        return Codec.INT.validate(value -> value >= min && value <= getStackLimit()
+                ? DataResult.success(value)
+                : DataResult.error(() -> "Value must be within range [" + min + ";" + getStackLimit() + "]: " + value));
+    }
 
     /**
      * Only the server computes the patches; remote clients receive them through {@link ItemComponentsSyncMessage}.
