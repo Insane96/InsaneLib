@@ -1,5 +1,5 @@
-# Upcoming
-* Item Components' "Stack Limit" config option has been replaced by "Increase Stack Limit" (true by default), which raises the vanilla limit of 99 to 1073741823. Requires a Minecraft restart
+# 2.4.36.0
+* Item Components' "Stack Limit" config option has been replaced by "Increase Stack Limit" (true by default), which raises the vanilla limit of 99 to 1,073,741,823. Requires a Minecraft restart
   * Previously the configured value was ignored by the item and component codecs, which always used 9999 since they are built before the config is loaded
   * Item counts over 999 now show as 1k, 1m, 1b
   * The limit is half the max integer value, as vanilla sums the counts of two stacks when merging them (e.g. shift-click), which would overflow and delete the items
