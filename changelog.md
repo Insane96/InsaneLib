@@ -16,6 +16,16 @@
   * Fixed falling blocks that can't be placed never disappearing when `doEntityDrops` is false (or the falling block doesn't drop)
   * Fixed falling blocks getting stuck forever on top of insta-break blocks with a collision (e.g. slime blocks) when breaking insta-break blocks is enabled. They now land on them
 * Fixed an invalid `loot_pool_injections` entry breaking the loot table loading. It's now logged and skipped
+* Fixed `insanelib:loot_purger` treating loot generated more than ~46000 blocks from spawn as if it was at spawn
+* `insanelib:replace_loot`
+  * With `amount_to_replace`, the remaining items no longer lose their components (enchantments, damage, etc.)
+  * Empty `chances` or `multipliers` are now reported as an error when loading instead of crashing when generating loot
+* Item knockback multiplier (`insanelib:knockback_multiplier`) is no longer applied to knockbacks unrelated to the attack (e.g. an explosion after being hit)
+* Time Stop No Player Online
+  * Disabling the feature while time is stopped now makes time advance again without restarting
+  * Fixed the functions not being updated after a `/reload`
+* The order of features and modules in the config files is now always the same
+* An invalid id in a config (e.g. uppercase letters) is now logged and ignored (or the default value is used) instead of crashing
 
 ## Technical
 * Fixed clients being disconnected when a synced JsonConfig is longer than 32767 characters
@@ -29,6 +39,12 @@
 * `ModNBTData#get(ItemStack, ...)` now returns the type default (0/false) like the other variants instead of `null` when the stack has no custom data
 * Fixed `ModNBTData#get` crashing with `UUID.class` when the key is missing. It now returns `null` as documented
 * `ModNBTData#remove` no longer creates missing compounds and removes the ones left empty. Removing the last mod data from an item stack now removes the `custom_data` component, so it stacks again with stacks without it
+* `Feature.isEnabled(Class)` now returns false instead of crashing for features that are not loaded
+* `InsaneLib.ONE_DECIMAL_FORMATTER` is now also available on dedicated servers
+* `CurrentAttacker#resolve` now falls back to `getLastHurtByMob()` only if the victim was hurt by it in the current tick
+* `ILNearestAttackableTargetGoal`'s default target chance now goes through `reducedTickDelay` like vanilla's (10 -> 5)
+* Fixed `SerializableAttributeModifier#fromNetwork` reading the wrong id in the error message for an unknown attribute
+* `TimeStopNoPlayerOnline.STOP`, `TC` and `SEASONS` are now the functions' ids
 * `ObjTag#isValid` now returns false when the id wasn't found in the registry, as documented. Missing items in `item_components` are now logged and missing ids in `ObjTagValue` lists are skipped
 
 # 2.4.35.0

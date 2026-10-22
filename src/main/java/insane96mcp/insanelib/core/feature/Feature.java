@@ -265,7 +265,8 @@ public class Feature {
     }
 
     public static boolean isEnabled(Class<? extends Feature> feature) {
-        return get(feature).isEnabled();
+        Feature f = get(feature);
+        return f != null && f.isEnabled();
     }
 
     public static boolean isEnabled(String featureName) {

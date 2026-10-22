@@ -8,6 +8,7 @@ import com.google.gson.stream.JsonWriter;
 import insane96mcp.insanelib.InsaneLib;
 import insane96mcp.insanelib.core.feature.config.ConfigOption;
 import insane96mcp.insanelib.core.feature.config.ConfigUtils;
+import net.minecraft.ResourceLocationException;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
@@ -296,16 +297,24 @@ public class ObjTag<T> {
     public static class COption<T> extends ConfigOption<ObjTag<T>> {
         private final ModConfigSpec.ConfigValue<String> valueConfig;
         private final ResourceKey<Registry<T>> registryKey;
+        private final ObjTag<T> defaultValue;
 
         public COption(ModConfigSpec.Builder builder, String name, String description, ObjTag<T> defaultValue) {
             super(builder, name, description);
             this.registryKey = defaultValue.getRegistryKey();
+            this.defaultValue = defaultValue;
             this.valueConfig = builder.define(name, defaultValue.toSerializedString());
         }
 
         @Override
         public ObjTag<T> get() {
-            return ObjTag.of(this.valueConfig.get(), this.registryKey);
+            try {
+                return ObjTag.of(this.valueConfig.get(), this.registryKey);
+            }
+            catch (ResourceLocationException e) {
+                InsaneLib.LOGGER.warn("Invalid id {} in config {}, using the default value: {}", this.valueConfig.get(), this.getName(), e.getMessage());
+                return this.defaultValue;
+            }
         }
 
         @Override

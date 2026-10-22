@@ -6,6 +6,9 @@ public abstract class ScheduledTickTask implements Runnable {
 
 	boolean executed = false;
 
+	/**
+	 * The task runs on the (tickDelay + 1)th call of {@link #tick()}, so a tickDelay of 0 runs on the first one
+	 */
 	public ScheduledTickTask(int tickDelay) {
 		this.tickDelay = tickDelay;
 		this.tick = 0;

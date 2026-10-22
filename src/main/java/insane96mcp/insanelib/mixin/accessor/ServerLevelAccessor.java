@@ -10,4 +10,7 @@ public interface ServerLevelAccessor {
 	@Accessor
 	@Mutable
 	void setTickTime(boolean tickTime);
+
+	@Accessor("tickTime")
+	boolean insanelib$isTickTime();
 }

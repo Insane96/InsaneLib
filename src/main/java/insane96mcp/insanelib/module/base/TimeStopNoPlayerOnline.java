@@ -7,7 +7,6 @@ import insane96mcp.insanelib.core.feature.Module;
 import insane96mcp.insanelib.core.feature.config.Config;
 import insane96mcp.insanelib.mixin.accessor.ServerLevelAccessor;
 import insane96mcp.insanelib.util.IntegratedPack;
-import net.minecraft.commands.CacheableFunction;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.functions.CommandFunction;
 import net.minecraft.resources.ResourceLocation;
@@ -47,35 +46,39 @@ public class TimeStopNoPlayerOnline extends Feature {
     }
 
     @SubscribeEvent
-    public void onPlayerLeave(PlayerEvent.PlayerLoggedInEvent event) {
+    public void onPlayerJoin(PlayerEvent.PlayerLoggedInEvent event) {
         setTickTime(event.getEntity().getServer(), true, null);
     }
 
     static int tick = 0;
-    public static CacheableFunction STOP = null;
-    public static CacheableFunction TC = null;
-    public static CacheableFunction SEASONS = null;
+    // Looked up every time, as functions change on /reload
+    public static final ResourceLocation STOP = InsaneLib.id("stop_weather_if_no_player_online");
+    public static final ResourceLocation TC = InsaneLib.id("stop_time_if_no_player_online_tc");
+    public static final ResourceLocation SEASONS = InsaneLib.id("stop_season_if_no_player_online");
 
     @SubscribeEvent
     public void serverTick(ServerTickEvent.Post event) {
-        if (!this.isEnabled())
+        if (!this.isEnabled()) {
+            // The feature has been disabled while time was stopped
+            ServerLevelAccessor overworld = (ServerLevelAccessor) event.getServer().overworld();
+            if (!overworld.insanelib$isTickTime())
+                overworld.setTickTime(true);
             return;
+        }
         if (++tick <= 20)
             return;
         tick = 0;
         ServerFunctionManager functions = event.getServer().getFunctions();
         if (alsoWeather)
-            executeFunction(functions, STOP, "insanelib:stop_weather_if_no_player_online");
+            executeFunction(functions, STOP);
         if (ModList.get().isLoaded("timecontrol") && timeControlIntegration)
-            executeFunction(functions, TC, "insanelib:stop_time_if_no_player_online_tc");
+            executeFunction(functions, TC);
         if (ModList.get().isLoaded("sereneseasons") && sereneSeasonsIntegration)
-            executeFunction(functions, SEASONS, "insanelib:stop_season_if_no_player_online");
+            executeFunction(functions, SEASONS);
     }
 
-    private void executeFunction(ServerFunctionManager functions, CacheableFunction function, String id) {
-        if (function == null)
-            function = new CacheableFunction(ResourceLocation.parse(id));
-        Optional<CommandFunction<CommandSourceStack>> func = function.get(functions);
+    private void executeFunction(ServerFunctionManager functions, ResourceLocation id) {
+        Optional<CommandFunction<CommandSourceStack>> func = functions.get(id);
         if (func.isPresent())
             functions.execute(func.get(), functions.getGameLoopSender());
         else

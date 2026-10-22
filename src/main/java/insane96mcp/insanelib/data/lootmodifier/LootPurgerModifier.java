@@ -97,9 +97,9 @@ public class LootPurgerModifier extends LootModifier {
 
         int spawnX = context.getLevel().getLevelData().getSpawnPos().getX();
         int spawnZ = context.getLevel().getLevelData().getSpawnPos().getZ();
-        int x = (int) context.getParam(LootContextParams.ORIGIN).x;
-        int z = (int) context.getParam(LootContextParams.ORIGIN).z;
-        int distanceFromSpawn = (int) Math.sqrt((x - spawnX) * (x - spawnX) + (z - spawnZ) * (z - spawnZ));
+        double x = context.getParam(LootContextParams.ORIGIN).x - spawnX;
+        double z = context.getParam(LootContextParams.ORIGIN).z - spawnZ;
+        int distanceFromSpawn = (int) Math.sqrt(x * x + z * z);
         float multiplier;
         if (distanceFromSpawn <= this.startRange)
             multiplier = 1f - this.multiplierAtStart;

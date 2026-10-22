@@ -77,9 +77,10 @@ public record SerializableAttributeModifier(ResourceLocation id, List<EquipmentS
     }
 
     public static SerializableAttributeModifier fromNetwork(FriendlyByteBuf byteBuf) {
-        Optional<Holder.Reference<Attribute>> attribute = BuiltInRegistries.ATTRIBUTE.getHolder(ResourceLocation.parse(byteBuf.readUtf()));
+        String attributeId = byteBuf.readUtf();
+        Optional<Holder.Reference<Attribute>> attribute = BuiltInRegistries.ATTRIBUTE.getHolder(ResourceLocation.parse(attributeId));
         if (attribute.isEmpty())
-            throw new IllegalStateException("Invalid attribute from network: %s".formatted(byteBuf.readUtf()));
+            throw new IllegalStateException("Invalid attribute from network: %s".formatted(attributeId));
         ResourceLocation id = byteBuf.readResourceLocation();
         List<EquipmentSlot> slots = byteBuf.readList(byteBuf1 -> byteBuf1.readEnum(EquipmentSlot.class));
         double amount = byteBuf.readDouble();

@@ -26,11 +26,9 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.IEventBus;
-import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
-import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
@@ -53,7 +51,8 @@ public class InsaneLib {
     /**
      * Same as {@link net.neoforged.neoforge.common.extensions.IAttributeExtension.FORMAT} but with one decimal place
      */
-    public static DecimalFormat ONE_DECIMAL_FORMATTER;
+    public static final DecimalFormat ONE_DECIMAL_FORMATTER = Util.make(new DecimalFormat("#.#"),
+            fmt -> fmt.setDecimalFormatSymbols(DecimalFormatSymbols.getInstance(Locale.ROOT)));
 
     public InsaneLib(IEventBus eventBus, ModContainer modContainer) {
         CONFIG = new ILModConfig(id("base"), "Base", ModConfig.Type.COMMON,
@@ -68,7 +67,6 @@ public class InsaneLib {
         ILLootFunctions.REGISTRY.register(eventBus);
         ILCriteriaTriggers.REGISTRY.register(eventBus);
 
-        eventBus.addListener(InsaneLib::clientSetup);
         eventBus.addListener(IntegratedPack::onAddPackFinders);
         eventBus.addListener(NetworkHandler::register);
         eventBus.addListener(PushResistance::attribute);
@@ -97,12 +95,6 @@ public class InsaneLib {
     private void onAddReloadListeners(AddReloadListenerEvent event) {
         event.addListener(JsonFeatureDataReloadListener.INSTANCE);
         event.addListener(ItemComponentsReloadListener.INSTANCE);
-    }
-
-    @SubscribeEvent
-    public static void clientSetup(FMLClientSetupEvent event) {
-        ONE_DECIMAL_FORMATTER = Util.make(new DecimalFormat("#.#"),
-                fmt -> fmt.setDecimalFormatSymbols(DecimalFormatSymbols.getInstance(Locale.ROOT)));
     }
 
     public static void gatherData(GatherDataEvent event) {

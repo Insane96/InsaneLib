@@ -1,6 +1,8 @@
 package insane96mcp.insanelib.core.feature.config;
 
+import insane96mcp.insanelib.InsaneLib;
 import insane96mcp.insanelib.data.ObjTag;
+import net.minecraft.ResourceLocationException;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.neoforged.neoforge.common.ModConfigSpec;
@@ -70,7 +72,12 @@ public class Blacklist<T> {
     public static <T> List<ObjTag<T>> parseStringList(List<? extends String> strings, ResourceKey<Registry<T>> registryKey) {
         List<ObjTag<T>> list = new ArrayList<>();
         for (String s : strings) {
-            list.add(ObjTag.of(s, registryKey));
+            try {
+                list.add(ObjTag.of(s, registryKey));
+            }
+            catch (ResourceLocationException e) {
+                InsaneLib.LOGGER.warn("Invalid id {} in config, it will be ignored: {}", s, e.getMessage());
+            }
         }
         return list;
     }
