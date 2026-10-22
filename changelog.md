@@ -1,3 +1,15 @@
+# Upcoming
+* Fixed `insanelib:drop_multiplier` loot modifier deleting unstackable items (e.g. tools and armor) matching the item/tag from the loot when `ignore_unstackable` is true (the default). They are now left untouched as intended
+* Fixed `insanelib:loot_purger` loot modifier
+  * With `start_range` > 0 the start range was subtracted twice, purging all the loot right after `start_range` and reaching 0 only at `start_range + end_range` instead of `end_range`
+  * With `apply_to_damageable`, items generated beyond `end_range` were repaired (even fully). Beyond `end_range` the loot is now left untouched
+  * Fixed a division by zero when `end_range` is equal to `start_range`
+* Fixed item stacks keeping the components of an `item_components` definition after a `/reload` (or a server change) removed it, until the stack was reloaded from disk
+
+## Technical
+* Fixed `MCUtils#addAttributeModifierToItemStack` never adding the modifier
+* `ObjTag#isValid` now returns false when the id wasn't found in the registry, as documented. Missing items in `item_components` are now logged and missing ids in `ObjTagValue` lists are skipped
+
 # 2.4.35.0
 * Mods using `ILModConfig` (InsaneLib included) now automatically get a config screen (NeoForge's `ConfigurationScreen`) in the Mods list (basically all my mods), unless they register their own. Entries without a translation show their config name instead of the raw translation key
 * Better Falling Blocks can now be disabled

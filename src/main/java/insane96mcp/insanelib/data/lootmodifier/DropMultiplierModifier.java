@@ -112,7 +112,8 @@ public class DropMultiplierModifier extends LootModifier {
                 existingStack.setCount(existingStack.getCount() + stack.getCount());
             }
         }
-        generatedLoot.removeIf(MATCHES_ITEM_OR_TAG);
+        // Ignored unstackable stacks were not merged into newStacks, so they must be kept
+        generatedLoot.removeIf(stack -> MATCHES_ITEM_OR_TAG.test(stack) && (stack.isStackable() || !this.ignoreUnstackable));
         for (ItemStack newStack : newStacks) {
             int count = MathHelper.getAmountWithDecimalChance(context.getRandom(), (newStack.getCount() - amountToKeep) * multiplier) + amountToKeep;
             if (count > 0) {

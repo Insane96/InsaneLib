@@ -156,7 +156,8 @@ public class ObjTag<T> {
      * Returns false if the requested id was not found in the registry.
      */
     public boolean isValid() {
-        return this.obj != null || this.tag != null || this.requestedId != null;
+        // requestedId without a registry is a deferred dynamic registry reference; with a registry it's an id that wasn't found
+        return this.obj != null || this.tag != null || (this.requestedId != null && this.registry == null);
     }
 
     /**
