@@ -9,6 +9,7 @@ import insane96mcp.insanelib.core.feature.Module;
 import insane96mcp.insanelib.data.JsonFeatureDataReloadListener;
 import insane96mcp.insanelib.data.ObjTag;
 import insane96mcp.insanelib.network.message.JsonConfigSyncMessage;
+import insane96mcp.insanelib.util.SnapshotList;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -86,6 +87,18 @@ public abstract class JsonFeature extends Feature {
         }
         if (listRead == null)
             listRead = new ArrayList<>(defaultList);
+        replaceContents(list, listRead);
+    }
+
+    /**
+     * Replaces the contents of the list with the ones read. {@link SnapshotList}s are replaced at once, so that other
+     * threads never see them empty (e.g. the client in singleplayer while the integrated server reloads them)
+     */
+    private static <T> void replaceContents(List<T> list, List<T> listRead) {
+        if (list instanceof SnapshotList<T> snapshotList) {
+            snapshotList.replaceWith(listRead);
+            return;
+        }
         // Not addAll + removeAll(oldEntries), as that would also remove the entries read that are equal to old ones
         list.clear();
         list.addAll(listRead);
@@ -94,7 +107,8 @@ public abstract class JsonFeature extends Feature {
     public static class JsonConfig<T> {
         String fileName;
         /**
-         * Items read from the json are stored in this list
+         * Items read from the json are stored in this list. Use a {@link SnapshotList} if it's read on the client, as in
+         * singleplayer it's shared with the integrated server, that rewrites it on {@code /reload}
          */
         List<T> list;
         /**
@@ -181,9 +195,7 @@ public abstract class JsonFeature extends Feature {
                 List<T> listRead = gson.fromJson(fileReader, listType);
                 if (listRead == null)
                     throw new JsonSyntaxException("The file is empty");
-                // Not addAll + removeAll(oldEntries), as that would also remove the entries read that are equal to old ones
-                this.list.clear();
-                this.list.addAll(listRead);
+                replaceContents(this.list, listRead);
             }
             catch (JsonSyntaxException e) {
                 InsaneLib.LOGGER.error("Parsing error loading Json {}: {}", FilenameUtils.removeExtension(file.getName()), e.getMessage());

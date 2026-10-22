@@ -1,12 +1,14 @@
 # Upcoming
-* Item Components' "Stack Limit" config option has been replaced by "Increase Stack Limit" (true by default), which raises the vanilla limit of 99 to 2147483647. Requires a Minecraft restart
+* Item Components' "Stack Limit" config option has been replaced by "Increase Stack Limit" (true by default), which raises the vanilla limit of 99 to 1073741823. Requires a Minecraft restart
   * Previously the configured value was ignored by the item and component codecs, which always used 9999 since they are built before the config is loaded
   * Item counts over 999 now show as 1k, 1m, 1b
+  * The limit is half the max integer value, as vanilla sums the counts of two stacks when merging them (e.g. shift-click), which would overflow and delete the items
 * Fixed `insanelib:drop_multiplier` loot modifier deleting unstackable items (e.g. tools and armor) matching the item/tag from the loot when `ignore_unstackable` is true (the default). They are now left untouched as intended
 * Fixed `insanelib:loot_purger` loot modifier
   * With `start_range` > 0 the start range was subtracted twice, purging all the loot right after `start_range` and reaching 0 only at `start_range + end_range` instead of `end_range`
   * With `apply_to_damageable`, items generated beyond `end_range` were repaired (even fully). Beyond `end_range` the loot is now left untouched
   * Fixed a division by zero when `end_range` is equal to `start_range`
+  * Fixed loot generated more than ~46000 blocks from spawn being treated as if it was at spawn
 * Fixed item stacks keeping the components of an `item_components` definition after a `/reload` (or a server change) removed it, until the stack was reloaded from disk
 * Fixed clients keeping the `item_components` patches of the previous server when joining a server without InsaneLib
 * Fixed possible issues in singleplayer caused by the client and the integrated server modifying `item_components` patches at the same time
@@ -16,7 +18,6 @@
   * Fixed falling blocks that can't be placed never disappearing when `doEntityDrops` is false (or the falling block doesn't drop)
   * Fixed falling blocks getting stuck forever on top of insta-break blocks with a collision (e.g. slime blocks) when breaking insta-break blocks is enabled. They now land on them
 * Fixed an invalid `loot_pool_injections` entry breaking the loot table loading. It's now logged and skipped
-* Fixed `insanelib:loot_purger` treating loot generated more than ~46000 blocks from spawn as if it was at spawn
 * `insanelib:replace_loot`
   * With `amount_to_replace`, the remaining items no longer lose their components (enchantments, damage, etc.)
   * Empty `chances` or `multipliers` are now reported as an error when loading instead of crashing when generating loot
@@ -45,6 +46,7 @@
 * `ILNearestAttackableTargetGoal`'s default target chance now goes through `reducedTickDelay` like vanilla's (10 -> 5)
 * Fixed `SerializableAttributeModifier#fromNetwork` reading the wrong id in the error message for an unknown attribute
 * `TimeStopNoPlayerOnline.STOP`, `TC` and `SEASONS` are now the functions' ids
+* Added `SnapshotList`, a thread-safe list replaced as a whole. JsonConfigs using it as their list are now updated at once on reload, so in singleplayer the client never sees them empty or gets a `ConcurrentModificationException` while the integrated server reloads them. Lists of JsonConfigs read on the client should use it
 * `ObjTag#isValid` now returns false when the id wasn't found in the registry, as documented. Missing items in `item_components` are now logged and missing ids in `ObjTagValue` lists are skipped
 
 # 2.4.35.0

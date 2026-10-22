@@ -31,7 +31,7 @@ import java.util.*;
 @LoadFeature(description = "Allows modifying item data components via data packs", canBeDisabled = false)
 public class ItemComponentsFeature extends Feature {
 
-    @Config(description = "Vanilla limits max stack sizes to 99 for some reasons. This increases that limit to max integer value (2147483647). For items with stack > 99 the number showing the count is shrunk. Items with count > 999 will show 1k, 1m, 1b. Requires MC restart.")
+    @Config(description = "Vanilla limits max stack sizes to 99 for some reasons. This increases that limit to 1073741823 (half the max integer value, so that two stacks can be summed without overflowing). For items with stack > 99 the number showing the count is shrunk. Items with count > 999 will show 1k, 1m, 1b. Requires MC restart.")
     public static Boolean increaseStackLimit = true;
     @Config(description = "Always render the item stack count at a smaller scale, even when it's 99 or below")
     public static Boolean alwaysShrinkStackCount = false;
@@ -52,9 +52,15 @@ public class ItemComponentsFeature extends Feature {
             stackLimitIncreased = increaseStackLimit;
     }
 
+    /**
+     * Half of {@link Integer#MAX_VALUE}, as vanilla sums the counts of two stacks in an int when merging them
+     * (e.g. {@code AbstractContainerMenu#moveItemStackTo}), which would overflow and delete the items
+     */
+    public static final int INCREASED_STACK_LIMIT = Integer.MAX_VALUE / 2;
+
     public static int getStackLimit() {
         boolean increased = stackLimitIncreased != null ? stackLimitIncreased : increaseStackLimit;
-        return increased ? Integer.MAX_VALUE : Item.ABSOLUTE_MAX_STACK_SIZE;
+        return increased ? INCREASED_STACK_LIMIT : Item.ABSOLUTE_MAX_STACK_SIZE;
     }
 
     /**
