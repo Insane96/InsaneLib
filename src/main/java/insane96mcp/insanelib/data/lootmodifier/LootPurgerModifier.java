@@ -67,9 +67,9 @@ public class LootPurgerModifier extends LootModifier {
     /** If {@code true}, damageable items are damaged proportionally instead of being removed. */
     private boolean applyToDamageable = false;
     /** Items in this tag are never purged or damaged. */
-    private Optional<TagKey<Item>> blacklistedItemsTag;
+    private Optional<TagKey<Item>> blacklistedItemsTag = Optional.empty();
     /** Entity types in this tag are never affected by this modifier. */
-    private Optional<TagKey<EntityType<?>>> blacklistedEntityTypeTag;
+    private Optional<TagKey<EntityType<?>>> blacklistedEntityTypeTag = Optional.empty();
 
     public LootPurgerModifier(LootItemCondition[] conditionsIn) {
         super(conditionsIn);

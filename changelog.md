@@ -12,6 +12,10 @@
 * Fixed possible issues in singleplayer caused by the client and the integrated server modifying `item_components` patches at the same time
 * Fixed Player Attributes modifiers being lost after a `/reload`
 * Fixed creative tabs being rebuilt from the integrated server thread on `/reload` in singleplayer
+* Better Falling Blocks
+  * Fixed falling blocks that can't be placed never disappearing when `doEntityDrops` is false (or the falling block doesn't drop)
+  * Fixed falling blocks getting stuck forever on top of insta-break blocks with a collision (e.g. slime blocks) when breaking insta-break blocks is enabled. They now land on them
+* Fixed an invalid `loot_pool_injections` entry breaking the loot table loading. It's now logged and skipped
 
 ## Technical
 * Fixed clients being disconnected when a synced JsonConfig is longer than 32767 characters
@@ -20,6 +24,11 @@
 * JsonConfig sync no longer re-reads the json in singleplayer / LAN host, as the lists are shared with the integrated server
 * `ItemComponentsReloadListener.PATCHED_COMPONENTS` and `SYNCED_PATCHES` are now immutable maps replaced as a whole instead of being modified. Added `ItemComponentsReloadListener#getUnpatchedComponents`
 * Fixed `MCUtils#addAttributeModifierToItemStack` never adding the modifier
+* Fixed `DisenchantModifier` and `LootPurgerModifier` created through their `Builder` crashing (blacklist tags left `null`)
+* `AttributeModifierOperationSerializer` now serializes the operation as a string (e.g. `"add_value"`), the same format it deserializes, instead of an object
+* `ModNBTData#get(ItemStack, ...)` now returns the type default (0/false) like the other variants instead of `null` when the stack has no custom data
+* Fixed `ModNBTData#get` crashing with `UUID.class` when the key is missing. It now returns `null` as documented
+* `ModNBTData#remove` no longer creates missing compounds and removes the ones left empty. Removing the last mod data from an item stack now removes the `custom_data` component, so it stacks again with stacks without it
 * `ObjTag#isValid` now returns false when the id wasn't found in the registry, as documented. Missing items in `item_components` are now logged and missing ids in `ObjTagValue` lists are skipped
 
 # 2.4.35.0

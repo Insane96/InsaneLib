@@ -221,11 +221,10 @@ public abstract class FallingBlockEntityMixin extends Entity implements BetterFa
         boolean canReplaceAtPos = stateAt.canBeReplaced(new DirectionalPlaceContext(this.level(), blockPos, Direction.DOWN, ItemStack.EMPTY, Direction.UP));
         boolean breakInstaBreak = BetterFallingBlocks.breakInstabreakBlocks;
         boolean isInstaBreak = stateAt.getDestroySpeed(this.level(), blockPos) == 0f;
-        boolean isInstaBreakBelow = blockStateBelow.getDestroySpeed(this.level(), blockPos.below()) == 0f;
         boolean canBreakAtPos = isInstaBreak && breakInstaBreak;
-        boolean canBreakBelow = isInstaBreakBelow && breakInstaBreak;
         boolean shouldHydrate = isConcretePowder && canBeHydrated;
-        boolean isFreeBelow = (FallingBlock.isFree(blockStateBelow) || canBreakBelow) && !shouldHydrate;
+        // Insta-break blocks below with a collision (e.g. slime blocks) are not free, the block lands on them
+        boolean isFreeBelow = FallingBlock.isFree(blockStateBelow) && !shouldHydrate;
 
         if (isFreeBelow) {
             if (this.getDeltaMovement().length() <= 1e-5f) {
@@ -396,8 +395,8 @@ public abstract class FallingBlockEntityMixin extends Entity implements BetterFa
 
     @Unique
     private void insanelib$handleFailedPlacement(Block block, BlockPos pos) {
+        this.discard();
         if (this.dropItem && this.level().getGameRules().getBoolean(GameRules.RULE_DOENTITYDROPS)) {
-            this.discard();
             this.callOnBrokenAfterFall(block, pos);
             this.spawnAtLocation(block);
         }

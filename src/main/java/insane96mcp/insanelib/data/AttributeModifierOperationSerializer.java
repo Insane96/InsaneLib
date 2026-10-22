@@ -20,9 +20,7 @@ public class AttributeModifierOperationSerializer implements JsonSerializer<Attr
 
     @Override
     public JsonElement serialize(AttributeModifier.Operation src, Type typeOfSrc, JsonSerializationContext context) {
-        JsonObject jObject = new JsonObject();
-        jObject.addProperty("operation", src.name().toLowerCase());
-        return jObject;
+        return new JsonPrimitive(src.getSerializedName());
     }
 
 }

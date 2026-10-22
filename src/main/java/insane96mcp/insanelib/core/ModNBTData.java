@@ -70,7 +70,7 @@ public class ModNBTData {
     public static <T> T get(ItemStack stack, ResourceLocation loc, Class<T> type) {
         CustomData customData = stack.get(DataComponents.CUSTOM_DATA);
         if (customData == null || customData.isEmpty())
-            return null;
+            return get(EMPTY_TAG, loc, type);
         return get(customData.copyTag(), loc, type);
     }
 
@@ -91,7 +91,7 @@ public class ModNBTData {
         if (type == Double.class) return type.cast(modData.getDouble(key));
         if (type == Boolean.class) return type.cast(modData.getBoolean(key));
         if (type == String.class) return type.cast(modData.getString(key));
-        if (type == UUID.class) return type.cast(modData.getUUID(key));
+        if (type == UUID.class) return modData.hasUUID(key) ? type.cast(modData.getUUID(key)) : null;
         if (type == CompoundTag.class) return type.cast(modData.getCompound(key));
         if (type == int[].class) return type.cast(modData.getIntArray(key));
         if (type == ListTag.class) throw new IllegalArgumentException("Use getList overload");
@@ -247,9 +247,23 @@ public class ModNBTData {
      * Removes the specified nbt data from the compound tag
      */
     public static void remove(CompoundTag tag, ResourceLocation loc) {
-        CompoundTag modData = getNestedCompounds(loc.getPath(), getModData(tag, loc.getNamespace()));
-        String key = getNestedKey(loc.getPath());
-        modData.remove(key);
+        removeNested(tag, loc.getNamespace() + "/" + loc.getPath());
+    }
+
+    // Doesn't create missing compounds and removes the ones left empty
+    private static void removeNested(CompoundTag compound, String path) {
+        int slash = path.indexOf('/');
+        if (slash < 0) {
+            compound.remove(path);
+            return;
+        }
+        String child = path.substring(0, slash);
+        if (!compound.contains(child, Tag.TAG_COMPOUND))
+            return;
+        CompoundTag childTag = compound.getCompound(child);
+        removeNested(childTag, path.substring(slash + 1));
+        if (childTag.isEmpty())
+            compound.remove(child);
     }
 
     public static int classToNBTType(Class<?> type) {
