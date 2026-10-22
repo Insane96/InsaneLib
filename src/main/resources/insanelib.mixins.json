@@ -30,6 +30,7 @@
 		"ReloadableServerRegistriesMixin",
 		"accessor.CreeperAccessor",
 		"accessor.ExplosionAccessor",
+		"accessor.ItemAccessor",
 		"accessor.MobEffectInstanceAccessor",
 		"accessor.PatchedDataComponentMapAccessor",
 		"accessor.ServerLevelAccessor"

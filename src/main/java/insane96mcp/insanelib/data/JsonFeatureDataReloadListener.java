@@ -8,6 +8,7 @@ import net.minecraft.util.profiling.ProfilerFiller;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class JsonFeatureDataReloadListener extends SimplePreparableReloadListener<Void> {
     public static final JsonFeatureDataReloadListener INSTANCE;
@@ -34,5 +35,9 @@ public class JsonFeatureDataReloadListener extends SimplePreparableReloadListene
 
     public void registerJsonConfigFeature(JsonFeature feature) {
         this.JSON_CONFIG_FEATURES.add(feature);
+    }
+
+    public List<JsonFeature> getJsonConfigFeatures() {
+        return this.JSON_CONFIG_FEATURES;
     }
 }

@@ -76,9 +76,6 @@ public class ItemComponentsFeature extends Feature {
         if (event.getUpdateCause() != TagsUpdatedEvent.UpdateCause.SERVER_DATA_LOAD)
             return;
 
-        ItemComponentsReloadListener.PATCHED_COMPONENTS.clear();
-        ItemComponentsReloadListener.SYNCED_PATCHES.clear();
-
         RegistryOps<JsonElement> ops = RegistryOps.create(JsonOps.INSTANCE, event.getRegistryAccess());
 
         // Collect merged components per item (higher priority wins per component type)
@@ -106,8 +103,11 @@ public class ItemComponentsFeature extends Feature {
             }
         }
 
-        if (ItemComponentsReloadListener.DEFINITIONS.isEmpty() && allComponents.isEmpty() && allRemovals.isEmpty())
+        if (ItemComponentsReloadListener.DEFINITIONS.isEmpty() && allComponents.isEmpty() && allRemovals.isEmpty()) {
+            ItemComponentsReloadListener.PATCHED_COMPONENTS = Map.of();
+            ItemComponentsReloadListener.SYNCED_PATCHES = Map.of();
             return;
+        }
 
         // Sort by priority ascending so higher priority definitions are applied last and win
         List<ItemComponent> sorted = new ArrayList<>(ItemComponentsReloadListener.DEFINITIONS);
@@ -160,7 +160,7 @@ public class ItemComponentsFeature extends Feature {
                     }
                     // A component removed by a previous definition counts as absent: the merge json alone becomes the new value
                     boolean removed = removeSet.contains(type);
-                    Object existingValue = setMap.containsKey(type) ? setMap.get(type) : removed ? null : item.components().get(type);
+                    Object existingValue = setMap.containsKey(type) ? setMap.get(type) : removed ? null : ItemComponentsReloadListener.getUnpatchedComponents(item).get(type);
                     try {
                         Object value = existingValue == null
                                 ? decodeComponent(type, entry.getValue(), ops)
@@ -174,19 +174,21 @@ public class ItemComponentsFeature extends Feature {
             }
         }
 
-        // PATCHED_COMPONENTS is still empty here → Item.components() in the mixin falls through → vanilla prototype
         Set<Item> affectedItems = new HashSet<>();
         affectedItems.addAll(allComponents.keySet());
         affectedItems.addAll(allRemovals.keySet());
 
+        Map<Item, DataComponentMap> patchedComponents = new HashMap<>();
+        Map<ResourceLocation, DataComponentPatch> syncedPatches = new HashMap<>();
         for (Item item : affectedItems) {
             Map<DataComponentType<?>, Object> toSet = allComponents.getOrDefault(item, Map.of());
             Set<DataComponentType<?>> toRemove = allRemovals.getOrDefault(item, Set.of());
             DataComponentPatch patch = buildPatch(toSet, toRemove);
-            DataComponentMap patched = PatchedDataComponentMap.fromPatch(item.components(), patch);
-            ItemComponentsReloadListener.PATCHED_COMPONENTS.put(item, patched);
-            ItemComponentsReloadListener.SYNCED_PATCHES.put(BuiltInRegistries.ITEM.getKey(item), patch);
+            patchedComponents.put(item, PatchedDataComponentMap.fromPatch(ItemComponentsReloadListener.getUnpatchedComponents(item), patch));
+            syncedPatches.put(BuiltInRegistries.ITEM.getKey(item), patch);
         }
+        ItemComponentsReloadListener.PATCHED_COMPONENTS = Map.copyOf(patchedComponents);
+        ItemComponentsReloadListener.SYNCED_PATCHES = Map.copyOf(syncedPatches);
 
         InsaneLib.LOGGER.info("ItemComponents: applied components to {} items", affectedItems.size());
     }

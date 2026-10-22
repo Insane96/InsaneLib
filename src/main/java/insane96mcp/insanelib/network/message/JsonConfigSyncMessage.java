@@ -25,7 +25,7 @@ public record JsonConfigSyncMessage(ResourceLocation syncType, String json) impl
         @Override
         public void encode(FriendlyByteBuf buf, JsonConfigSyncMessage msg) {
             buf.writeResourceLocation(msg.syncType());
-            buf.writeUtf(msg.json());
+            buf.writeUtf(msg.json(), Integer.MAX_VALUE);
         }
     };
 
@@ -35,11 +35,16 @@ public record JsonConfigSyncMessage(ResourceLocation syncType, String json) impl
     }
 
     public static void handle(final JsonConfigSyncMessage payload, final IPayloadContext context) {
+        boolean isMemoryConnection = context.connection().isMemoryConnection();
         context.enqueueWork(() -> {
-            JsonFeature.SyncType syncType = JsonFeature.getSyncType(payload.syncType());
-            if (syncType == null)
-                throw new NullPointerException("Failed to get JsonConfigSync with id %s".formatted(payload.syncType()));
-            syncType.onSync.accept(payload.json());
+            // Singleplayer / LAN host share the lists with the integrated server, that already loaded them
+            if (!isMemoryConnection) {
+                JsonFeature.SyncType syncType = JsonFeature.getSyncType(payload.syncType());
+                if (syncType == null)
+                    throw new NullPointerException("Failed to get JsonConfigSync with id %s".formatted(payload.syncType()));
+                syncType.onSync.accept(payload.json());
+            }
+            JsonFeature.onClientSync(payload.syncType());
         });
     }
 

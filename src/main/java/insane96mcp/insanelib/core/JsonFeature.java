@@ -82,11 +82,13 @@ public abstract class JsonFeature extends Feature {
             listRead = gson.fromJson(json, listType);
         }
         catch (Exception e) {
-            listRead = new ArrayList<>(defaultList);
+            listRead = null;
         }
-        List<T> oldEntries = new ArrayList<>(list);
+        if (listRead == null)
+            listRead = new ArrayList<>(defaultList);
+        // Not addAll + removeAll(oldEntries), as that would also remove the entries read that are equal to old ones
+        list.clear();
         list.addAll(listRead);
-        list.removeAll(oldEntries);
     }
 
     public static class JsonConfig<T> {
@@ -175,11 +177,13 @@ public abstract class JsonFeature extends Feature {
                 }
             }
 
-            List<T> oldEntries = new ArrayList<>(this.list);
             try (FileReader fileReader = new FileReader(file)) {
                 List<T> listRead = gson.fromJson(fileReader, listType);
+                if (listRead == null)
+                    throw new JsonSyntaxException("The file is empty");
+                // Not addAll + removeAll(oldEntries), as that would also remove the entries read that are equal to old ones
+                this.list.clear();
                 this.list.addAll(listRead);
-                this.list.removeAll(oldEntries);
             }
             catch (JsonSyntaxException e) {
                 InsaneLib.LOGGER.error("Parsing error loading Json {}: {}", FilenameUtils.removeExtension(file.getName()), e.getMessage());
@@ -241,7 +245,21 @@ public abstract class JsonFeature extends Feature {
     public void onTagsUpdatedEvent(TagsUpdatedEvent event) {
         if (event.getUpdateCause() == TagsUpdatedEvent.UpdateCause.CLIENT_PACKET_RECEIVED) {
             for (JsonConfig<?> jsonConfig : JSON_CONFIGS) {
-                jsonConfig.onLoad(true);
+                // When joining a server tags are received before the sync, so synced configs are loaded in onClientSync
+                if (!jsonConfig.syncToClient)
+                    jsonConfig.onLoad(true);
+            }
+        }
+    }
+
+    /**
+     * Called on the client once the JsonConfigs with the given sync type have been synced
+     */
+    public static void onClientSync(ResourceLocation syncType) {
+        for (JsonFeature feature : JsonFeatureDataReloadListener.INSTANCE.getJsonConfigFeatures()) {
+            for (JsonConfig<?> jsonConfig : feature.getJsonConfigs()) {
+                if (jsonConfig.syncToClient && syncType.equals(jsonConfig.syncType))
+                    jsonConfig.onLoad(true);
             }
         }
     }

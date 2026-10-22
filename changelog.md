@@ -8,8 +8,17 @@
   * With `apply_to_damageable`, items generated beyond `end_range` were repaired (even fully). Beyond `end_range` the loot is now left untouched
   * Fixed a division by zero when `end_range` is equal to `start_range`
 * Fixed item stacks keeping the components of an `item_components` definition after a `/reload` (or a server change) removed it, until the stack was reloaded from disk
+* Fixed clients keeping the `item_components` patches of the previous server when joining a server without InsaneLib
+* Fixed possible issues in singleplayer caused by the client and the integrated server modifying `item_components` patches at the same time
+* Fixed Player Attributes modifiers being lost after a `/reload`
+* Fixed creative tabs being rebuilt from the integrated server thread on `/reload` in singleplayer
 
 ## Technical
+* Fixed clients being disconnected when a synced JsonConfig is longer than 32767 characters
+* JsonFeature: fixed reloading a JsonConfig removing all the entries read that are equal to the old ones (e.g. records). An empty JsonConfig file is now reported as a parsing error and keeps the old entries
+* JsonFeature: `JsonConfig#onLoad` on the client is now called after the config has been synced for configs synced to clients. When joining a server it was called before receiving the server's values
+* JsonConfig sync no longer re-reads the json in singleplayer / LAN host, as the lists are shared with the integrated server
+* `ItemComponentsReloadListener.PATCHED_COMPONENTS` and `SYNCED_PATCHES` are now immutable maps replaced as a whole instead of being modified. Added `ItemComponentsReloadListener#getUnpatchedComponents`
 * Fixed `MCUtils#addAttributeModifierToItemStack` never adding the modifier
 * `ObjTag#isValid` now returns false when the id wasn't found in the registry, as documented. Missing items in `item_components` are now logged and missing ids in `ObjTagValue` lists are skipped
 

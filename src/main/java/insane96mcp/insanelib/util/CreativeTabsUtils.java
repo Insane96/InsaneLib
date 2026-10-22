@@ -88,6 +88,9 @@ public class CreativeTabsUtils {
 	 * instead of requiring a world rejoin.
 	 */
 	public static void onTagsUpdated(TagsUpdatedEvent event) {
+		// In singleplayer SERVER_DATA_LOAD is fired on the integrated server thread, before the client got the new tags
+		if (event.getUpdateCause() != TagsUpdatedEvent.UpdateCause.CLIENT_PACKET_RECEIVED)
+			return;
 		Minecraft minecraft = Minecraft.getInstance();
 		LocalPlayer player = minecraft.player;
 		if (player == null || player.connection == null)
