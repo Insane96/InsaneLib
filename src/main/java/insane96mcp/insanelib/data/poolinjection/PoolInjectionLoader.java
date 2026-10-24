@@ -75,11 +75,17 @@ public class PoolInjectionLoader {
 
             RegistryOps<JsonElement> ops = RegistryOps.create(JsonOps.INSTANCE, event.getRegistries());
 
-            LootPoolEntryContainer entry = LootPoolEntries.CODEC.parse(ops, injection.entry()).getOrThrow();
-            JsonObject poolJson = (JsonObject) LootPool.CODEC.encodeStart(ops, pool).getOrThrow();
-            JsonObject entryJson = (JsonObject) LootPoolEntries.CODEC.encodeStart(ops, entry).getOrThrow();
-            poolJson.getAsJsonArray("entries").add(entryJson);
-            LootPool newPool = LootPool.CODEC.parse(ops, poolJson).getOrThrow();
+            LootPool newPool;
+            try {
+                LootPoolEntryContainer entry = LootPoolEntries.CODEC.parse(ops, injection.entry()).getOrThrow();
+                JsonObject poolJson = (JsonObject) LootPool.CODEC.encodeStart(ops, pool).getOrThrow();
+                JsonObject entryJson = (JsonObject) LootPoolEntries.CODEC.encodeStart(ops, entry).getOrThrow();
+                poolJson.getAsJsonArray("entries").add(entryJson);
+                newPool = LootPool.CODEC.parse(ops, poolJson).getOrThrow();
+            } catch (Exception e) {
+                InsaneLib.LOGGER.error("Failed to inject entry into pool '{}' of loot table {}: {}", injection.pool(), injection.lootTable(), e.getMessage());
+                continue;
+            }
 
             table.removePool(injection.pool());
             table.addPool(newPool);

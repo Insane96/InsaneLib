@@ -71,7 +71,7 @@ public class ModNBTData {
     public static <T> T get(ItemStack stack, Identifier loc, Class<T> type) {
         CustomData customData = stack.get(DataComponents.CUSTOM_DATA);
         if (customData == null || customData.isEmpty())
-            return null;
+            return get(EMPTY_TAG, loc, type);
         return get(customData.copyTag(), loc, type);
     }
 
@@ -246,9 +246,23 @@ public class ModNBTData {
      * Removes the specified nbt data from the compound tag
      */
     public static void remove(CompoundTag tag, Identifier loc) {
-        CompoundTag modData = getNestedCompounds(loc.getPath(), getModData(tag, loc.getNamespace()));
-        String key = getNestedKey(loc.getPath());
-        modData.remove(key);
+        removeNested(tag, loc.getNamespace() + "/" + loc.getPath());
+    }
+
+    // Doesn't create missing compounds and removes the ones left empty
+    private static void removeNested(CompoundTag compound, String path) {
+        int slash = path.indexOf('/');
+        if (slash < 0) {
+            compound.remove(path);
+            return;
+        }
+        String child = path.substring(0, slash);
+        CompoundTag childTag = compound.getCompound(child).orElse(null);
+        if (childTag == null)
+            return;
+        removeNested(childTag, path.substring(slash + 1));
+        if (childTag.isEmpty())
+            compound.remove(child);
     }
 
     public static int classToNBTType(Class<?> type) {

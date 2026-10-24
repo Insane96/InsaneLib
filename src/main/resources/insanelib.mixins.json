@@ -34,6 +34,7 @@
 		"ServerClockManagerMixin",
 		"accessor.CreeperAccessor",
 		"accessor.ExplosionAccessor",
+		"accessor.PatchedDataComponentMapAccessor",
 		"accessor.ServerLevelAccessor"
 	],
 	"injectors": {

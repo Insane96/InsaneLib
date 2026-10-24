@@ -3,6 +3,8 @@ package insane96mcp.insanelib.module.base.items;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
 import com.mojang.serialization.JsonOps;
 import insane96mcp.insanelib.InsaneLib;
 import insane96mcp.insanelib.core.feature.Feature;
@@ -20,21 +22,57 @@ import net.minecraft.resources.RegistryOps;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.Item;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.event.config.ModConfigEvent;
 import net.neoforged.neoforge.event.DefaultDataComponentsBoundEvent;
 import net.neoforged.neoforge.event.OnDatapackSyncEvent;
 
+import javax.annotation.Nullable;
 import java.util.*;
 
 @LoadFeature(description = "Allows modifying item data components via data packs", canBeDisabled = false)
 public class ItemComponentsFeature extends Feature {
 
-    @Config(description = "Vanilla limits max stack sizes to 99 for some reasons. This replaces that limit")
-    public static Integer stackLimit = 9999;
-
-    @Config
-    public static Boolean disableShrinkStackCount = false;
+    @Config(description = "Vanilla limits max stack sizes to 99 for some reasons. This increases that limit to 1073741823 (half the max integer value, so that two stacks can be summed without overflowing). For items with stack > 99 the number showing the count is shrunk. Items with count > 999 will show 1k, 1m, 1b. Requires MC restart.")
+    public static Boolean increaseStackLimit = true;
     @Config(description = "Always render the item stack count at a smaller scale, even when it's 99 or below")
     public static Boolean alwaysShrinkStackCount = false;
+    @Config
+    public static Boolean disableShrinkStackCount = false;
+
+    /**
+     * {@link #increaseStackLimit} as read the first time the config is loaded. Changing it while the game is running
+     * isn't supported, as stacks over the new limit would fail to be saved and loaded.
+     */
+    @Nullable
+    private static Boolean stackLimitIncreased = null;
+
+    @Override
+    public void readConfig(ModConfigEvent event) {
+        super.readConfig(event);
+        if (stackLimitIncreased == null)
+            stackLimitIncreased = increaseStackLimit;
+    }
+
+    /**
+     * Half of {@link Integer#MAX_VALUE}, as vanilla sums the counts of two stacks in an int when merging them
+     * (e.g. {@code AbstractContainerMenu#moveItemStackTo}), which would overflow and delete the items
+     */
+    public static final int INCREASED_STACK_LIMIT = Integer.MAX_VALUE / 2;
+
+    public static int getStackLimit() {
+        boolean increased = stackLimitIncreased != null ? stackLimitIncreased : increaseStackLimit;
+        return increased ? INCREASED_STACK_LIMIT : Item.ABSOLUTE_MAX_STACK_SIZE;
+    }
+
+    /**
+     * Replaces vanilla's {@code ExtraCodecs.intRange(min, 99)}. The max is checked on each decode/encode instead of being
+     * baked in the codec, as the codecs are built while bootstrapping Minecraft, before the config is loaded.
+     */
+    public static Codec<Integer> stackSizeCodec(int min) {
+        return Codec.INT.validate(value -> value >= min && value <= getStackLimit()
+                ? DataResult.success(value)
+                : DataResult.error(() -> "Value must be within range [" + min + ";" + getStackLimit() + "]: " + value));
+    }
 
     /**
      * Default components are bound to the item holders after tags ({@link net.neoforged.neoforge.event.TagsUpdatedEvent}
@@ -46,14 +84,11 @@ public class ItemComponentsFeature extends Feature {
         if (event.getUpdateCause() != DefaultDataComponentsBoundEvent.UpdateCause.SERVER_DATA_LOAD) {
             // Remote clients bind components while joining, before receiving the patches: clear the ones of the previous server
             if (event.shouldUpdateStaticData()) {
-                ItemComponentsReloadListener.PATCHED_COMPONENTS.clear();
-                ItemComponentsReloadListener.SYNCED_PATCHES.clear();
+                ItemComponentsReloadListener.PATCHED_COMPONENTS = Map.of();
+                ItemComponentsReloadListener.SYNCED_PATCHES = Map.of();
             }
             return;
         }
-
-        ItemComponentsReloadListener.PATCHED_COMPONENTS.clear();
-        ItemComponentsReloadListener.SYNCED_PATCHES.clear();
 
         HolderLookup.Provider registries = ItemComponentsReloadListener.registries;
         if (registries == null) {
@@ -87,8 +122,11 @@ public class ItemComponentsFeature extends Feature {
             }
         }
 
-        if (ItemComponentsReloadListener.DEFINITIONS.isEmpty() && allComponents.isEmpty() && allRemovals.isEmpty())
+        if (ItemComponentsReloadListener.DEFINITIONS.isEmpty() && allComponents.isEmpty() && allRemovals.isEmpty()) {
+            ItemComponentsReloadListener.PATCHED_COMPONENTS = Map.of();
+            ItemComponentsReloadListener.SYNCED_PATCHES = Map.of();
             return;
+        }
 
         // Sort by priority ascending so higher priority definitions are applied last and win
         List<ItemComponent> sorted = new ArrayList<>(ItemComponentsReloadListener.DEFINITIONS);
@@ -148,7 +186,7 @@ public class ItemComponentsFeature extends Feature {
                     else if (removeSet.contains(type))
                         existingValue = null;
                     else
-                        existingValue = item.components().get(type);
+                        existingValue = ItemComponentsReloadListener.getUnpatchedComponents(item).get(type);
                     try {
                         Object mergedValue;
                         if (existingValue == null) {
@@ -167,19 +205,21 @@ public class ItemComponentsFeature extends Feature {
             }
         }
 
-        // PATCHED_COMPONENTS is still empty here → Item.components() in the mixin falls through → vanilla prototype
         Set<Item> affectedItems = new HashSet<>();
         affectedItems.addAll(allComponents.keySet());
         affectedItems.addAll(allRemovals.keySet());
 
+        Map<Item, DataComponentMap> patchedComponents = new HashMap<>();
+        Map<Identifier, DataComponentPatch> syncedPatches = new HashMap<>();
         for (Item item : affectedItems) {
             Map<DataComponentType<?>, Object> toSet = allComponents.getOrDefault(item, Map.of());
             Set<DataComponentType<?>> toRemove = allRemovals.getOrDefault(item, Set.of());
             DataComponentPatch patch = buildPatch(toSet, toRemove);
-            DataComponentMap patched = PatchedDataComponentMap.fromPatch(item.components(), patch);
-            ItemComponentsReloadListener.PATCHED_COMPONENTS.put(item, patched);
-            ItemComponentsReloadListener.SYNCED_PATCHES.put(BuiltInRegistries.ITEM.getKey(item), patch);
+            patchedComponents.put(item, PatchedDataComponentMap.fromPatch(ItemComponentsReloadListener.getUnpatchedComponents(item), patch));
+            syncedPatches.put(BuiltInRegistries.ITEM.getKey(item), patch);
         }
+        ItemComponentsReloadListener.PATCHED_COMPONENTS = Map.copyOf(patchedComponents);
+        ItemComponentsReloadListener.SYNCED_PATCHES = Map.copyOf(syncedPatches);
 
         InsaneLib.LOGGER.info("ItemComponents: applied components to {} items", affectedItems.size());
     }

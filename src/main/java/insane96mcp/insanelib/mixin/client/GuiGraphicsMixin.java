@@ -1,10 +1,13 @@
 package insane96mcp.insanelib.mixin.client;
 
+import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import com.llamalad7.mixinextras.sugar.Local;
 import insane96mcp.insanelib.module.base.items.ItemComponentsFeature;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.world.item.ItemStack;
 import org.joml.Matrix3x2fStack;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -15,10 +18,36 @@ public abstract class GuiGraphicsMixin {
     @Unique
     private static final float SHRUNK_SCALE = 0.7F;
 
+    /**
+     * Counts over 999 are shown as 1k, 1m, 1b (rounded down) so they fit in the slot, with one decimal when the
+     * integer part has a single digit (e.g. 1.5k, 15k, 150k)
+     */
+    @ModifyExpressionValue(method = "itemCount",
+            at = @At(value = "INVOKE", target = "Ljava/lang/String;valueOf(I)Ljava/lang/String;"))
+    private String insanelib$abbreviateCount(String original, @Local(argsOnly = true) ItemStack stack) {
+        int count = stack.getCount();
+        if (count >= 1_000_000_000)
+            return insanelib$abbreviate(count, 1_000_000_000, "b");
+        if (count >= 1_000_000)
+            return insanelib$abbreviate(count, 1_000_000, "m");
+        if (count >= 1_000)
+            return insanelib$abbreviate(count, 1_000, "k");
+        return original;
+    }
+
+    @Unique
+    private static String insanelib$abbreviate(int count, int unit, String suffix) {
+        int tenths = count / (unit / 10);
+        if (tenths < 100)
+            return tenths / 10 + "." + tenths % 10 + suffix;
+        return count / unit + suffix;
+    }
+
     @WrapOperation(method = "itemCount",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphicsExtractor;text(Lnet/minecraft/client/gui/Font;Ljava/lang/String;IIIZ)V"))
-    private void insanelib$drawCount(GuiGraphicsExtractor instance, Font font, String text, int x, int y, int color, boolean dropShadow, Operation<Void> original) {
-        if (ItemComponentsFeature.disableShrinkStackCount || text == null || (!ItemComponentsFeature.alwaysShrinkStackCount && text.length() <= 2)) {
+    private void insanelib$drawCount(GuiGraphicsExtractor instance, Font font, String text, int x, int y, int color, boolean dropShadow, Operation<Void> original, @Local(argsOnly = true) ItemStack stack) {
+        // Based on the count and not on the text length, as abbreviated counts (e.g. 1k) are short
+        if (ItemComponentsFeature.disableShrinkStackCount || text == null || (!ItemComponentsFeature.alwaysShrinkStackCount && stack.getCount() <= 99)) {
             original.call(instance, font, text, x, y, color, dropShadow);
             return;
         }

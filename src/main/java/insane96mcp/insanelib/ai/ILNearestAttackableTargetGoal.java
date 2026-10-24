@@ -34,7 +34,7 @@ public class ILNearestAttackableTargetGoal<T extends LivingEntity> extends Targe
 	public ILNearestAttackableTargetGoal(Mob goalOwnerIn, Class<T> targetClassIn, boolean mustSee, boolean mustReach, @Nullable Predicate<LivingEntity> targetPredicate) {
 		super(goalOwnerIn, mustSee, mustReach);
 		this.targetClass = targetClassIn;
-		this.targetChance = 10;
+		this.targetChance = reducedTickDelay(10);
 		this.setFlags(EnumSet.of(Flag.TARGET));
 		this.targetEntitySelector = TargetingConditions.forCombat().range(this.getFollowDistance()).selector(targetPredicate == null ? null : (target, level) -> targetPredicate.test(target));
 	}

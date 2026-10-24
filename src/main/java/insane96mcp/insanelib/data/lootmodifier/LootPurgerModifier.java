@@ -67,9 +67,9 @@ public class LootPurgerModifier extends LootModifier {
     /** If {@code true}, damageable items are damaged proportionally instead of being removed. */
     private boolean applyToDamageable = false;
     /** Items in this tag are never purged or damaged. */
-    private Optional<TagKey<Item>> blacklistedItemsTag;
+    private Optional<TagKey<Item>> blacklistedItemsTag = Optional.empty();
     /** Entity types in this tag are never affected by this modifier. */
-    private Optional<TagKey<EntityType<?>>> blacklistedEntityTypeTag;
+    private Optional<TagKey<EntityType<?>>> blacklistedEntityTypeTag = Optional.empty();
 
     public LootPurgerModifier(LootItemCondition[] conditionsIn) {
         super(conditionsIn, IGlobalLootModifier.DEFAULT_PRIORITY);
@@ -97,15 +97,17 @@ public class LootPurgerModifier extends LootModifier {
 
         int spawnX = context.getLevel().getLevelData().getRespawnData().pos().getX();
         int spawnZ = context.getLevel().getLevelData().getRespawnData().pos().getZ();
-        int x = (int) context.getParameter(LootContextParams.ORIGIN).x;
-        int z = (int) context.getParameter(LootContextParams.ORIGIN).z;
-        int distanceFromSpawn = (int) Math.sqrt((x - spawnX) * (x - spawnX) + (z - spawnZ) * (z - spawnZ));
-        int distanceFromStart = distanceFromSpawn - this.startRange;
+        double x = context.getParameter(LootContextParams.ORIGIN).x - spawnX;
+        double z = context.getParameter(LootContextParams.ORIGIN).z - spawnZ;
+        int distanceFromSpawn = (int) Math.sqrt(x * x + z * z);
         float multiplier;
-        if (distanceFromStart <= 0)
+        if (distanceFromSpawn <= this.startRange)
             multiplier = 1f - this.multiplierAtStart;
+        // Also covers endRange <= startRange, avoiding a division by zero
+        else if (distanceFromSpawn >= this.endRange)
+            multiplier = 0f;
         else
-            multiplier = (this.endRange - distanceFromStart) / ((float) this.endRange - this.startRange) * (1f - this.multiplierAtStart);
+            multiplier = (this.endRange - distanceFromSpawn) / ((float) this.endRange - this.startRange) * (1f - this.multiplierAtStart);
         generatedLoot.removeIf(itemStack -> {
             if (blacklistedItemsTag.isPresent() && itemStack.is(blacklistedItemsTag.get()))
                 return false;

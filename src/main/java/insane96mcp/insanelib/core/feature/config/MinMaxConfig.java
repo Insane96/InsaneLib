@@ -60,6 +60,8 @@ public class MinMaxConfig {
         @Override
         public void set(Object value) {
             MinMaxConfig minMaxConfig = (MinMaxConfig) value;
+            if (!ConfigUtils.canSet(this.minConfig, this.name))
+                return;
             this.minConfig.set(minMaxConfig.min);
             this.maxConfig.set(minMaxConfig.max);
         }

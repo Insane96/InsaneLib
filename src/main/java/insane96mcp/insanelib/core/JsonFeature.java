@@ -9,6 +9,7 @@ import insane96mcp.insanelib.core.feature.Module;
 import insane96mcp.insanelib.data.JsonFeatureDataReloadListener;
 import insane96mcp.insanelib.data.ObjTag;
 import insane96mcp.insanelib.network.message.JsonConfigSyncMessage;
+import insane96mcp.insanelib.util.SnapshotList;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
@@ -82,17 +83,32 @@ public abstract class JsonFeature extends Feature {
             listRead = gson.fromJson(json, listType);
         }
         catch (Exception e) {
-            listRead = new ArrayList<>(defaultList);
+            listRead = null;
         }
-        List<T> oldEntries = new ArrayList<>(list);
+        if (listRead == null)
+            listRead = new ArrayList<>(defaultList);
+        replaceContents(list, listRead);
+    }
+
+    /**
+     * Replaces the contents of the list with the ones read. {@link SnapshotList}s are replaced at once, so that other
+     * threads never see them empty (e.g. the client in singleplayer while the integrated server reloads them)
+     */
+    private static <T> void replaceContents(List<T> list, List<T> listRead) {
+        if (list instanceof SnapshotList<T> snapshotList) {
+            snapshotList.replaceWith(listRead);
+            return;
+        }
+        // Not addAll + removeAll(oldEntries), as that would also remove the entries read that are equal to old ones
+        list.clear();
         list.addAll(listRead);
-        list.removeAll(oldEntries);
     }
 
     public static class JsonConfig<T> {
         String fileName;
         /**
-         * Items read from the json are stored in this list
+         * Items read from the json are stored in this list. Use a {@link SnapshotList} if it's read on the client, as in
+         * singleplayer it's shared with the integrated server, that rewrites it on {@code /reload}
          */
         List<T> list;
         /**
@@ -175,11 +191,11 @@ public abstract class JsonFeature extends Feature {
                 }
             }
 
-            List<T> oldEntries = new ArrayList<>(this.list);
             try (FileReader fileReader = new FileReader(file)) {
                 List<T> listRead = gson.fromJson(fileReader, listType);
-                this.list.addAll(listRead);
-                this.list.removeAll(oldEntries);
+                if (listRead == null)
+                    throw new JsonSyntaxException("The file is empty");
+                replaceContents(this.list, listRead);
             }
             catch (JsonSyntaxException e) {
                 InsaneLib.LOGGER.error("Parsing error loading Json {}: {}", FilenameUtils.removeExtension(file.getName()), e.getMessage());
@@ -241,7 +257,21 @@ public abstract class JsonFeature extends Feature {
     public void onTagsUpdatedEvent(TagsUpdatedEvent event) {
         if (event instanceof TagsUpdatedEvent.ClientPacketReceived) {
             for (JsonConfig<?> jsonConfig : JSON_CONFIGS) {
-                jsonConfig.onLoad(true);
+                // When joining a server tags are received before the sync, so synced configs are loaded in onClientSync
+                if (!jsonConfig.syncToClient)
+                    jsonConfig.onLoad(true);
+            }
+        }
+    }
+
+    /**
+     * Called on the client once the JsonConfigs with the given sync type have been synced
+     */
+    public static void onClientSync(Identifier syncType) {
+        for (JsonFeature feature : JsonFeatureDataReloadListener.INSTANCE.getJsonConfigFeatures()) {
+            for (JsonConfig<?> jsonConfig : feature.getJsonConfigs()) {
+                if (jsonConfig.syncToClient && syncType.equals(jsonConfig.syncType))
+                    jsonConfig.onLoad(true);
             }
         }
     }

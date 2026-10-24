@@ -44,7 +44,7 @@ public class DisenchantModifier extends LootModifier {
     );
 
     /** Items in this tag are not disenchanted. Enchanted books in the tag are also kept as enchanted books. */
-    private Optional<TagKey<Item>> blacklistedItemsTag;
+    private Optional<TagKey<Item>> blacklistedItemsTag = Optional.empty();
 
     public DisenchantModifier(LootItemCondition[] conditionsIn) {
         super(conditionsIn, IGlobalLootModifier.DEFAULT_PRIORITY);

@@ -43,6 +43,13 @@ public class Fixes extends Feature {
 	@Config(description = "If true, https://bugs.mojang.com/browse/MC/issues/MC-145114 will be fixed.")
 	public static Boolean fixMobCrossbowFireworkShooting = true;
 
+	@Config(description = "If true, falling blocks going through an End portal will no longer be duplicated.")
+	public static Boolean fixFallingBlockDupe = true;
+
+	public static boolean shouldFixFallingBlockDupe() {
+		return Feature.isEnabled(Fixes.class) && fixFallingBlockDupe;
+	}
+
 	public static boolean shouldFixMobCrossbowFireworkShooting() {
 		return Feature.isEnabled(Fixes.class) && fixMobCrossbowFireworkShooting;
 	}

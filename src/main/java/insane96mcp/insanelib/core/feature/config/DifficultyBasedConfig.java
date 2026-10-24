@@ -47,6 +47,8 @@ public class DifficultyBasedConfig {
         @Override
         public void set(Object value) {
             DifficultyBasedConfig difficultyBasedConfig = (DifficultyBasedConfig) value;
+            if (!ConfigUtils.canSet(this.easyConfig, this.name))
+                return;
             this.easyConfig.set(difficultyBasedConfig.easy);
             this.normalConfig.set(difficultyBasedConfig.normal);
             this.hardConfig.set(difficultyBasedConfig.hard);

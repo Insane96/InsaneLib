@@ -84,8 +84,6 @@ public class SerializableMobEffectInstance {
 			Builder builder = new Builder(holderOpt.get(), duration);
 			if (jObject.has("amplifier"))
 				builder.setAmplifier(GsonHelper.getAsInt(jObject, "amplifier"));
-			if (jObject.has("amplifier"))
-				builder.setAmplifier(GsonHelper.getAsInt(jObject, "amplifier"));
 			if (GsonHelper.getAsBoolean(jObject, "ambient", false))
 				builder.ambientParticles();
 			if (GsonHelper.getAsBoolean(jObject, "hide_particles", false))

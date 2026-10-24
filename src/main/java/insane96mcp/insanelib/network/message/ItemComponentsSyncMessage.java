@@ -37,17 +37,20 @@ public record ItemComponentsSyncMessage(Map<Identifier, DataComponentPatch> patc
     }
 
     public static void handle(final ItemComponentsSyncMessage payload, final IPayloadContext context) {
+        // Singleplayer / LAN host share PATCHED_COMPONENTS with the integrated server, that already computed them
+        if (context.connection().isMemoryConnection())
+            return;
         context.enqueueWork(() -> {
-            ItemComponentsReloadListener.PATCHED_COMPONENTS.clear();
+            Map<Item, DataComponentMap> patchedComponents = new HashMap<>();
             for (Map.Entry<Identifier, DataComponentPatch> entry : payload.patches().entrySet()) {
                 if (!BuiltInRegistries.ITEM.containsKey(entry.getKey())) {
                     InsaneLib.LOGGER.warn("ItemComponents: received sync for unknown item '{}', skipping", entry.getKey());
                     continue;
                 }
                 Item item = BuiltInRegistries.ITEM.getValue(entry.getKey());
-                DataComponentMap patched = PatchedDataComponentMap.fromPatch(item.components(), entry.getValue());
-                ItemComponentsReloadListener.PATCHED_COMPONENTS.put(item, patched);
+                patchedComponents.put(item, PatchedDataComponentMap.fromPatch(ItemComponentsReloadListener.getUnpatchedComponents(item), entry.getValue()));
             }
+            ItemComponentsReloadListener.PATCHED_COMPONENTS = Map.copyOf(patchedComponents);
         });
     }
 

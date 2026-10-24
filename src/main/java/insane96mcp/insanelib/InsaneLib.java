@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.TypeAdapterFactory;
 import com.mojang.logging.LogUtils;
+import insane96mcp.insanelib.client.ILConfigScreen;
 import insane96mcp.insanelib.command.ILCommand;
 import insane96mcp.insanelib.data.AttributeModifierOperationSerializer;
 import insane96mcp.insanelib.data.JsonFeatureDataReloadListener;
@@ -22,11 +23,9 @@ import net.minecraft.util.Util;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.IEventBus;
-import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
-import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
@@ -49,7 +48,8 @@ public class InsaneLib {
     /**
      * Same as {@link net.neoforged.neoforge.common.extensions.IAttributeExtension.FORMAT} but with one decimal place
      */
-    public static DecimalFormat ONE_DECIMAL_FORMATTER;
+    public static final DecimalFormat ONE_DECIMAL_FORMATTER = Util.make(new DecimalFormat("#.#"),
+            fmt -> fmt.setDecimalFormatSymbols(DecimalFormatSymbols.getInstance(Locale.ROOT)));
 
     public InsaneLib(IEventBus eventBus, ModContainer modContainer) {
         CONFIG = new ILModConfig(id("base"), "Base", ModConfig.Type.COMMON,
@@ -64,7 +64,6 @@ public class InsaneLib {
         ILLootFunctions.REGISTRY.register(eventBus);
         ILCriteriaTriggers.REGISTRY.register(eventBus);
 
-        eventBus.addListener(InsaneLib::clientSetup);
         eventBus.addListener(IntegratedPack::onAddPackFinders);
         eventBus.addListener(NetworkHandler::register);
         eventBus.addListener(PushResistance::attribute);
@@ -73,6 +72,7 @@ public class InsaneLib {
 
         if (FMLEnvironment.getDist().isClient()) {
             eventBus.addListener(EventPriority.LOWEST, CreativeTabsUtils::removeCreativeRemovalTaggedItems);
+            eventBus.addListener(ILConfigScreen::registerForILMods);
             NeoForge.EVENT_BUS.addListener(CreativeTabsUtils::onTagsUpdated);
         }
 
@@ -89,12 +89,6 @@ public class InsaneLib {
     private void onAddReloadListeners(AddServerReloadListenersEvent event) {
         event.addListener(id("json_feature_data"), JsonFeatureDataReloadListener.INSTANCE);
         event.addListener(id("item_components"), ItemComponentsReloadListener.INSTANCE);
-    }
-
-    @SubscribeEvent
-    public static void clientSetup(FMLClientSetupEvent event) {
-        ONE_DECIMAL_FORMATTER = Util.make(new DecimalFormat("#.#"),
-                fmt -> fmt.setDecimalFormatSymbols(DecimalFormatSymbols.getInstance(Locale.ROOT)));
     }
 
     public static void gatherData(GatherDataEvent.Client event) {

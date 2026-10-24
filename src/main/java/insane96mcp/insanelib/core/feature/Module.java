@@ -15,7 +15,7 @@ import javax.annotation.Nullable;
 import java.util.*;
 
 public class Module {
-    static final HashMap<Identifier, Module> modules = new HashMap<>();
+    static final HashMap<Identifier, Module> modules = new LinkedHashMap<>();
 
     private ModConfigSpec.ConfigValue<Boolean> enabledConfig;
 
@@ -31,8 +31,8 @@ public class Module {
     private final String modId;
     private final ModConfig.Type modConfigType;
 
-    private static final Map<Class<? extends Feature>, Feature> loadedFeatures = new HashMap<>();
-    private final Map<Class<? extends Feature>, Feature> features = new HashMap<>();
+    private static final Map<Class<? extends Feature>, Feature> loadedFeatures = new LinkedHashMap<>();
+    private final Map<Class<? extends Feature>, Feature> features = new LinkedHashMap<>();
 
     Module(Identifier id, String name, ModConfig.Type modConfigType, ModConfigSpec.Builder configBuilder, IEventBus modEventBus) {
         this.id = id;
@@ -121,7 +121,9 @@ public class Module {
     }
 
     public void readConfig(final ModConfigEvent event) {
-        if (event.getConfig().getType() != this.modConfigType
+        // SERVER configs get unloaded when the server stops; the values can no longer be read, so the last ones read are kept
+        if (event instanceof ModConfigEvent.Unloading
+                || event.getConfig().getType() != this.modConfigType
                 || !event.getConfig().getModId().equals(this.modId))
             return;
 
@@ -153,7 +155,7 @@ public class Module {
     private static final Type LOAD_FEATURE_TYPE = Type.getType(LoadFeature.class);
 
     public static void loadFeatures(ModConfig.Type modConfigType, String modId, ClassLoader classLoader) {
-        Set<Module> modulesToLoad = new HashSet<>();
+        Set<Module> modulesToLoad = new LinkedHashSet<>();
         ModFileScanData modFileScanData = ModList.get().getModFileById(modId).getFile().getScanResult();
         modFileScanData.getAnnotations().stream()
                 .filter(annotation -> LOAD_FEATURE_TYPE.equals(annotation.annotationType()))

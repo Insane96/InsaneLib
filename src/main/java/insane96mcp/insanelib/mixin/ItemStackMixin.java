@@ -1,7 +1,10 @@
 package insane96mcp.insanelib.mixin;
 
-import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import com.mojang.serialization.Codec;
 import insane96mcp.insanelib.event.ILEventFactory;
+import insane96mcp.insanelib.mixin.accessor.PatchedDataComponentMapAccessor;
 import insane96mcp.insanelib.module.base.items.ItemComponentsFeature;
 import insane96mcp.insanelib.module.base.items.ItemComponentsReloadListener;
 import net.minecraft.core.component.DataComponentMap;
@@ -29,9 +32,9 @@ public abstract class ItemStackMixin {
     @Shadow public abstract Item getItem();
     @Shadow public abstract boolean isEmpty();
 
-    @ModifyExpressionValue(method = "lambda$static$1", at = @At(value = "CONSTANT", args = "intValue=99"))
-    private static int insanelib$maxCountRange(int original) {
-        return ItemComponentsFeature.stackLimit;
+    @WrapOperation(method = "lambda$static$1", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/ExtraCodecs;intRange(II)Lcom/mojang/serialization/Codec;"))
+    private static Codec<Integer> insanelib$maxCountRange(int min, int max, Operation<Codec<Integer>> original) {
+        return ItemComponentsFeature.stackSizeCodec(min);
     }
 
     @Inject(method = "getComponents", at = @At("HEAD"), cancellable = true)
@@ -44,8 +47,15 @@ public abstract class ItemStackMixin {
         if (this.isEmpty())
             return;
         DataComponentMap override = ItemComponentsReloadListener.PATCHED_COMPONENTS.get(getItem());
-        if (override == null)
+        if (override == null) {
+            // A stack corrected while its item was patched keeps the patched prototype after a reload removes the
+            // patch, so it's restored to the item's own one. Identity check, as every ItemStack gets item.components()
+            // as prototype, so this is cheap and the field is swapped only once.
+            DataComponentMap prototype = getItem().components();
+            if (((PatchedDataComponentMapAccessor) (Object) this.components).getPrototype() != prototype)
+                this.components = PatchedDataComponentMap.fromPatch(prototype, this.components.asPatch());
             return;
+        }
         PatchedDataComponentMap corrected = PatchedDataComponentMap.fromPatch(override, this.components.asPatch());
         // Only swap the field when the correction actually changes something. Reassigning on every call
         // (even when it's a no-op content-wise) hands out a fresh object identity each time, which breaks

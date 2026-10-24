@@ -3,6 +3,7 @@ package insane96mcp.insanelib.mixin;
 import insane96mcp.insanelib.InsaneLib;
 import insane96mcp.insanelib.core.feature.Feature;
 import insane96mcp.insanelib.event.ILEventFactory;
+import insane96mcp.insanelib.module.base.Fixes;
 import insane96mcp.insanelib.module.base.betterfallingblocks.BetterFallingBlockExtensor;
 import insane96mcp.insanelib.module.base.betterfallingblocks.BetterFallingBlocks;
 import net.minecraft.core.BlockPos;
@@ -85,6 +86,9 @@ public abstract class FallingBlockEntityMixin extends Entity implements BetterFa
     public boolean dropItem;
 
     @Shadow
+    public boolean forceTickAfterTeleportToDuplicate;
+
+    @Shadow
     private boolean cancelDrop;
 
     @Shadow
@@ -103,6 +107,15 @@ public abstract class FallingBlockEntityMixin extends Entity implements BetterFa
         ILEventFactory.onFallingBlockLand((FallingBlockEntity) (Object) this);
     }
 
+    /**
+     * Vanilla keeps ticking the falling block that went through an End portal (forceTickAfterTeleportToDuplicate), placing it in both dimensions
+     */
+    @Inject(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/item/FallingBlockEntity;handlePortal()V", shift = At.Shift.AFTER), cancellable = true)
+    private void insanelib$fixDupeAfterPortal(CallbackInfo ci) {
+        if (Fixes.shouldFixFallingBlockDupe() && this.isRemoved())
+            ci.cancel();
+    }
+
     @Inject(method = "tick", at = @At("HEAD"), cancellable = true)
     private void insanelib$replaceTick(CallbackInfo ci) {
         if (!Feature.isEnabled(BetterFallingBlocks.class)
@@ -119,10 +132,6 @@ public abstract class FallingBlockEntityMixin extends Entity implements BetterFa
 
     @Unique
     private boolean insanelib$shouldDiscardEntity() {
-        //Fixes duping exploit through dimensions
-        if (BetterFallingBlocks.fixDupeExploit && this.isRemoved())
-            return true;
-
         if (this.blockState.isAir()) {
             this.discard();
             return true;
@@ -137,12 +146,16 @@ public abstract class FallingBlockEntityMixin extends Entity implements BetterFa
             this.setDeltaMovement(this.getDeltaMovement().add(0.0D, -GRAVITY_ACCELERATION, 0.0D));
         }
         this.move(MoverType.SELF, this.getDeltaMovement());
+        this.handlePortal();
         this.setDeltaMovement(this.getDeltaMovement().scale(AIR_RESISTANCE));
     }
 
     @Unique
     private void insanelib$handleServerSideLogic() {
         if (this.level().isClientSide())
+            return;
+        // Same as vanilla, the falling block that went through an End portal keeps ticking and is placed in both dimensions
+        if (!this.isAlive() && (!this.forceTickAfterTeleportToDuplicate || Fixes.shouldFixFallingBlockDupe()))
             return;
 
         BlockPos blockPos = this.blockPosition();
@@ -212,11 +225,10 @@ public abstract class FallingBlockEntityMixin extends Entity implements BetterFa
         boolean canReplaceAtPos = stateAt.canBeReplaced(new DirectionalPlaceContext(this.level(), blockPos, Direction.DOWN, ItemStack.EMPTY, Direction.UP));
         boolean breakInstaBreak = BetterFallingBlocks.breakInstabreakBlocks;
         boolean isInstaBreak = stateAt.getDestroySpeed(this.level(), blockPos) == 0f;
-        boolean isInstaBreakBelow = blockStateBelow.getDestroySpeed(this.level(), blockPos.below()) == 0f;
         boolean canBreakAtPos = isInstaBreak && breakInstaBreak;
-        boolean canBreakBelow = isInstaBreakBelow && breakInstaBreak;
         boolean shouldHydrate = isConcretePowder && canBeHydrated;
-        boolean isFreeBelow = (FallingBlock.isFree(blockStateBelow) || canBreakBelow) && !shouldHydrate;
+        // Insta-break blocks below with a collision (e.g. slime blocks) are not free, the block lands on them
+        boolean isFreeBelow = FallingBlock.isFree(blockStateBelow) && !shouldHydrate;
 
         if (isFreeBelow) {
             if (this.getDeltaMovement().length() <= 1e-5f) {
@@ -387,8 +399,8 @@ public abstract class FallingBlockEntityMixin extends Entity implements BetterFa
 
     @Unique
     private void insanelib$handleFailedPlacement(Block block, BlockPos pos) {
+        this.discard();
         if (this.dropItem && ((ServerLevel) this.level()).getGameRules().get(GameRules.ENTITY_DROPS)) {
-            this.discard();
             this.callOnBrokenAfterFall(block, pos);
             this.spawnAtLocation((ServerLevel) this.level(), block);
         }

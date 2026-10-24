@@ -11,6 +11,7 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemInstance;
@@ -59,8 +60,8 @@ public class ReplaceLootModifier extends LootModifier {
                             BuiltInRegistries.ITEM.byNameCodec().fieldOf("item_to_replace").forGetter(m -> m.itemToReplace),
                             BuiltInRegistries.ITEM.byNameCodec().fieldOf("new_item").forGetter(m -> m.newItem),
                             Codec.INT.optionalFieldOf("amount_to_replace", -1).forGetter(m -> m.amountToReplace),
-                            Codec.list(Codec.FLOAT).optionalFieldOf("chances", List.of(1f)).forGetter(m -> m.chances),
-                            Codec.list(Codec.FLOAT).optionalFieldOf("multipliers", List.of(1f)).forGetter(m -> m.multipliers),
+                            ExtraCodecs.nonEmptyList(Codec.list(Codec.FLOAT)).optionalFieldOf("chances", List.of(1f)).forGetter(m -> m.chances),
+                            ExtraCodecs.nonEmptyList(Codec.list(Codec.FLOAT)).optionalFieldOf("multipliers", List.of(1f)).forGetter(m -> m.multipliers),
                             Codec.BOOL.optionalFieldOf("keep_durability", false).forGetter(m -> m.keepDurability),
                             Codec.BOOL.optionalFieldOf("chests_only", false).forGetter(m -> m.chestsOnly)
                     ).apply(inst, ReplaceLootModifier::new)
@@ -142,7 +143,7 @@ public class ReplaceLootModifier extends LootModifier {
                         copyComponents(stack, newStack, false, 0f);
                         toAdd.add(newStack);
                         if (amountToReplace < stack.getCount())
-                            toAdd.add(new ItemStack(itemToReplace, stack.getCount() - amountToReplace));
+                            toAdd.add(stack.copyWithCount(stack.getCount() - amountToReplace));
                     }
                 });
 

@@ -10,6 +10,6 @@ import org.spongepowered.asm.mixin.injection.At;
 public interface ContainerMixin {
     @ModifyExpressionValue(method = "getMaxStackSize()I", at = @At(value = "CONSTANT", args = "intValue=99"))
     default int insanelib$maxStackSize(int original) {
-        return ItemComponentsFeature.stackLimit;
+        return ItemComponentsFeature.getStackLimit();
     }
 }

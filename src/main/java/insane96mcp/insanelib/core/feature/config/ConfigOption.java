@@ -53,6 +53,8 @@ public abstract class ConfigOption<T> {
 
         @Override
         public void set(Object value) {
+            if (!ConfigUtils.canSet(this.valueConfig, this.name))
+                return;
             this.valueConfig.set(value);
         }
 
@@ -78,6 +80,8 @@ public abstract class ConfigOption<T> {
 
         @Override
         public void set(Object value) {
+            if (!ConfigUtils.canSet(this.valueConfig, this.name))
+                return;
             this.valueConfig.set((Double) value);
         }
 
@@ -103,6 +107,8 @@ public abstract class ConfigOption<T> {
 
         @Override
         public void set(Object value) {
+            if (!ConfigUtils.canSet(this.valueConfig, this.name))
+                return;
             this.valueConfig.set((Integer) value);
         }
 
@@ -128,6 +134,8 @@ public abstract class ConfigOption<T> {
 
         @Override
         public void set(Object value) {
+            if (!ConfigUtils.canSet(this.valueConfig, this.name))
+                return;
             this.valueConfig.set((Boolean) value);
         }
 
@@ -153,6 +161,8 @@ public abstract class ConfigOption<T> {
 
         @Override
         public void set(Object value) {
+            if (!ConfigUtils.canSet(this.valueConfig, this.name))
+                return;
             this.valueConfig.set((String) value);
         }
 
@@ -178,6 +188,8 @@ public abstract class ConfigOption<T> {
 
         @Override
         public void set(Object value) {
+            if (!ConfigUtils.canSet(this.valueConfig, this.name))
+                return;
             this.valueConfig.set((List<? extends String>) value);
         }
 
@@ -204,6 +216,8 @@ public abstract class ConfigOption<T> {
 
         @Override
         public void set(Object value) {
+            if (!ConfigUtils.canSet(this.valueConfig, this.name))
+                return;
             this.valueConfig.set((T) value);
         }
 
