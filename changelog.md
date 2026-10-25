@@ -1,4 +1,4 @@
-# Upcoming
+# 2.4.36.1
 * Fixed mods with multiple configs (e.g. a SERVER and a CLIENT one) logging "No module found with ID ..." warnings for features of the configs created later, even if everything was loaded correctly
   * A `module` in `@LoadFeature` that no config registers (e.g. a typo) is now reported once all the mods are loaded, unless the feature's `requiresMods` are missing
   * A `@LoadFeature` without `module` in a mod with multiple modules is now always reported, also when it was loaded in the only module existing at that time
