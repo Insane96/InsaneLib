@@ -1,4 +1,4 @@
-# Upcoming
+# 2.4.37.0
 * Thrown tridents damage is now calculated from the attack damage modifiers of the item thrown (moved from Insane's Survival Overhaul), instead of a fixed 8. Vanilla tridents still deal 8, but changes to the trident attack damage (data packs, mods) now apply when thrown too
 * Fixed `MCUtils.hurtIgnoreInvulnerability` leaving the entity's last hurt damage set to the damage just dealt, so during the remaining invulnerability frames hits stronger than that damage (instead of stronger than the previous hit) went through
 
