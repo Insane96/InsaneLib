@@ -1,3 +1,9 @@
+# Upcoming
+* Fixed mods with multiple configs (e.g. a SERVER and a CLIENT one) logging "No module found with ID ..." warnings for features of the configs created later, even if everything was loaded correctly
+  * A `module` in `@LoadFeature` that no config registers (e.g. a typo) is now reported once all the mods are loaded, unless the feature's `requiresMods` are missing
+  * A `@LoadFeature` without `module` in a mod with multiple modules is now always reported, also when it was loaded in the only module existing at that time
+* `Feature.isEnabled(Class)` crashes again (now with a clear message) when the feature failed to load, instead of silently returning false since 2.4.36.0. It still returns false for features not loaded because their `requiresMods` are missing or for CLIENT features on dedicated servers
+
 # 2.4.36.0
 * Item Components' "Stack Limit" config option has been replaced by "Increase Stack Limit" (true by default), which raises the vanilla limit of 99 to 1,073,741,823. Requires a Minecraft restart
   * Previously the configured value was ignored by the item and component codecs, which always used 9999 since they are built before the config is loaded

@@ -34,6 +34,13 @@ public class Module {
     private static final Map<Class<? extends Feature>, Feature> loadedFeatures = new LinkedHashMap<>();
     private final Map<Class<? extends Feature>, Feature> features = new LinkedHashMap<>();
 
+    // @LoadFeature (by class name) whose module didn't exist yet when processed. It might be registered by an ILModConfig of the mod created later, so they're checked in checkFeatureModules
+    private static final Map<String, ModFileScanData.AnnotationData> unresolvedModuleFeatures = new LinkedHashMap<>();
+    // @LoadFeature (by class name) that don't specify a module, with their mod id. They're valid only if the mod registers a single module, checked in checkFeatureModules
+    private static final Map<String, String> implicitModuleFeatures = new LinkedHashMap<>();
+    // @LoadFeature (by class name) intentionally not loaded: required mods missing or CLIENT features on dedicated servers
+    private static final Set<String> skippedFeatures = new HashSet<>();
+
     Module(ResourceLocation id, String name, ModConfig.Type modConfigType, ModConfigSpec.Builder configBuilder, IEventBus modEventBus) {
         this.id = id;
         this.name = name;
@@ -182,40 +189,36 @@ public class Module {
                                                 Set<Module> modulesToLoad) throws Exception {
         Map<String, Object> annotationDataMap = annotationData.annotationData();
         String moduleStr = (String) annotationDataMap.get("module");
+        String className = annotationData.clazz().getClassName();
 
+        // Errors are not logged here as the mod might create more ILModConfigs after this one, they're reported by checkFeatureModules
         Module module;
         if (moduleStr == null || moduleStr.isEmpty()) {
             List<Module> modModules;
             synchronized (_lock) {
-                modModules = Module.modules.values().stream()
-                        .filter(m -> m.getId().getNamespace().equals(modId))
-                        .toList();
+                implicitModuleFeatures.put(className, modId);
+                modModules = getModModules(modId);
             }
-            if (modModules.size() == 1) {
-                module = modModules.getFirst();
-            }
-            else if (modModules.isEmpty()) {
-                InsaneLib.LOGGER.warn("No module found for mod {}", modId);
+            if (modModules.size() != 1)
                 return;
-            }
-            else {
-                InsaneLib.LOGGER.warn("@LoadFeature on {} must specify 'module' — multiple modules registered for mod {}", annotationData.clazz().getClassName(), modId);
-                return;
-            }
+            module = modModules.getFirst();
         }
         else {
             ResourceLocation moduleId = ResourceLocation.parse(moduleStr);
             synchronized (_lock) {
                 module = Module.modules.get(moduleId);
-            }
-            if (module == null) {
-                InsaneLib.LOGGER.warn("No module found with ID {}", moduleId);
-                return;
+                if (module == null) {
+                    unresolvedModuleFeatures.putIfAbsent(className, annotationData);
+                    return;
+                }
             }
         }
-        if (module.modConfigType != modConfigType
-                || (FMLEnvironment.dist.isDedicatedServer() && module.modConfigType == ModConfig.Type.CLIENT))
+        if (module.modConfigType != modConfigType)
             return;
+        if (FMLEnvironment.dist.isDedicatedServer() && module.modConfigType == ModConfig.Type.CLIENT) {
+            markSkipped(className);
+            return;
+        }
 
         Type type = annotationData.clazz();
         Class<?> clazz = Class.forName(type.getClassName(), false, classLoader);
@@ -224,8 +227,10 @@ public class Module {
         @SuppressWarnings("unchecked")
         Class<? extends Feature> featureClazz = (Class<? extends Feature>) clazz;
 
-        if (!areRequiredModsLoaded(annotationDataMap, type.getClassName()))
+        if (!areRequiredModsLoaded(annotationDataMap, type.getClassName())) {
+            markSkipped(className);
             return;
+        }
 
         boolean enabledByDefault = (Boolean) annotationDataMap.getOrDefault("enabledByDefault", true);
         boolean canBeDisabled = (Boolean) annotationDataMap.getOrDefault("canBeDisabled", true);
@@ -239,18 +244,76 @@ public class Module {
     }
 
     private static boolean areRequiredModsLoaded(Map<String, Object> annotationDataMap, String className) {
+        Optional<String> missingMod = getMissingRequiredMod(annotationDataMap);
+        missingMod.ifPresent(modId -> InsaneLib.LOGGER.info("Feature {} not loaded because {} is not present", className, modId));
+        return missingMod.isEmpty();
+    }
+
+    private static Optional<String> getMissingRequiredMod(Map<String, Object> annotationDataMap) {
         if (!annotationDataMap.containsKey("requiresMods"))
-            return true;
+            return Optional.empty();
 
         @SuppressWarnings("unchecked")
         List<String> requiredMods = (List<String>) annotationDataMap.get("requiresMods");
-        for (String modId : requiredMods) {
-            if (!ModList.get().isLoaded(modId)) {
-                InsaneLib.LOGGER.info("Feature {} not loaded because {} is not present", className, modId);
-                return false;
-            }
+        return requiredMods.stream()
+                .filter(modId -> !ModList.get().isLoaded(modId))
+                .findFirst();
+    }
+
+    private static void markSkipped(String className) {
+        synchronized (_lock) {
+            skippedFeatures.add(className);
         }
-        return true;
+    }
+
+    /**
+     * Whether the feature has intentionally not been loaded (its required mods are missing or it's a CLIENT feature on a dedicated server)
+     */
+    public static boolean isFeatureSkipped(Class<? extends Feature> featureClazz) {
+        synchronized (_lock) {
+            return skippedFeatures.contains(featureClazz.getName());
+        }
+    }
+
+    private static List<Module> getModModules(String modId) {
+        return Module.modules.values().stream()
+                .filter(m -> m.getId().getNamespace().equals(modId))
+                .toList();
+    }
+
+    /**
+     * Reports the @LoadFeature not loaded because of a wrong {@code module}: one never registered by any ILModConfig
+     * (ignored if the feature's required mods are missing), or none while the mod registers more than one module.<br>
+     * A mod can create multiple ILModConfigs and while loading one the modules of the ones created later don't exist yet,
+     * so the check can be done only once all the mods have been constructed.
+     */
+    public static void checkFeatureModules() {
+        synchronized (_lock) {
+            unresolvedModuleFeatures.forEach((className, annotationData) -> {
+                ResourceLocation moduleId = ResourceLocation.parse((String) annotationData.annotationData().get("module"));
+                if (!Module.modules.containsKey(moduleId) && getMissingRequiredMod(annotationData.annotationData()).isEmpty())
+                    InsaneLib.LOGGER.warn("@LoadFeature on {} specifies module {}, but no ILModConfig registered it. The feature has not been loaded", className, moduleId);
+            });
+            implicitModuleFeatures.forEach((className, modId) -> {
+                List<Module> modModules = getModModules(modId);
+                if (modModules.size() == 1)
+                    return;
+                if (modModules.isEmpty()) {
+                    InsaneLib.LOGGER.warn("@LoadFeature on {} doesn't specify 'module' and no module is registered for mod {}. The feature has not been loaded", className, modId);
+                    return;
+                }
+                Optional<Feature> loadedFeature = loadedFeatures.entrySet().stream()
+                        .filter(entry -> entry.getKey().getName().equals(className))
+                        .map(Map.Entry::getValue)
+                        .findFirst();
+                if (loadedFeature.isPresent())
+                    InsaneLib.LOGGER.warn("@LoadFeature on {} must specify 'module' — multiple modules registered for mod {}. The feature has been loaded in {} only because it was the sole module when the feature was processed, which depends on the order the ILModConfigs are created", className, modId, loadedFeature.get().getModule().getId());
+                else
+                    InsaneLib.LOGGER.warn("@LoadFeature on {} must specify 'module' — multiple modules registered for mod {}. The feature has not been loaded", className, modId);
+            });
+            unresolvedModuleFeatures.clear();
+            implicitModuleFeatures.clear();
+        }
     }
 
     private static Feature instantiateFeature(Class<?> clazz, Module module, boolean enabledByDefault, boolean canBeDisabled) {

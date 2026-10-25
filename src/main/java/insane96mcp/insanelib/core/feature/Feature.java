@@ -266,7 +266,11 @@ public class Feature {
 
     public static boolean isEnabled(Class<? extends Feature> feature) {
         Feature f = get(feature);
-        return f != null && f.isEnabled();
+        if (f != null)
+            return f.isEnabled();
+        if (Module.isFeatureSkipped(feature))
+            return false;
+        throw new IllegalStateException("Feature %s is not loaded. Check that it's annotated with @LoadFeature with a module registered by an ILModConfig (see the warnings in the log)".formatted(feature.getName()));
     }
 
     public static boolean isEnabled(String featureName) {

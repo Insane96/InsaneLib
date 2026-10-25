@@ -7,6 +7,7 @@ import com.mojang.logging.LogUtils;
 import insane96mcp.insanelib.client.ILConfigScreen;
 import insane96mcp.insanelib.client.ItemComponentsClientHandler;
 import insane96mcp.insanelib.command.ILCommand;
+import insane96mcp.insanelib.core.feature.Module;
 import insane96mcp.insanelib.data.AttributeModifierOperationSerializer;
 import insane96mcp.insanelib.data.JsonFeatureDataReloadListener;
 import insane96mcp.insanelib.data.poolinjection.PoolInjectionLoader;
@@ -29,6 +30,7 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
+import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
@@ -72,6 +74,8 @@ public class InsaneLib {
         eventBus.addListener(PushResistance::attribute);
         eventBus.addListener(MobDetectionRange::attribute);
         eventBus.addListener(InsaneLib::gatherData);
+        // Every mod has created its ILModConfigs by now
+        eventBus.addListener((FMLCommonSetupEvent event) -> Module.checkFeatureModules());
 
         if (FMLLoader.getDist().isClient()) {
             eventBus.addListener(EventPriority.LOWEST, CreativeTabsUtils::removeCreativeRemovalTaggedItems);

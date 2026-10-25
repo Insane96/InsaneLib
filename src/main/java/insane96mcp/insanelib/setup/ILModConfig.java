@@ -61,6 +61,29 @@ import java.util.function.BiConsumer;
  *     <li>When the server stops the config is unloaded but {@code @Config} fields keep the last values read.
  *     {@code ConfigOption#set} and {@code Feature#setEnabledConfig} do nothing (and log a warning) while the config is not loaded.</li>
  * </ul>
+ *
+ * <p><b>Multiple configs</b> (e.g. a SERVER config for gameplay and a CLIENT config for rendering, each with its own module):
+ * <pre>{@code
+ * public static final String MAIN_MODULE = MOD_ID + ":main";
+ * public static final String CLIENT_MODULE = MOD_ID + ":client";
+ *
+ *     CONFIG = new ILModConfig(ResourceLocation.parse(MAIN_MODULE), "Single Module", ModConfig.Type.SERVER,
+ *             modEventBus, MyMod.class.getClassLoader());
+ *     modContainer.registerConfig(ModConfig.Type.SERVER, CONFIG.spec);
+ *     CLIENT_CONFIG = new ILModConfig(ResourceLocation.parse(CLIENT_MODULE), "Client", ModConfig.Type.CLIENT,
+ *             modEventBus, MyMod.class.getClassLoader());
+ *     modContainer.registerConfig(ModConfig.Type.CLIENT, CLIENT_CONFIG.spec);
+ * }</pre>
+ * Features use {@code @LoadFeature(module = MyMod.MAIN_MODULE, ...)} or {@code @LoadFeature(module = MyMod.CLIENT_MODULE, ...)}.
+ * Notes on multiple configs:
+ * <ul>
+ *     <li>Each config loads only the features of its own modules. Create all the configs in the mod constructor, also the
+ *     CLIENT one on dedicated servers (its features are skipped there).</li>
+ *     <li>Features must always specify {@code module}. If they don't, the feature is assigned to the only module
+ *     existing when it's processed, which depends on the order the configs are created, and a warning is logged.</li>
+ *     <li>A {@code module} that no config registers (e.g. a typo) is logged as a warning once all the mods have been
+ *     constructed (common setup), unless the feature's {@code requiresMods} are missing.</li>
+ * </ul>
  */
 public class ILModConfig {
     private static final Set<ModContainer> MOD_CONTAINERS = Collections.synchronizedSet(new LinkedHashSet<>());
