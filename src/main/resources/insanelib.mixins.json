@@ -28,6 +28,7 @@
 		"PlayerMixin",
 		"ProjectileWeaponItemMixin",
 		"ReloadableServerRegistriesMixin",
+		"ThrownTridentMixin",
 		"accessor.CreeperAccessor",
 		"accessor.ExplosionAccessor",
 		"accessor.ItemAccessor",

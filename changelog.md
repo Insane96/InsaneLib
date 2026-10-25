@@ -1,3 +1,7 @@
+# Upcoming
+* Thrown tridents damage is now calculated from the attack damage modifiers of the item thrown (moved from Insane's Survival Overhaul), instead of a fixed 8. Vanilla tridents still deal 8, but changes to the trident attack damage (data packs, mods) now apply when thrown too
+* Fixed `MCUtils.hurtIgnoreInvulnerability` leaving the entity's last hurt damage set to the damage just dealt, so during the remaining invulnerability frames hits stronger than that damage (instead of stronger than the previous hit) went through
+
 # 2.4.36.1
 * Fixed mods with multiple configs (e.g. a SERVER and a CLIENT one) logging "No module found with ID ..." warnings for features of the configs created later, even if everything was loaded correctly
   * A `module` in `@LoadFeature` that no config registers (e.g. a typo) is now reported once all the mods are loaded, unless the feature's `requiresMods` are missing
