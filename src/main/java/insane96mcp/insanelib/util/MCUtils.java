@@ -3,6 +3,7 @@ package insane96mcp.insanelib.util;
 import com.ezylang.evalex.Expression;
 import com.ezylang.evalex.data.EvaluationValue;
 import insane96mcp.insanelib.InsaneLib;
+import insane96mcp.insanelib.mixin.accessor.LivingEntityAccessor;
 import insane96mcp.insanelib.mixin.accessor.MobEffectInstanceAccessor;
 import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.core.BlockPos;
@@ -135,11 +136,16 @@ public class MCUtils {
 		itemStack.set(DataComponents.ATTRIBUTE_MODIFIERS, modifiers);
 	}
 
+	/**
+	 * Hurts the entity ignoring its invulnerability frames, then restores them along with {@code lastHurt}, so the remaining frames still only let through damage above the previous hit's
+	 */
 	public static boolean hurtIgnoreInvulnerability(LivingEntity hurtEntity, DamageSource source, float amount) {
 		int hurtResistantTime = hurtEntity.invulnerableTime;
+		float lastHurt = ((LivingEntityAccessor) hurtEntity).getLastHurt();
 		hurtEntity.invulnerableTime = 0;
 		boolean attacked = hurtEntity.hurt(source, amount);
 		hurtEntity.invulnerableTime = hurtResistantTime;
+		((LivingEntityAccessor) hurtEntity).setLastHurt(lastHurt);
 		return attacked;
 	}
 
