@@ -5,6 +5,7 @@ import insane96mcp.insanelib.core.feature.config.*;
 import insane96mcp.insanelib.data.ObjTag;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.config.ModConfigEvent;
 import net.neoforged.neoforge.common.ModConfigSpec;
 import net.neoforged.neoforge.common.NeoForge;
@@ -21,6 +22,7 @@ public class Feature {
     private String description;
     private ModConfigSpec.ConfigValue<Boolean> enabledConfig;
     private Module module;
+    private ModConfig.Type configType;
 
     private boolean enabledByDefault;
     private boolean canBeDisabled;
@@ -62,6 +64,10 @@ public class Feature {
 
     protected Feature() {}
 
+    void setConfigType(ModConfig.Type configType) {
+        this.configType = configType;
+    }
+
     public void init(Module module, boolean enabledByDefault, boolean canBeDisabled) {
         this.module = module;
         this.enabledByDefault = enabledByDefault;
@@ -90,8 +96,11 @@ public class Feature {
         return enabled && this.isModuleEnabled();
     }
 
+    /**
+     * @return true if the module is enabled in the config of this feature's config type
+     */
     public boolean isModuleEnabled() {
-        return this.module.isEnabled();
+        return this.module.isEnabled(this.configType);
     }
 
     public void setEnabled(boolean enabled) {
@@ -111,6 +120,13 @@ public class Feature {
         return module;
     }
 
+    /**
+     * The config type (file) this feature is in, specified with {@link ConfigType} or the module's default one
+     */
+    public ModConfig.Type getConfigType() {
+        return configType;
+    }
+
     public String getName() {
         return name;
     }
@@ -120,7 +136,7 @@ public class Feature {
     }
 
     public ModConfigSpec.Builder getBuilder() {
-        return this.module.configBuilder;
+        return this.module.getConfigBuilder(this.configType);
     }
 
     HashMap<Field, ConfigOption<?>> configOptions = new HashMap<>();
@@ -177,8 +193,8 @@ public class Feature {
     public final void loadConfig() {
         if (this.canBeDisabled) {
             if (!this.description.isEmpty())
-                this.module.configBuilder.comment(getDescription());
-            enabledConfig = this.module.configBuilder.define("Enable " + getName(), enabledByDefault);
+                this.getBuilder().comment(getDescription());
+            enabledConfig = this.getBuilder().define("Enable " + getName(), enabledByDefault);
         }
         else
             enabledConfig = null;
@@ -241,13 +257,13 @@ public class Feature {
 
     public void pushConfig() {
         if (!description.isEmpty())
-            this.module.configBuilder.comment(this.getDescription());
+            this.getBuilder().comment(this.getDescription());
 
-        this.module.configBuilder.push(this.getName());
+        this.getBuilder().push(this.getName());
     }
 
     protected void popConfig() {
-        this.module.configBuilder.pop();
+        this.getBuilder().pop();
     }
 
     public void registerEvents() {

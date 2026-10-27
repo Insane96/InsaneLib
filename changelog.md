@@ -1,3 +1,13 @@
+# 2.5.0.0-alpha
+* The config type (COMMON / SERVER / CLIENT) is now per feature instead of per module, so the same module can have features in different config files
+  * New `@ConfigType(ModConfig.Type)` annotation for features. Without it the feature uses the config type of its module as before, so existing mods work without changes
+  * A module appears in each config file it has features of, with its own section and "Enable" toggle containing only the features of that file. Each toggle enables / disables only the features in its own file, e.g. the client can't disable COMMON or SERVER features. The module's description, "can be disabled" and "enabled by default" apply to all its files
+  * New `ILModConfig(modId, type, modEventBus, classLoader)` constructor, that loads the features of the given type of the modules already registered by the mod
+  * New `Module.Builder.create(id, name, defaultConfigType, modEventBus)`: modules no longer need a config builder, so they can be created once before all the ILModConfigs. The overload with the builder is deprecated, as is `Module#setConfigBuilder`
+  * Modules without features are no longer added to the config ("Enable" toggle included) and a warning is logged
+  * CLIENT features are skipped on dedicated servers per feature, also when the mod doesn't create the CLIENT config there
+  * A warning is logged for features with a config type for which the mod didn't create an ILModConfig, and for features not loaded because their module was registered after the ILModConfig of their config type was created
+
 # 2.4.37.0
 * Thrown tridents damage is now calculated from the attack damage modifiers of the item thrown (moved from Insane's Survival Overhaul), instead of a fixed 8. Vanilla tridents still deal 8, but changes to the trident attack damage (data packs, mods) now apply when thrown too
 * Fixed `MCUtils.hurtIgnoreInvulnerability` leaving the entity's last hurt damage set to the damage just dealt, so during the remaining invulnerability frames hits stronger than that damage (instead of stronger than the previous hit) went through

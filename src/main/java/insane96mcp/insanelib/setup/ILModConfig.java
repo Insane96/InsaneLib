@@ -1,5 +1,6 @@
 package insane96mcp.insanelib.setup;
 
+import insane96mcp.insanelib.InsaneLib;
 import insane96mcp.insanelib.core.feature.Module;
 import insane96mcp.insanelib.network.message.ServerConfigSyncMessage;
 import net.minecraft.resources.ResourceLocation;
@@ -46,6 +47,8 @@ import java.util.function.BiConsumer;
  *             modEventBus, MyMod.class.getClassLoader());
  *     modContainer.registerConfig(ModConfig.Type.SERVER, CONFIG.spec);
  * }</pre>
+ * Single features of a module whose config type is another one can also be put in the SERVER config with
+ * {@code @ConfigType(ModConfig.Type.SERVER)} and a SERVER ILModConfig, see Multiple configs.<br>
  * Notes on SERVER configs:
  * <ul>
  *     <li>The file is {@code config/<modid>-server.toml}, loaded when the server starts. A world can override it with
@@ -60,29 +63,47 @@ import java.util.function.BiConsumer;
  *     false) and {@code @Config} fields hold the values they are initialized with.</li>
  *     <li>When the server stops the config is unloaded but {@code @Config} fields keep the last values read.
  *     {@code ConfigOption#set} and {@code Feature#setEnabledConfig} do nothing (and log a warning) while the config is not loaded.</li>
+ *     <li>Only SERVER configs are synced: a client always reads its own COMMON and CLIENT configs, also when connected to a server.</li>
  * </ul>
  *
- * <p><b>Multiple configs</b> (e.g. a SERVER config for gameplay and a CLIENT config for rendering, each with its own module):
+ * <p><b>Multiple configs</b> (e.g. COMMON gameplay features and CLIENT rendering features in the same modules):
  * <pre>{@code
- * public static final String MAIN_MODULE = MOD_ID + ":main";
- * public static final String CLIENT_MODULE = MOD_ID + ":client";
+ * public static final String COMBAT = MOD_ID + ":combat";
  *
- *     CONFIG = new ILModConfig(ResourceLocation.parse(MAIN_MODULE), "Single Module", ModConfig.Type.SERVER,
- *             modEventBus, MyMod.class.getClassLoader());
- *     modContainer.registerConfig(ModConfig.Type.SERVER, CONFIG.spec);
- *     CLIENT_CONFIG = new ILModConfig(ResourceLocation.parse(CLIENT_MODULE), "Client", ModConfig.Type.CLIENT,
- *             modEventBus, MyMod.class.getClassLoader());
+ * // MyModModules
+ * public static void init(IEventBus modEventBus) {
+ *     Module.Builder.create(ResourceLocation.parse(COMBAT), "Combat", ModConfig.Type.COMMON, modEventBus).build();
+ *     ...
+ * }
+ *
+ * // Mod constructor: the modules are created once, then one ILModConfig per config type
+ *     MyModModules.init(modEventBus);
+ *     CONFIG = new ILModConfig(MOD_ID, ModConfig.Type.COMMON, modEventBus, MyMod.class.getClassLoader());
+ *     modContainer.registerConfig(ModConfig.Type.COMMON, CONFIG.spec);
+ *     CLIENT_CONFIG = new ILModConfig(MOD_ID, ModConfig.Type.CLIENT, modEventBus, MyMod.class.getClassLoader());
  *     modContainer.registerConfig(ModConfig.Type.CLIENT, CLIENT_CONFIG.spec);
  * }</pre>
- * Features use {@code @LoadFeature(module = MyMod.MAIN_MODULE, ...)} or {@code @LoadFeature(module = MyMod.CLIENT_MODULE, ...)}.
+ * Features use {@code @LoadFeature(module = MyMod.COMBAT)} to be in the COMMON config (the module's config type), and
+ * {@code @LoadFeature(module = MyMod.COMBAT)} with {@code @ConfigType(ModConfig.Type.CLIENT)} to be in the CLIENT config.
  * Notes on multiple configs:
  * <ul>
- *     <li>Each config loads only the features of its own modules. Create all the configs in the mod constructor, also the
- *     CLIENT one on dedicated servers (its features are skipped there).</li>
- *     <li>Features must always specify {@code module}. If they don't, the feature is assigned to the only module
- *     existing when it's processed, which depends on the order the configs are created, and a warning is logged.</li>
- *     <li>A {@code module} that no config registers (e.g. a typo) is logged as a warning once all the mods have been
- *     constructed (common setup), unless the feature's {@code requiresMods} are missing.</li>
+ *     <li>A feature without {@code @ConfigType} is in the config of its module's config type (the one passed to
+ *     {@code Module.Builder.create}).</li>
+ *     <li>A module appears in the config of each type it has features of, with its own section and "Enable" toggle
+ *     containing only the features of that type. Each toggle enables / disables only the features in its own config, e.g.
+ *     the client can't disable COMMON or SERVER features. The module's description, {@code canBeDisabled} and
+ *     {@code enabledByDefault} apply to all its configs.</li>
+ *     <li>Each ILModConfig loads only the features of its own type, of the modules registered <b>before it's created</b>,
+ *     so create the modules first. The {@code modulesInit} constructor still works: the modules created by the
+ *     {@code modulesInit} of an ILModConfig are available to the ILModConfigs created after it, not to the ones created before.</li>
+ *     <li>Create all the configs in the mod constructor, also the CLIENT one on dedicated servers (its features are skipped there).</li>
+ *     <li>Features must always specify {@code module} if the mod has more than one. If they don't, the feature is
+ *     assigned to the only module existing when it's processed, which depends on the order the modules and configs are
+ *     created, and a warning is logged.</li>
+ *     <li>Once all the mods have been constructed (common setup) warnings are logged for: a {@code module} not
+ *     registered (e.g. a typo), unless the feature's {@code requiresMods} are missing; a feature whose config type has
+ *     no ILModConfig created by the mod; a feature not loaded because its module was registered after the ILModConfig
+ *     of its config type; a module without features, that doesn't appear in any config.</li>
  * </ul>
  */
 public class ILModConfig {
@@ -99,10 +120,10 @@ public class ILModConfig {
                        IEventBus modEventBus, ClassLoader classLoader) {
         this.builder = new ModConfigSpec.Builder();
         this.spec = this.builder.configure(b -> {
-            Module.Builder.create(moduleId, moduleName, type, b, modEventBus)
+            Module.Builder.create(moduleId, moduleName, type, modEventBus)
                     .canBeDisabled(false)
                     .build();
-            Module.loadFeatures(type, moduleId.getNamespace(), classLoader);
+            Module.loadFeatures(type, moduleId.getNamespace(), classLoader, b);
             return b;
         }).getRight();
         this.registerServerConfigSync(type, modEventBus);
@@ -118,7 +139,24 @@ public class ILModConfig {
         this.builder = new ModConfigSpec.Builder();
         this.spec = this.builder.configure(b -> {
             modulesInit.accept(modEventBus, b);
-            Module.loadFeatures(type, modId, classLoader);
+            Module.loadFeatures(type, modId, classLoader, b);
+            return b;
+        }).getRight();
+        this.registerServerConfigSync(type, modEventBus);
+        trackActiveModContainer();
+    }
+
+    /**
+     * Constructor for the modules already registered by the mod (created before, or by the {@code modulesInit} of
+     * another ILModConfig). Loads only the features of the given config type; modules without features of that type
+     * are not added to this config.
+     */
+    public ILModConfig(String modId, ModConfig.Type type, IEventBus modEventBus, ClassLoader classLoader) {
+        if (!Module.hasModules(modId))
+            InsaneLib.LOGGER.warn("ILModConfig ({}) created for mod {}, but the mod has not registered any module yet. Create the modules before the ILModConfigs that load their features", type, modId);
+        this.builder = new ModConfigSpec.Builder();
+        this.spec = this.builder.configure(b -> {
+            Module.loadFeatures(type, modId, classLoader, b);
             return b;
         }).getRight();
         this.registerServerConfigSync(type, modEventBus);
