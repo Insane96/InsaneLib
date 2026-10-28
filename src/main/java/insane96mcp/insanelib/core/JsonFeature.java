@@ -13,9 +13,11 @@ import insane96mcp.insanelib.util.SnapshotList;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.neoforged.fml.config.ModConfig;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.OnDatapackSyncEvent;
 import net.neoforged.neoforge.event.TagsUpdatedEvent;
+import net.neoforged.neoforge.event.server.ServerAboutToStartEvent;
 import org.apache.commons.io.FilenameUtils;
 
 import javax.annotation.Nullable;
@@ -50,6 +52,16 @@ public abstract class JsonFeature extends Feature {
         super.registerEvents();
         NeoForge.EVENT_BUS.addListener(this::onDataPackSync);
         NeoForge.EVENT_BUS.addListener(this::onTagsUpdatedEvent);
+        if (this.getConfigType() == ModConfig.Type.SERVER)
+            NeoForge.EVENT_BUS.addListener(this::onServerAboutToStart);
+    }
+
+    /**
+     * SERVER configs are loaded after the data packs, so when the reload listener runs on server start the feature is
+     * still disabled and the jsons are not read. Read them again once the SERVER config has been loaded.
+     */
+    private void onServerAboutToStart(ServerAboutToStartEvent event) {
+        this.loadJsonConfigs();
     }
 
     public abstract String getModConfigFolder();

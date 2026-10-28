@@ -1,3 +1,6 @@
+# Upcoming
+* Fixed JsonFeatures in the SERVER config not reading their jsons when the world is loaded (only after `/reload`), as the data packs are loaded before the SERVER config, when the feature is still disabled
+
 # 2.5.0.0-alpha
 * The config type (COMMON / SERVER / CLIENT) is now per feature instead of per module, so the same module can have features in different config files
   * New `@ConfigType(ModConfig.Type)` annotation for features. Without it the feature uses the config type of its module as before, so existing mods work without changes
