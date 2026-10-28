@@ -1,4 +1,4 @@
-# Upcoming
+# 2.5.0.1-alpha
 * Fixed JsonFeatures in the SERVER config not reading their jsons when the world is loaded (only after `/reload`), as the data packs are loaded before the SERVER config, when the feature is still disabled
 
 # 2.5.0.0-alpha
