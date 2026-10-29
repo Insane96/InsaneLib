@@ -11,6 +11,7 @@ import insane96mcp.insanelib.core.feature.Feature;
 import insane96mcp.insanelib.core.feature.LoadFeature;
 import insane96mcp.insanelib.core.feature.config.Config;
 import insane96mcp.insanelib.network.message.ItemComponentsSyncMessage;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.DataComponentType;
@@ -18,12 +19,15 @@ import net.minecraft.core.component.PatchedDataComponentMap;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.Item;
+import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.event.config.ModConfigEvent;
 import net.neoforged.neoforge.event.OnDatapackSyncEvent;
 import net.neoforged.neoforge.event.TagsUpdatedEvent;
+import net.neoforged.neoforge.event.server.ServerAboutToStartEvent;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -82,7 +86,44 @@ public class ItemComponentsFeature extends Feature {
         if (event.getUpdateCause() != TagsUpdatedEvent.UpdateCause.SERVER_DATA_LOAD)
             return;
 
-        RegistryOps<JsonElement> ops = RegistryOps.create(JsonOps.INSTANCE, event.getRegistryAccess());
+        int affectedItems = recomputePatches(event.getRegistryAccess());
+        InsaneLib.LOGGER.info("ItemComponents: applied components to {} items", affectedItems);
+    }
+
+    /**
+     * When the world is loaded tags are updated before the {@code MinecraftServer} exists, so before SERVER configs are
+     * loaded: programmatic providers of SERVER features saw the default values (or the ones of the previous world).
+     * SERVER configs are loaded right before this event. No sync needed, as no player is connected yet.
+     * Low priority so that {@code JsonFeature}s of SERVER features have already re-read their jsons.
+     */
+    @SubscribeEvent(priority = EventPriority.LOW)
+    public void onServerAboutToStart(ServerAboutToStartEvent event) {
+        int affectedItems = recomputePatches(event.getServer().registryAccess());
+        InsaneLib.LOGGER.debug("ItemComponents: applied components to {} items after SERVER configs were loaded", affectedItems);
+    }
+
+    /**
+     * Called by {@code ILModConfig} on the server thread when a SERVER config is reloaded while the server is running
+     * (e.g. the file edited by hand), as programmatic providers may read its values. Clients are synced only if the
+     * patches changed.
+     */
+    public static void onServerConfigReloaded(MinecraftServer server) {
+        Map<ResourceLocation, DataComponentPatch> previousPatches = ItemComponentsReloadListener.SYNCED_PATCHES;
+        int affectedItems = recomputePatches(server.registryAccess());
+        if (ItemComponentsReloadListener.SYNCED_PATCHES.equals(previousPatches))
+            return;
+        InsaneLib.LOGGER.info("ItemComponents: SERVER config reloaded, applied components to {} items", affectedItems);
+        for (ServerPlayer player : server.getPlayerList().getPlayers())
+            ItemComponentsSyncMessage.sync(ItemComponentsReloadListener.SYNCED_PATCHES, player);
+    }
+
+    /**
+     * Replaces {@link ItemComponentsReloadListener#PATCHED_COMPONENTS} and {@link ItemComponentsReloadListener#SYNCED_PATCHES}
+     * with the programmatic patches and the data pack definitions applied on top.
+     * @return the number of items patched
+     */
+    private static int recomputePatches(RegistryAccess registryAccess) {
+        RegistryOps<JsonElement> ops = RegistryOps.create(JsonOps.INSTANCE, registryAccess);
 
         // Collect merged components per item (higher priority wins per component type)
         Map<Item, Map<DataComponentType<?>, Object>> allComponents = new HashMap<>();
@@ -91,7 +132,7 @@ public class ItemComponentsFeature extends Feature {
         // Seed with programmatic patches first (lowest priority — data pack definitions overwrite these)
         for (var provider : ItemComponentsReloadListener.PROGRAMMATIC_PROVIDERS) {
             Map<Item, DataComponentPatch> programmatic = new HashMap<>();
-            provider.accept(event.getRegistryAccess(), programmatic);
+            provider.accept(registryAccess, programmatic);
 
             for (Map.Entry<Item, DataComponentPatch> entry : programmatic.entrySet()) {
                 Item item = entry.getKey();
@@ -112,7 +153,7 @@ public class ItemComponentsFeature extends Feature {
         if (ItemComponentsReloadListener.DEFINITIONS.isEmpty() && allComponents.isEmpty() && allRemovals.isEmpty()) {
             ItemComponentsReloadListener.PATCHED_COMPONENTS = Map.of();
             ItemComponentsReloadListener.SYNCED_PATCHES = Map.of();
-            return;
+            return 0;
         }
 
         // Sort by priority ascending so higher priority definitions are applied last and win
@@ -195,8 +236,7 @@ public class ItemComponentsFeature extends Feature {
         }
         ItemComponentsReloadListener.PATCHED_COMPONENTS = Map.copyOf(patchedComponents);
         ItemComponentsReloadListener.SYNCED_PATCHES = Map.copyOf(syncedPatches);
-
-        InsaneLib.LOGGER.info("ItemComponents: applied components to {} items", affectedItems.size());
+        return affectedItems.size();
     }
 
     @SubscribeEvent

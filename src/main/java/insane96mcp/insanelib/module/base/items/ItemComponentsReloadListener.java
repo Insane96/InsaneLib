@@ -39,10 +39,15 @@ public class ItemComponentsReloadListener extends SimplePreparableReloadListener
 
     /**
      * Register a provider to supply programmatic component patches.
-     * Providers are called on each reload before data pack definitions are applied,
+     * Providers are called before data pack definitions are applied,
      * so data pack entries always take priority over programmatic ones.
      * The consumer receives the current {@link RegistryAccess} and a mutable map
-     * to populate with {@link DataComponentPatch} entries per item.
+     * to populate with {@link DataComponentPatch} entries per item.<br>
+     * Providers are called multiple times (on world load, /reload and when a SERVER config made with {@code ILModConfig}
+     * is reloaded), always with a new empty map: they must be idempotent and not accumulate state between calls.<br>
+     * On world load tags are updated before SERVER configs are loaded, so providers reading SERVER config values first
+     * see the default values (or the previous world's ones). The final patches are the ones computed on
+     * {@link net.neoforged.neoforge.event.server.ServerAboutToStartEvent}, once SERVER configs are loaded.
      */
     public static final List<BiConsumer<RegistryAccess, Map<Item, DataComponentPatch>>> PROGRAMMATIC_PROVIDERS = new ArrayList<>();
 
@@ -69,7 +74,8 @@ public class ItemComponentsReloadListener extends SimplePreparableReloadListener
     }
 
     /**
-     * The patches are replaced in {@link ItemComponentsFeature#onTagsUpdated}, once tags are bound
+     * The patches are replaced in {@link ItemComponentsFeature#onTagsUpdated}, once tags are bound, and again in
+     * {@link ItemComponentsFeature#onServerAboutToStart}
      */
     @Override
     protected void apply(@NotNull List<ItemComponent> definitions, @NotNull ResourceManager resourceManager, @NotNull ProfilerFiller profiler) {

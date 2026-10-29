@@ -1,3 +1,7 @@
+# 2.5.0.3-alpha
+* Fixed item component patches of programmatic providers (e.g. ISO's stack sizes) reading SERVER config values not applied when the world is loaded (only after `/reload`): tags are loaded before the SERVER config, so the patches used its default values or the ones of the previous world. They are now computed again once the SERVER config is loaded
+* Item component patches are now computed again when a SERVER config made with ILModConfig is reloaded while the server is running (e.g. the file edited by hand), and synced to the players if changed
+
 # 2.5.0.2-alpha
 * SERVER configs can now be edited from the config screen in the main menu (previously "only available while a world is loaded"). The global `config/<modid>-server.toml` file is edited, so worlds with an override in `saves/<world>/serverconfig/` are not affected
 * The SERVER config screen now shows at the top if the global config file or the world's own one (in `serverconfig`) is being edited

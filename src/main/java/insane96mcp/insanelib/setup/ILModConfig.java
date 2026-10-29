@@ -2,6 +2,7 @@ package insane96mcp.insanelib.setup;
 
 import insane96mcp.insanelib.InsaneLib;
 import insane96mcp.insanelib.core.feature.Module;
+import insane96mcp.insanelib.module.base.items.ItemComponentsFeature;
 import insane96mcp.insanelib.network.message.ServerConfigSyncMessage;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
@@ -185,7 +186,9 @@ public class ILModConfig {
     }
 
     /**
-     * NeoForge syncs SERVER configs only on login, so when the server reloads the file the config is sent again to clients
+     * NeoForge syncs SERVER configs only on login, so when the server reloads the file the config is sent again to clients.
+     * Item component patches are recomputed too, as programmatic providers may read the config. Done here as the event
+     * is posted only on the bus of the mod owning the config, so InsaneLib can't listen to other mods' configs.
      */
     private void onServerConfigReloading(final ModConfigEvent.Reloading event) {
         ModConfig modConfig = event.getConfig();
@@ -196,6 +199,9 @@ public class ILModConfig {
         if (server == null)
             return;
         // Reloading is fired from the config file watcher thread
-        server.execute(() -> ServerConfigSyncMessage.syncToAll(modConfig, server));
+        server.execute(() -> {
+            ServerConfigSyncMessage.syncToAll(modConfig, server);
+            ItemComponentsFeature.onServerConfigReloaded(server);
+        });
     }
 }
