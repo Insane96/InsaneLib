@@ -82,7 +82,12 @@ public class Feature {
         if (!name.isBlank())
             return name;
 
-        return fieldNameToConfigOption(this.getClass().getSimpleName()).replaceAll("(?i)feature", "").trim();
+        // Strips the words Feature, Server, Client and Common from the class name
+        String className = this.getClass().getSimpleName();
+        String stripped = className.replaceAll("(Feature|Server|Client|Common)(?![a-z])", "");
+        if (stripped.isBlank())
+            stripped = className;
+        return fieldNameToConfigOption(stripped).trim();
     }
 
     private String extractDescription() {

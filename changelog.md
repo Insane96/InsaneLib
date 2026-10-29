@@ -1,3 +1,7 @@
+# 2.5.0.4-alpha
+* Feature names generated from the class name (when `@LoadFeature` has no `name`) now strip the words "Feature", "Server", "Client" and "Common" anywhere in the name (e.g. `ServerHealthFeature` → "Health"). Only whole CamelCase words are removed (e.g. "Featured" or "Servers" are kept), so the name keeps its first letter capitalized and has no double spaces. Previously only "feature" was removed, also inside other words (e.g. `FeaturedItemsFeature` → "d items")
+  * Config keys and data paths of features named this way may change
+
 # 2.5.0.3-alpha
 * Fixed item component patches of programmatic providers (e.g. ISO's stack sizes) reading SERVER config values not applied when the world is loaded (only after `/reload`): tags are loaded before the SERVER config, so the patches used its default values or the ones of the previous world. They are now computed again once the SERVER config is loaded
 * Item component patches are now computed again when a SERVER config made with ILModConfig is reloaded while the server is running (e.g. the file edited by hand), and synced to the players if changed
