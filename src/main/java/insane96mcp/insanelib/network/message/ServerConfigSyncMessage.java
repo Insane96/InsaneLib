@@ -11,12 +11,16 @@ import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.fml.config.ConfigTracker;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.config.ModConfigs;
+import net.neoforged.neoforge.event.server.ServerStoppedEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.neoforged.neoforge.network.registration.NetworkRegistry;
 
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * NeoForge syncs SERVER configs only on login. This re-sends a SERVER config to the connected clients when the server
@@ -60,6 +64,16 @@ public record ServerConfigSyncMessage(String fileName, byte[] contents) implemen
     }
 
     /**
+     * Contents of the last sync per config file. Saving from the config screen fires a Reloading event and then the file
+     * watcher fires another one for the same change, so syncs with unchanged contents are skipped.
+     */
+    private static final Map<String, byte[]> LAST_SYNCED = new HashMap<>();
+
+    public static void onServerStopped(final ServerStoppedEvent event) {
+        LAST_SYNCED.clear();
+    }
+
+    /**
      * Sends the config to all the connected players and notifies operators. Must be called on the server thread.
      */
     public static void syncToAll(ModConfig modConfig, MinecraftServer server) {
@@ -71,15 +85,19 @@ public record ServerConfigSyncMessage(String fileName, byte[] contents) implemen
             InsaneLib.LOGGER.error("Failed to read server config {} to sync it to clients", modConfig.getFileName(), e);
             return;
         }
+        if (Arrays.equals(LAST_SYNCED.put(modConfig.getFileName(), contents), contents))
+            return;
         ServerConfigSyncMessage message = new ServerConfigSyncMessage(modConfig.getFileName(), contents);
         int synced = 0;
         for (ServerPlayer player : server.getPlayerList().getPlayers()) {
-            if (!NetworkRegistry.hasChannel(player.connection, TYPE.id()))
+            // Singleplayer / LAN host share the config with the server
+            if (player.connection.getConnection().isMemoryConnection() || !NetworkRegistry.hasChannel(player.connection, TYPE.id()))
                 continue;
             PacketDistributor.sendToPlayer(player, message);
-            if (!player.connection.getConnection().isMemoryConnection())
-                synced++;
+            synced++;
         }
+        if (synced == 0)
+            return;
         InsaneLib.LOGGER.info("Server config {} reloaded and synced to {} players", modConfig.getFileName(), synced);
         Component notification = Component.literal("Server config %s reloaded and synced to %d players".formatted(modConfig.getFileName(), synced)).withStyle(ChatFormatting.GRAY, ChatFormatting.ITALIC);
         for (ServerPlayer player : server.getPlayerList().getPlayers()) {

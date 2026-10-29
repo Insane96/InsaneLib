@@ -1,3 +1,8 @@
+# 2.5.0.2-alpha
+* SERVER configs can now be edited from the config screen in the main menu (previously "only available while a world is loaded"). The global `config/<modid>-server.toml` file is edited, so worlds with an override in `saves/<world>/serverconfig/` are not affected
+* The SERVER config screen now shows at the top if the global config file or the world's own one (in `serverconfig`) is being edited
+* Fixed the "Server config reloaded and synced" message being sent twice when saving from the config screen, and being sent in singleplayer ("synced to 0 players")
+
 # 2.5.0.1-alpha
 * Fixed JsonFeatures in the SERVER config not reading their jsons when the world is loaded (only after `/reload`), as the data packs are loaded before the SERVER config, when the feature is still disabled
 

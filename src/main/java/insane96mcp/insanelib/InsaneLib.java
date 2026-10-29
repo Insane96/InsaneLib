@@ -17,6 +17,7 @@ import insane96mcp.insanelib.module.base.MobDetectionRange;
 import insane96mcp.insanelib.module.base.PushResistance;
 import insane96mcp.insanelib.module.base.items.ItemComponentsReloadListener;
 import insane96mcp.insanelib.network.NetworkHandler;
+import insane96mcp.insanelib.network.message.ServerConfigSyncMessage;
 import insane96mcp.insanelib.setup.*;
 import insane96mcp.insanelib.util.CreativeTabsUtils;
 import insane96mcp.insanelib.util.IntegratedPack;
@@ -80,6 +81,7 @@ public class InsaneLib {
         if (FMLLoader.getDist().isClient()) {
             eventBus.addListener(EventPriority.LOWEST, CreativeTabsUtils::removeCreativeRemovalTaggedItems);
             eventBus.addListener(ILConfigScreen::registerForILMods);
+            NeoForge.EVENT_BUS.addListener(ILConfigScreen::onScreenOpening);
             NeoForge.EVENT_BUS.addListener(CreativeTabsUtils::onTagsUpdated);
             NeoForge.EVENT_BUS.addListener(ItemComponentsClientHandler::onLoggingIn);
         }
@@ -90,6 +92,7 @@ public class InsaneLib {
         NeoForge.EVENT_BUS.addListener(PoolInjectionLoader::onLootTableLoad);
         NeoForge.EVENT_BUS.addListener(RecipeRemovalUtils::removeRecipeRemovalTaggedRecipes);
         NeoForge.EVENT_BUS.addListener(RecipeRemovalUtils::onServerAboutToStart);
+        NeoForge.EVENT_BUS.addListener(ServerConfigSyncMessage::onServerStopped);
     }
 
     private void onRegisterCommands(RegisterCommandsEvent event) {
