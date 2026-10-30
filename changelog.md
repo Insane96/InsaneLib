@@ -1,4 +1,4 @@
-# Upcoming
+# 2.5.0.5-beta
 * Increased the slot limit of NeoForge's `ComponentItemHandler` (e.g. shulker boxes as items) and `ItemStackHandler` from 99 to the increased stack limit, so mods inserting items through them (e.g. Quark's right click to insert in shulker boxes) no longer split stacks over 99 into multiple slots
 
 # 2.5.0.4-alpha
