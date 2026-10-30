@@ -1,3 +1,6 @@
+# Upcoming
+* Increased the slot limit of NeoForge's `ComponentItemHandler` (e.g. shulker boxes as items) and `ItemStackHandler` from 99 to the increased stack limit, so mods inserting items through them (e.g. Quark's right click to insert in shulker boxes) no longer split stacks over 99 into multiple slots
+
 # 2.5.0.4-alpha
 * Feature names generated from the class name (when `@LoadFeature` has no `name`) now strip the words "Feature", "Server", "Client" and "Common" anywhere in the name (e.g. `ServerHealthFeature` → "Health"). Only whole CamelCase words are removed (e.g. "Featured" or "Servers" are kept), so the name keeps its first letter capitalized and has no double spaces. Previously only "feature" was removed, also inside other words (e.g. `FeaturedItemsFeature` → "d items")
   * Config keys and data paths of features named this way may change
