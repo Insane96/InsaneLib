@@ -1,4 +1,4 @@
-# Upcoming
+# 2.5.1.0
 * Endermen can no longer teleport inside full blocks that can be passed through (e.g. cobwebs, powder snow, or leaves with mods that make them pass through), where they could get stuck, or on top of such blocks if they would fall through them. Can be disabled with the `fixEndermanTeleportingInsideBlocks` config option
 * Fixed the `Error sending packet clientbound/minecraft:disconnect` error spamming the server log when a status connection (e.g. a server list ping) fails, for example when reset by the other side. The status protocol has no disconnect packet, so the connection is now closed without trying to send it. Can be disabled with the `fixStatusDisconnectError` config option
 
