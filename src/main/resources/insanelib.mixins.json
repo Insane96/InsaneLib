@@ -10,6 +10,7 @@
 		"CakeBlockMixin",
 		"CommonHooksMixin",
 		"ComponentItemHandlerMixin",
+		"ConnectionMixin",
 		"ContainerMixin",
 		"CreeperMixin",
 		"CrossbowItemMixin",

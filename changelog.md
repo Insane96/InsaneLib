@@ -1,5 +1,6 @@
 # Upcoming
 * Endermen can no longer teleport inside full blocks that can be passed through (e.g. cobwebs, powder snow, or leaves with mods that make them pass through), where they could get stuck, or on top of such blocks if they would fall through them. Can be disabled with the `fixEndermanTeleportingInsideBlocks` config option
+* Fixed the `Error sending packet clientbound/minecraft:disconnect` error spamming the server log when a status connection (e.g. a server list ping) fails, for example when reset by the other side. The status protocol has no disconnect packet, so the connection is now closed without trying to send it. Can be disabled with the `fixStatusDisconnectError` config option
 
 # 2.5.0.5-beta
 * Increased the slot limit of NeoForge's `ComponentItemHandler` (e.g. shulker boxes as items) and `ItemStackHandler` from 99 to the increased stack limit, so mods inserting items through them (e.g. Quark's right click to insert in shulker boxes) no longer split stacks over 99 into multiple slots

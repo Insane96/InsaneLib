@@ -58,6 +58,13 @@ public class Fixes extends Feature {
 	@Config(description = "Prevents endermen from teleporting inside full blocks that can be passed through (e.g. cobwebs, powder snow, or leaves with mods that make them pass through), where they can get stuck. Also prevents them from teleporting on top of such blocks if they would fall through them.")
 	public static Boolean fixEndermanTeleportingInsideBlocks = true;
 
+	@Config(description = "If true, status connections (server list pings) that fail, e.g. when reset by the other side, will no longer log an \"Error sending packet clientbound/minecraft:disconnect\" error in the console.")
+	public static Boolean fixStatusDisconnectError = true;
+
+	public static boolean shouldFixStatusDisconnectError() {
+		return Feature.isEnabled(Fixes.class) && fixStatusDisconnectError;
+	}
+
 	public static boolean shouldFixFallingBlockDupe() {
 		return Feature.isEnabled(Fixes.class) && fixFallingBlockDupe;
 	}
