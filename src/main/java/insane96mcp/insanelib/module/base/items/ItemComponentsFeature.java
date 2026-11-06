@@ -119,7 +119,7 @@ public class ItemComponentsFeature extends Feature {
 
     /**
      * Replaces {@link ItemComponentsReloadListener#PATCHED_COMPONENTS} and {@link ItemComponentsReloadListener#SYNCED_PATCHES}
-     * with the programmatic patches and the data pack definitions applied on top.
+     * with the programmatic patches, the data pack definitions applied on top and finally the post processors.
      * @return the number of items patched
      */
     private static int recomputePatches(RegistryAccess registryAccess) {
@@ -150,7 +150,7 @@ public class ItemComponentsFeature extends Feature {
             }
         }
 
-        if (ItemComponentsReloadListener.DEFINITIONS.isEmpty() && allComponents.isEmpty() && allRemovals.isEmpty()) {
+        if (ItemComponentsReloadListener.DEFINITIONS.isEmpty() && ItemComponentsReloadListener.POST_PROCESSORS.isEmpty() && allComponents.isEmpty() && allRemovals.isEmpty()) {
             ItemComponentsReloadListener.PATCHED_COMPONENTS = Map.of();
             ItemComponentsReloadListener.SYNCED_PATCHES = Map.of();
             return 0;
@@ -221,6 +221,10 @@ public class ItemComponentsFeature extends Feature {
             }
         }
 
+        // Post processors: transform the final values, after both programmatic patches and data pack definitions
+        for (ItemComponentsReloadListener.PostProcessor<?> postProcessor : ItemComponentsReloadListener.POST_PROCESSORS)
+            applyPostProcessor(postProcessor, registryAccess, allComponents, allRemovals);
+
         Set<Item> affectedItems = new HashSet<>();
         affectedItems.addAll(allComponents.keySet());
         affectedItems.addAll(allRemovals.keySet());
@@ -248,6 +252,35 @@ public class ItemComponentsFeature extends Feature {
         }
         else {
             ItemComponentsSyncMessage.sync(ItemComponentsReloadListener.SYNCED_PATCHES, event.getPlayer());
+        }
+    }
+
+    /**
+     * Runs the post processor on every item having the component, either set by a patch or unpatched. Items whose
+     * component was removed are skipped. Only items whose value actually changes get an entry in {@code allComponents}.
+     */
+    @SuppressWarnings("unchecked")
+    private static <T> void applyPostProcessor(ItemComponentsReloadListener.PostProcessor<T> postProcessor, RegistryAccess registryAccess, Map<Item, Map<DataComponentType<?>, Object>> allComponents, Map<Item, Set<DataComponentType<?>>> allRemovals) {
+        DataComponentType<T> type = postProcessor.type();
+        for (Item item : BuiltInRegistries.ITEM) {
+            if (allRemovals.getOrDefault(item, Set.of()).contains(type))
+                continue;
+            Map<DataComponentType<?>, Object> setMap = allComponents.get(item);
+            T value = setMap != null && setMap.containsKey(type)
+                    ? (T) setMap.get(type)
+                    : ItemComponentsReloadListener.getUnpatchedComponents(item).get(type);
+            if (value == null)
+                continue;
+            T processed;
+            try {
+                processed = postProcessor.processor().process(registryAccess, item, value);
+            } catch (Exception e) {
+                InsaneLib.LOGGER.error("ItemComponents: post processor for component '{}' failed on item {}: {}", BuiltInRegistries.DATA_COMPONENT_TYPE.getKey(type), BuiltInRegistries.ITEM.getKey(item), e.getMessage());
+                continue;
+            }
+            if (processed == null || processed.equals(value))
+                continue;
+            allComponents.computeIfAbsent(item, k -> new LinkedHashMap<>()).put(type, processed);
         }
     }
 

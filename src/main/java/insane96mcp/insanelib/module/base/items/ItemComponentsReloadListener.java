@@ -6,6 +6,7 @@ import insane96mcp.insanelib.mixin.accessor.ItemAccessor;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponentPatch;
+import net.minecraft.core.component.DataComponentType;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimplePreparableReloadListener;
@@ -13,6 +14,8 @@ import net.minecraft.util.GsonHelper;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.item.Item;
 import org.jetbrains.annotations.NotNull;
+
+import javax.annotation.Nullable;
 
 import java.io.InputStreamReader;
 import java.util.ArrayList;
@@ -50,6 +53,33 @@ public class ItemComponentsReloadListener extends SimplePreparableReloadListener
      * {@link net.neoforged.neoforge.event.server.ServerAboutToStartEvent}, once SERVER configs are loaded.
      */
     public static final List<BiConsumer<RegistryAccess, Map<Item, DataComponentPatch>>> PROGRAMMATIC_PROVIDERS = new ArrayList<>();
+
+    /**
+     * Post processors registered with {@link #addPostProcessor}, in registration order.
+     */
+    public static final List<PostProcessor<?>> POST_PROCESSORS = new ArrayList<>();
+
+    /**
+     * Register a post processor that transforms the final value of a component type, after both the
+     * {@link #PROGRAMMATIC_PROVIDERS} and the data pack definitions have been applied.
+     * The processor is called for every item that has the component (patched or not), with its final value, and returns
+     * the value to use instead; returning the same (equal) value or {@code null} leaves it unchanged. Items whose
+     * component was removed by a definition are skipped.<br>
+     * Post processors are called in registration order, each receiving the value returned by the previous ones. Like
+     * programmatic providers they are called multiple times and must be idempotent with respect to their input (the
+     * value they receive is always the one before any post processing, never their own previous output).
+     */
+    public static <T> void addPostProcessor(DataComponentType<T> type, ComponentPostProcessor<T> processor) {
+        POST_PROCESSORS.add(new PostProcessor<>(type, processor));
+    }
+
+    @FunctionalInterface
+    public interface ComponentPostProcessor<T> {
+        @Nullable
+        T process(RegistryAccess registryAccess, Item item, T value);
+    }
+
+    public record PostProcessor<T>(DataComponentType<T> type, ComponentPostProcessor<T> processor) { }
 
     @Override
     protected @NotNull List<ItemComponent> prepare(@NotNull ResourceManager resourceManager, @NotNull ProfilerFiller profiler) {

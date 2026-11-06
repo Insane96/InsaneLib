@@ -1,3 +1,6 @@
+# 2.5.2.0
+* Item components: added post processors (`ItemComponentsReloadListener.addPostProcessor(type, processor)`), that transform the final value of a component type after both the programmatic providers and the data pack definitions have been applied. They are called for every item having the component (patched or not) and skip items whose component was removed by a data pack
+
 # 2.5.1.0
 * Endermen can no longer teleport inside full blocks that can be passed through (e.g. cobwebs, powder snow, or leaves with mods that make them pass through), where they could get stuck, or on top of such blocks if they would fall through them. Can be disabled with the `fixEndermanTeleportingInsideBlocks` config option
 * Fixed the `Error sending packet clientbound/minecraft:disconnect` error spamming the server log when a status connection (e.g. a server list ping) fails, for example when reset by the other side. The status protocol has no disconnect packet, so the connection is now closed without trying to send it. Can be disabled with the `fixStatusDisconnectError` config option
