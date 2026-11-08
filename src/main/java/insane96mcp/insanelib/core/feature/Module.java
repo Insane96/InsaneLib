@@ -14,6 +14,7 @@ import org.objectweb.asm.Type;
 
 import javax.annotation.Nullable;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 public class Module {
@@ -41,6 +42,8 @@ public class Module {
     private static final Map<String, Set<ModConfig.Type>> loadedConfigTypes = new HashMap<>();
     // @LoadFeature (by class name) intentionally not loaded: required mods missing or CLIENT features on dedicated servers
     private static final Set<String> skippedFeatures = new HashSet<>();
+    // The specs containing the modules' options. Concurrent as mods are constructed in parallel
+    private static final Set<ModConfigSpec> configSpecs = ConcurrentHashMap.newKeySet();
 
     private record FeatureAnnotation(String modId, ModFileScanData.AnnotationData annotationData, @Nullable ModConfig.Type configType) {
         @Nullable
@@ -184,10 +187,19 @@ public class Module {
         this.typeConfigs.put(configType, typeConfig);
     }
 
+    /**
+     * Marks the spec as containing the modules' options, so that its config events make the modules read them
+     */
+    public static void registerConfigSpec(ModConfigSpec spec) {
+        configSpecs.add(spec);
+    }
+
     public void readConfig(final ModConfigEvent event) {
         // SERVER configs get unloaded when the server stops; the values can no longer be read, so the last ones read are kept
         if (event instanceof ModConfigEvent.Unloading
-                || !event.getConfig().getModId().equals(this.modId))
+                || !event.getConfig().getModId().equals(this.modId)
+                // Other configs of the mod can be loaded before the modules' one (e.g. SERVER configs synced to clients), which would make reading the options fail
+                || !configSpecs.contains(event.getConfig().getSpec()))
             return;
         ModConfig.Type configType = event.getConfig().getType();
         TypeConfig typeConfig = this.typeConfigs.get(configType);

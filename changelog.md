@@ -1,3 +1,6 @@
+# 2.5.2.1
+* Fixed configs registered by a mod without ILModConfig making modules read their options. With two SERVER configs, if the other one was synced first the error aborted the event, so the mod's listener for that config never ran and clients kept its default values (e.g. Rune Enchanting's `runes.toml`)
+
 # 2.5.2.0
 * Item components: added post processors (`ItemComponentsReloadListener.addPostProcessor(type, processor)`), that transform the final value of a component type after both the programmatic providers and the data pack definitions have been applied. They are called for every item having the component (patched or not) and skip items whose component was removed by a data pack
 

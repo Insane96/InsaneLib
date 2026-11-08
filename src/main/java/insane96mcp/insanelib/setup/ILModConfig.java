@@ -181,6 +181,7 @@ public class ILModConfig {
     }
 
     private void registerServerConfigSync(ModConfig.Type type, IEventBus modEventBus) {
+        Module.registerConfigSpec(this.spec);
         if (type == ModConfig.Type.SERVER)
             modEventBus.addListener(this::onServerConfigReloading);
     }
