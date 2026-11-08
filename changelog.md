@@ -1,3 +1,6 @@
+# 2.5.3.0
+* Added the `insanelib:off_ground_mining_speed` player attribute, the multiplier applied to the mining speed when off ground (0.2 by default like vanilla, 1 means no penalty). Moved from Rune Enchanting
+
 # 2.5.2.1
 * Fixed configs registered by a mod without ILModConfig making modules read their options. With two SERVER configs, if the other one was synced first the error aborted the event, so the mod's listener for that config never ran and clients kept its default values (e.g. Rune Enchanting's `runes.toml`)
 

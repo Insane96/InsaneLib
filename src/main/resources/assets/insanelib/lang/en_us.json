@@ -1,4 +1,5 @@
 {
   "attribute.name.push_resistance": "Push Resistance",
-  "attribute.name.mob_detection_range": "Mob Detection Range"
+  "attribute.name.mob_detection_range": "Mob Detection Range",
+  "attribute.name.off_ground_mining_speed": "Off Ground Mining Speed"
 }

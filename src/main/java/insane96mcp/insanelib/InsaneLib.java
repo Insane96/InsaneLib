@@ -14,6 +14,7 @@ import insane96mcp.insanelib.data.poolinjection.PoolInjectionLoader;
 import insane96mcp.insanelib.datagen.ILBlockTagProvider;
 import insane96mcp.insanelib.datagen.ILItemTagProvider;
 import insane96mcp.insanelib.module.base.MobDetectionRange;
+import insane96mcp.insanelib.module.base.OffGroundMiningSpeed;
 import insane96mcp.insanelib.module.base.PushResistance;
 import insane96mcp.insanelib.module.base.items.ItemComponentsReloadListener;
 import insane96mcp.insanelib.network.NetworkHandler;
@@ -74,6 +75,7 @@ public class InsaneLib {
         eventBus.addListener(NetworkHandler::register);
         eventBus.addListener(PushResistance::attribute);
         eventBus.addListener(MobDetectionRange::attribute);
+        eventBus.addListener(OffGroundMiningSpeed::attribute);
         eventBus.addListener(InsaneLib::gatherData);
         // Every mod has created its ILModConfigs by now
         eventBus.addListener((FMLCommonSetupEvent event) -> Module.checkFeatureModules());

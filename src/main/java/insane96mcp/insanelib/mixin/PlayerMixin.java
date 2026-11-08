@@ -5,6 +5,7 @@ import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import insane96mcp.insanelib.event.ILEventFactory;
 import insane96mcp.insanelib.module.base.Fixes;
+import insane96mcp.insanelib.module.base.OffGroundMiningSpeed;
 import insane96mcp.insanelib.util.CurrentAttacker;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -22,6 +23,14 @@ public class PlayerMixin {
     @ModifyVariable(method = "causeFoodExhaustion", argsOnly = true, at = @At("HEAD"))
     private float changeExhaustionAmount(float amount) {
         return ILEventFactory.onPlayerExhaustionEvent((Player) (Object) this, amount);
+    }
+
+    /**
+     * Replaces the vanilla divider applied to the mining speed when off ground with the one given by the {@code insanelib:off_ground_mining_speed} attribute.
+     */
+    @ModifyExpressionValue(method = "getDigSpeed", at = @At(value = "CONSTANT", args = "floatValue=5.0"))
+    private float insanelib$changeOffGroundMiningDivider(float original) {
+        return OffGroundMiningSpeed.getDivider((Player) (Object) this, original);
     }
 
     /**
