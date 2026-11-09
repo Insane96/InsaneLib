@@ -61,7 +61,8 @@ import java.util.function.BiConsumer;
  *     <li>Changes to the file while the server is running are reloaded on the server and InsaneLib syncs them again
  *     to connected clients (NeoForge syncs only on login). Operators get a chat message when this happens.</li>
  *     <li>Before the config is loaded for the first time (e.g. in the main menu) features are disabled ({@code Feature#isEnabled()} returns
- *     false) and {@code @Config} fields hold the values they are initialized with.</li>
+ *     false) and {@code @Config} fields hold the values they are initialized with. Data packs are loaded before the
+ *     config too, so the {@code insanelib:feature_enabled} condition reads the file instead.</li>
  *     <li>When the server stops the config is unloaded but {@code @Config} fields keep the last values read.
  *     {@code ConfigOption#set} and {@code Feature#setEnabledConfig} do nothing (and log a warning) while the config is not loaded.</li>
  *     <li>Only SERVER configs are synced: a client always reads its own COMMON and CLIENT configs, also when connected to a server.</li>

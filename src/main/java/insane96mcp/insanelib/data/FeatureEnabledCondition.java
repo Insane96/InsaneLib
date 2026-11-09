@@ -13,7 +13,7 @@ public record FeatureEnabledCondition(String featureName) implements ICondition 
 
     @Override
     public boolean test(IContext context) {
-        return Feature.isEnabled(featureName);
+        return Feature.isEnabledForDataLoading(featureName);
     }
 
     @Override

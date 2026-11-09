@@ -25,6 +25,7 @@
 		"ItemMixin",
 		"ItemStackHandlerMixin",
 		"ItemStackMixin",
+		"LevelStorageAccessMixin",
 		"LivingEntityMixin",
 		"LootModifierManagerMixin",
 		"NearestAttackableTargetGoalMixin",

@@ -108,6 +108,21 @@ public class Feature {
         return this.module.isEnabled(this.configType);
     }
 
+    /**
+     * Same as {@link #isEnabled()}, but also correct while data packs are being loaded: a SERVER config is loaded only
+     * when the server is about to start, so on the first data pack load its values are read from the file.
+     */
+    public boolean isEnabledForDataLoading() {
+        if (this.configType != ModConfig.Type.SERVER)
+            return this.isEnabled();
+        ModConfig modConfig = this.module.getModConfig(this.configType);
+        if (modConfig == null || modConfig.getLoadedConfig() != null)
+            return this.isEnabled();
+        var config = ServerConfigFileReader.read(modConfig);
+        boolean featureEnabled = !this.canBeDisabled || ServerConfigFileReader.getBoolean(config, this.enabledConfig.getPath(), this.enabledByDefault);
+        return featureEnabled && this.module.isEnabledIn(this.configType, config);
+    }
+
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
     }
@@ -297,6 +312,15 @@ public class Feature {
     public static boolean isEnabled(String featureName) {
         return Module.getFeature(featureName)
                 .map(Feature::isEnabled)
+                .orElse(false);
+    }
+
+    /**
+     * @see #isEnabledForDataLoading()
+     */
+    public static boolean isEnabledForDataLoading(String featureName) {
+        return Module.getFeature(featureName)
+                .map(Feature::isEnabledForDataLoading)
                 .orElse(false);
     }
 

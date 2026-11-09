@@ -1,10 +1,13 @@
 package insane96mcp.insanelib.core.feature;
 
+import com.electronwill.nightconfig.core.Config;
 import insane96mcp.insanelib.InsaneLib;
+import insane96mcp.insanelib.core.feature.config.ServerConfigFileReader;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.config.ModConfig;
+import net.neoforged.fml.config.ModConfigs;
 import net.neoforged.fml.event.config.ModConfigEvent;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.fml.loading.modscan.ModAnnotation;
@@ -147,6 +150,27 @@ public class Module {
     public boolean isEnabled(ModConfig.Type configType) {
         TypeConfig typeConfig = this.typeConfigs.get(configType);
         return typeConfig == null ? this.enabledByDefault : typeConfig.enabled;
+    }
+
+    /**
+     * Whether the module is enabled in the given not yet loaded config, read with {@link ServerConfigFileReader}
+     */
+    boolean isEnabledIn(ModConfig.Type configType, Config config) {
+        if (!this.canBeDisabled)
+            return true;
+        TypeConfig typeConfig = this.typeConfigs.get(configType);
+        return typeConfig == null ? this.enabledByDefault : ServerConfigFileReader.getBoolean(config, typeConfig.enabledConfig.getPath(), this.enabledByDefault);
+    }
+
+    /**
+     * The registered config of the given type containing the modules' options, null if the mod didn't register it
+     */
+    @Nullable
+    ModConfig getModConfig(ModConfig.Type configType) {
+        return ModConfigs.getModConfigs(this.modId).stream()
+                .filter(modConfig -> modConfig.getType() == configType && configSpecs.contains(modConfig.getSpec()))
+                .findFirst()
+                .orElse(null);
     }
 
     public ResourceLocation getId() {

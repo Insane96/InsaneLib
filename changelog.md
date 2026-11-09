@@ -1,3 +1,6 @@
+# 2.5.3.1
+* Fixed the `insanelib:feature_enabled` condition being false for SERVER features during the first data pack load, so their recipes were discarded until `/reload`. Data packs are loaded before the SERVER config, so until it's loaded the condition now reads the feature's and the module's toggles from the file NeoForge will load (the world's `serverconfig` override, `config/` or `defaultconfigs/`), using the default values if the file or the option is missing
+
 # 2.5.3.0
 * Added the `insanelib:off_ground_mining_speed` player attribute, the multiplier applied to the mining speed when off ground (0.2 by default like vanilla, 1 means no penalty). Moved from Rune Enchanting
 
